@@ -13,6 +13,7 @@ import Healthcare from "./components/Healthcare";
 import Banner from "@/components/ui/enrollment/Banner";
 import FAQ from "@/components/ui/enrollment/FAQ";
 import AccCrousel from "./components/AccCrousel";
+import Loading from "@/app/loading";
 // import AccCrousel from "./components/AccCrousel";
 
 export default function Countrypage({
@@ -96,7 +97,6 @@ export default function Countrypage({
       }
       const posts = await response.json();
       setCountry(posts.country);
-      console.log(posts, "posts");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error fetching country:", error.message);
@@ -105,12 +105,9 @@ export default function Countrypage({
       }
     }
   };
-  console.log(country, "Country from Parent");
   useEffect(() => {
     fetchData();
   }, []);
-
-
   return country ? (
     <div>
       <div className="w-[90%] md:w-[95%] mx-auto">
@@ -169,6 +166,6 @@ export default function Countrypage({
       <DreamStudy />
     </div>
   ) : (
-    <p>Loading....</p>
+    <Loading />
   );
 }

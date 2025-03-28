@@ -40,7 +40,12 @@ interface CourseData {
   career_opportunity_5?: string;
 }
 
-const Herosection = ({ data, uniData }: { data: CourseData; uniData: { banner: string } }) => {
+interface UniData {
+  banner: string;
+  logo?: string;
+}
+
+const Herosection = ({ data, uniData }: { data: CourseData; uniData: UniData }) => {
   const arr1 = [
     {
       Image: "/CourseDetailPage/Notebook.svg",
@@ -78,7 +83,6 @@ const Herosection = ({ data, uniData }: { data: CourseData; uniData: { banner: s
       Name: `${data.initial_deposit}`,
     },
   ];
-  console.log(uniData.banner, "uniData.banner");
   return (
     <div>
       {/* Hero section */}
@@ -88,7 +92,7 @@ const Herosection = ({ data, uniData }: { data: CourseData; uniData: { banner: s
           <div
             className="relative w-[95%] mx-auto rounded-3xl overflow-hidden py-2 px-2 sm:px-0 min-h-[250px] sm:min-h-[400px] flex items-center justify-center"
             // style={{ backgroundImage: `url("/dcu-hero-img.png")` }}
-            style={{ backgroundImage: `url(${uniData.banner}  ) `, backgroundSize: "cover" }}
+            style={{ backgroundImage: `url(${uniData?.banner}  ) `, backgroundSize: "cover", backgroundRepeat: "no-repeat" }}
           >
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
@@ -96,7 +100,7 @@ const Herosection = ({ data, uniData }: { data: CourseData; uniData: { banner: s
               {/* Left Section */}
               <div className="w-[90%] flex flex-col items-center md:items-start text-center md:text-left space-y-2 pl-0 lg:pl-12">
                 <Image
-                  src="/CourseDetailPage/dcu.svg"
+                  src={uniData?.logo || "/CourseDetailPage/dcu.svg"}
                   alt="Dcu Logo"
                   width={130}
                   height={130}

@@ -54,7 +54,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       career_opportunity_5?: string;
     };
     universityData?: {
-      universityImages?: string;
+      universityImages?: {
+        banner?: string;
+        logo?: string;
+      };
     };
     countryData: {
       countryname: string;
@@ -140,7 +143,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   if (!data) return <p> Course Not Found</p>;
   return (
     <div>
-      <Herosection data={data?.courseData} uniData={{ banner: data?.universityData?.universityImages || "" }} />
+      <Herosection data={data?.courseData} uniData={{
+        banner: data?.universityData?.universityImages?.banner || "",
+        logo: data?.universityData?.universityImages?.logo || "",
+      }} />
       {/* Course Overview & Navigation Tabs */}
       <section className="bg-white md:mt-6 lg:mt-12 mb-6">
         <div className=" mx-auto w-[92%]">
