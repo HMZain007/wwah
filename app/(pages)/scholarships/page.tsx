@@ -14,17 +14,17 @@ const Page = () => {
   // List of countries for filters
   const countries = [
     { name: "United States of America", value: "usa", img: "/usa.png" },
-    { name: "China", value: "china", img: "/china.png" },
-    { name: "Canada", value: "canada", img: "/canada.png" },
-    { name: "Italy", value: "italy", img: "/italy.png" },
+    { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
+    { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
+    { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
     { name: "United Kingdom", value: "united-kingdom", img: "/ukflag.png" },
-    { name: "Ireland", value: "ireland", img: "/ireland.png" },
-    { name: "New Zealand", value: "new-zealand", img: "/new-zealand.png" },
-    { name: "Denmark", value: "denmark", img: "/denmark.png" },
-    { name: "France", value: "france", img: "/france.png" },
-    { name: "Australia", value: "australia", img: "/australia.png" },
+    { name: "Ireland", value: "ireland", img: "/countryarchive/ireland_logo.png" },
+    { name: "New Zealand", value: "new-zealand", img: "/nz.png" },
+    { name: "Denmark", value: "denmark", img: "/countryarchive/denmark_logo.png" },
+    { name: "France", value: "france", img: "/countryarchive/france_logo.png" },
+    { name: "Australia", value: "australia", img: "/countryarchive/australia_logo.png" },
     { name: "Austria", value: "austria", img: "/austria.svg" },
-    { name: "Germany", value: "germany", img: "/germany.png" },
+    { name: "Germany", value: "germany", img: "/countryarchive/germany_logo.png" },
     { name: "Portugal", value: "portugal", img: "/portugal.svg" },
     { name: "Poland", value: "poland", img: "/poland.svg" },
     { name: "Norway", value: "norway", img: "/norway.svg" },
@@ -137,7 +137,7 @@ const Page = () => {
     }
   };
 
-    const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const [showFavorites, setShowFavorites] = useState(false);
 
   // const toggleFavorite = (id: string) => {
@@ -147,22 +147,22 @@ const Page = () => {
   //   }));
   // };
 
-   const toggleFavorite = (id: string) => {
-      setFavorites((prev) => {
-        const updatedFavorites = { ...prev, [id]: !prev[id] };
-  
-        // Store favorites in local storage to persist on refresh
-        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  
-        return updatedFavorites;
-      });
-    };
-    useEffect(() => {
-      const storedFavorites = localStorage.getItem("favorites");
-      if (storedFavorites) {
-        setFavorites(JSON.parse(storedFavorites));
-      }
-    }, []);
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const updatedFavorites = { ...prev, [id]: !prev[id] };
+
+      // Store favorites in local storage to persist on refresh
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+
+      return updatedFavorites;
+    });
+  };
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favorites");
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
+    }
+  }, []);
 
   // Filtered list based on "Favorites" button
   const displayedScholarships = showFavorites
@@ -528,16 +528,15 @@ const Page = () => {
               </div>
               <div className="flex items-start justify-start mt-4 md:mt-0">
                 <div className="flex items-center justify-center gap-1 lg:gap-2 bg-gray-100 rounded-lg    ">
-       <button
-                   onClick={() => setShowFavorites((prev) => !prev)}
-                    className={`text-sm flex items-center justify-center gap-1 lg:gap-2 bg-gray-100 rounded-lg py-2 px-4   ${
-                     showFavorites ? "text-red-500 font-semibold" : "text-gray-600"
-                   }`}
-                 >
-                   <Image src="/hearti.svg" width={20} height={20} alt="favorites" />
-                   {showFavorites ? "ShowAll" : "Favorites"}
-                 </button>
-      </div>
+                  <button
+                    onClick={() => setShowFavorites((prev) => !prev)}
+                    className={`text-sm flex items-center justify-center gap-1 lg:gap-2 bg-gray-100 rounded-lg py-2 px-4   ${showFavorites ? "text-red-500 font-semibold" : "text-gray-600"
+                      }`}
+                  >
+                    <Image src="/hearti.svg" width={20} height={20} alt="favorites" />
+                    {showFavorites ? "ShowAll" : "Favorites"}
+                  </button>
+                </div>
               </div>
             </div>
             {loading ? (

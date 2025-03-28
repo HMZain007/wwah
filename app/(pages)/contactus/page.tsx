@@ -14,18 +14,18 @@ export default function ContactUs() {
   const countries = [
     { code: "+92", flag: "/pakflag.png", country: "Pakistan" },
     { code: "+1", flag: "/usa.png", country: "USA" },
-    { code: "+91", flag: "/india.png", country: "India" },
-    { code: "+61", flag: "/australia.png", country: "Australia" },
-    { code: "+39", flag: "/italy.png", country: "Italy" },
+    { code: "+91", flag: "/countryarchive/india_logo.png", country: "India" },
+    { code: "+61", flag: "/countryarchive/australia_logo.png", country: "Australia" },
+    { code: "+39", flag: "/countryarchive/italy_logo.png", country: "Italy" },
     { code: "+44", flag: "/ukflag.png", country: "United Kingdom" },
-    { code: "+1", flag: "/canada.png", country: "Canada" },
-    { code: "+86", flag: "/china.png", country: "China" },
-    { code: "+353", flag: "/ireland.png", country: "Ireland" },
-    { code: "+64", flag: "/new-zealand.png", country: "New Zealand" },
-    { code: "+49", flag: "/germany.png", country: "Germany" },
-    { code: "+60", flag: "/malaysia.png", country: "Malaysia" },
-    { code: "+33", flag: "/france.png", country: "France" },
-    { code: "+45", flag: "/denmark.png", country: "Denmark" },
+    { code: "+1", flag: "/countryarchive/canada_logo.png", country: "Canada" },
+    { code: "+86", flag: "/countryarchive/china_logo.png", country: "China" },
+    { code: "+353", flag: "/countryarchive/ireland_logo.png", country: "Ireland" },
+    { code: "+64", flag: "/nz.png", country: "New Zealand" },
+    { code: "+49", flag: "/countryarchive/germany_logo.png", country: "Germany" },
+    { code: "+60", flag: "/countryarchive/malaysia_logo.png", country: "Malaysia" },
+    { code: "+33", flag: "/countryarchive/france_logo.png", country: "France" },
+    { code: "+45", flag: "/countryarchive/denmark_logo.png", country: "Denmark" },
   ];
   const [form, setForm] = useState({
     firstName: "",
@@ -140,40 +140,40 @@ export default function ContactUs() {
               </label>
               <div className="flex flex-row gap-2">
                 {/* Dropdown for Country Code */}
-                                    <div className="flex items-center justify-center w-[50%] md:w-[25%]   bg-white bg-opacity-20 rounded-md">
+                <div className="flex items-center justify-center w-[50%] md:w-[25%]   bg-white bg-opacity-20 rounded-md">
 
-                      <Select onValueChange={handleCountryCodeChange}>
+                  <Select onValueChange={handleCountryCodeChange}>
                     <SelectTrigger className="flex items-center  border rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 bg-[#F1F1F1]">
+                      <div className="flex items-center space-x-2">
+                        <Image
+                          src={countries.find(c => `${c.country}_${c.code}` === form.countryCode)?.flag || countries[0].flag}
+                          alt="Country Flag"
+                          width={20}
+                          height={20}
+                          className="object-cover"
+                        />
+                        <p className="text-xs">{form.countryCode?.split('_')[1] || countries[0].code}</p> {/* Show only code */}
+                      </div>
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country.country} value={`${country.country}_${country.code}`}>
                           <div className="flex items-center space-x-2">
                             <Image
-                              src={countries.find(c => `${c.country}_${c.code}` === form.countryCode)?.flag || countries[0].flag}
-                              alt="Country Flag"
+                              src={country.flag}
+                              alt={`${country.country} Flag`}
                               width={20}
                               height={20}
                               className="object-cover"
                             />
-                            <p className="text-xs">{form.countryCode?.split('_')[1] || countries[0].code}</p> {/* Show only code */}
+                            <p className="text-xs truncate">{country.code}</p>
+                            <p className="text-xs truncate">({country.country})</p>
                           </div>
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          {countries.map((country) => (
-                            <SelectItem key={country.country} value={`${country.country}_${country.code}`}>
-                              <div className="flex items-center space-x-2">
-                                <Image
-                                  src={country.flag}
-                                  alt={`${country.country} Flag`}
-                                  width={20}
-                                  height={20}
-                                  className="object-cover"
-                                />
-                                <p className="text-xs truncate">{country.code}</p> 
-                                <p className="text-xs truncate">({country.country})</p> 
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                 </div>
                 {/* Input Field for Phone Number */}
