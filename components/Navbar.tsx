@@ -101,7 +101,7 @@ const Navbar = () => {
                     >
                       <div className="px-4 py-3">
                         <span className="block text-sm text-gray-900 dark:text-white">
-                          {user?.personalInfo.firstName || "User"}
+                          {user?.personalInfo.firstName || "Hi"}
                         </span>
                         <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
                           {user?.personalInfo?.email || "user12gmail.com"}
