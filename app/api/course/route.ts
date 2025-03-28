@@ -22,9 +22,15 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Course Not Found" }, { status: 404 });
         }
 
-        const countryData = await CountryData.findOne({ countryname: courseData.countryname.trim() }).lean();
-
-
+        const countryData = await CountryData.findOne(
+            { countryname: courseData.countryname.trim() },
+            {
+                _id: 1,
+                countryname: 1,
+                embassyDocuments: 1,
+                universityDocuments: { $elemMatch: { course_level: courseData.course_level } },
+            }
+        ).lean();
         const universityData = await University.findById(courseData.university_id).select("universityImages").lean();
         return NextResponse.json({ courseData, countryData, universityData });
 
