@@ -106,9 +106,6 @@ function Page() {
     setDropdownOpen(!isDropdownOpen);
   };
   const [successOpen, setSuccessOpen] = useState(false);
-  if (uniLoading || loading) {
-    return <Loading />
-  }
 
   const handleNavigate = () => {
     if (input.trim()) {
@@ -117,6 +114,10 @@ function Page() {
       router.push("/chatmodel"); // Navigate without message if input is empty
     }
   };
+  if (uniLoading || loading) {
+    return <Loading />
+  }
+
   return (
     // landing page container starts
     <div className="landingPage">

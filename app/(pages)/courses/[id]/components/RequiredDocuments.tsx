@@ -44,22 +44,20 @@ export const RequiredDocuments = ({ data }: { data: Data }) => {
       <div className="flex flex-col md:flex-row gap-2 md:mb-8">
         <Button
           variant="outline"
-          className={`px-4 py-2 rounded-lg border-2 h-12 hover:bg-red-700 hover:text-white ${
-            activeTabUni === "University Application Docs"
-              ? "border-red-700 text-red-700 font-semibold bg-transparent"
-              : "border-gray-900 text-gray-900 bg-transparent"
-          }`}
+          className={`px-4 py-2 rounded-lg border-2 h-12 hover:bg-red-700 hover:text-white ${activeTabUni === "University Application Docs"
+            ? "border-red-700 text-red-700 font-semibold bg-transparent"
+            : "border-gray-900 text-gray-900 bg-transparent"
+            }`}
           onClick={() => setActiveTabUni("University Application Docs")}
         >
           University Application Docs
         </Button>
         <Button
           variant="outline"
-          className={`px-4 py-2 rounded-lg border-2 h-12 ${
-            activeTabUni === "Embassy Documents"
-              ? "border-red-500 text-red-700 font-semibold bg-transparent"
-              : "border-gray-900 text-gray-900 bg-transparent"
-          }`}
+          className={`px-4 py-2 rounded-lg border-2 h-12 ${activeTabUni === "Embassy Documents"
+            ? "border-red-500 text-red-700 font-semibold bg-transparent"
+            : "border-gray-900 text-gray-900 bg-transparent"
+            }`}
           onClick={() => setActiveTabUni("Embassy Documents")}
         >
           Embassy Documents

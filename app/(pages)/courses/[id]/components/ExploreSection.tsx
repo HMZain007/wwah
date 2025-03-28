@@ -13,7 +13,6 @@ export const ExploreSection: React.FC<ExploreSectionProps> = ({ data }) => {
   useEffect(() => {
     fetchUniversities(); // Fetch universities when component mounts
   }, []);
-  console.log(universities);
 
   return (
     <section className="relative flex flex-col lg:flex-row items-center text-white bg-black bg-cover bg-center p-6 md:p-8 lg:px-12 lg:py-12 overflow-hidden justify-between w-full">
