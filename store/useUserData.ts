@@ -1,3 +1,4 @@
+import { deleteAuthToken } from "@/utils/authHelper";
 import { create } from "zustand";
 interface AcademmicInfo {
   highestQualification: string;
@@ -71,6 +72,7 @@ interface UserStore {
   error: string | null;
   fetchUserProfile: (token: string) => Promise<void>;
   setUser: (user: User) => void;
+  logout: () => void;
 }
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
@@ -79,17 +81,17 @@ export const useUserStore = create<UserStore>((set) => ({
   fetchUserProfile: async (token) => {
     try {
       set({ loading: true, error: null });
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API}profile`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ Send token in Authorization header
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // ✅ Ensure cookies are sent
-      }
-    );
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API}profile`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ Send token in Authorization header
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // ✅ Ensure cookies are sent
+        }
+      );
       if (!response) {
         throw new Error("Failed to fetch user data");
       }
@@ -105,4 +107,8 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
   setUser: (user) => set({ user }),
+  logout: () => {
+    deleteAuthToken(); // ✅ Remove token first
+    set(() => ({ user: null, isAuthenticate: false, loading: false })); // ✅ Reset store state
+  },
 }));

@@ -112,7 +112,7 @@ const BasicInfo = () => {
 
       if (result.success) {
         toast.success("Basic information saved successfully!");
-        router.push("/completeprofile/academicinformation");
+        router.push("/dashboard/completeapplication");
       } else {
         toast.error(result.message || "Failed to save information");
       }
@@ -534,11 +534,10 @@ const BasicInfo = () => {
                         e.preventDefault();
                         setCurrentPage((prev) => Math.max(prev - 1, 1));
                       }}
-                      className={`p-2 text-sm ${
-                        currentPage === 1
+                      className={`p-2 text-sm ${currentPage === 1
                           ? "pointer-events-none opacity-50"
                           : ""
-                      }`}
+                        }`}
                     >
                       Previous
                     </PaginationPrevious>
@@ -555,11 +554,10 @@ const BasicInfo = () => {
                         e.preventDefault();
                         handleNextPage();
                       }}
-                      className={`p-2 text-sm ${
-                        currentPage === totalPages
+                      className={`p-2 text-sm ${currentPage === totalPages
                           ? "pointer-events-none opacity-50"
                           : ""
-                      }`}
+                        }`}
                     >
                       Next
                     </PaginationNext>
