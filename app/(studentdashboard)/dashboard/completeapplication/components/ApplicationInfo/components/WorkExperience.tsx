@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -13,37 +14,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { useEffect } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 import { formSchema } from "./Schema";
+import { format } from "date-fns";
 
+import { z } from "zod";
 interface Props {
   form: UseFormReturn<z.infer<typeof formSchema>>;
 }
 const WorkExperience: React.FC<Props> = ({ form }) => {
   const { fields, append } = useFieldArray({
-    name: "workExperience",
     control: form.control,
+    name: "workExperience",
   });
-  // export default function WorkExperience({
-  //   form,
-  // }: {
-  //   form: UseFormReturn<{
-  //     workExperience: {
-  //       jobTitle: string;
-  //       organizationName: string;
-  //       isFullTime: boolean;
-  //       isPartTime: boolean;
-  //       employmentType: string | null;
-  //       from: string;
-  //       to: string;
-  //     }[];
-  //   }>;
-  // }) {
-  //   const { fields, append } = useFieldArray({
-  //     control: form.control,
-  //     name: "workExperience",
-  //   });
 
   // Helper function to convert checkbox states to database value
   const convertCheckboxesToEmploymentType = (
@@ -137,7 +119,7 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={Boolean(field.value)}
+                                checked={field.value}
                                 onCheckedChange={(checked) => {
                                   field.onChange(checked);
                                   if (checked) {
@@ -148,8 +130,10 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                                   }
                                   handleEmploymentTypeChange(
                                     index,
-                                    Boolean(checked),
-                                    false
+                                    false,
+                                    Boolean(field.value)
+
+                                    // checked,
                                   );
                                 }}
                               />
@@ -167,7 +151,7 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={Boolean(field.value)}
+                                checked={field.value}
                                 onCheckedChange={(checked) => {
                                   field.onChange(checked);
                                   if (checked) {
@@ -179,7 +163,7 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                                   handleEmploymentTypeChange(
                                     index,
                                     false,
-                                    Boolean(checked)
+                                    Boolean(field.value)
                                   );
                                 }}
                               />
@@ -202,11 +186,7 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                         control={form.control}
                         name={`workExperience.${index}.employmentType`}
                         render={({ field }) => (
-                          <input
-                            type="hidden"
-                            {...field}
-                            value={field.value ?? ""}
-                          />
+                          <input type="hidden" {...field} />
                         )}
                       />
                     </div>
@@ -226,11 +206,24 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                       <Input
                         type="date"
                         {...field}
+                        // value={
+                        //   field.value
+                        //     ? field.value.toISOString().split("T")[0]
+                        //     : ""
+                        // }
                         value={
                           field.value
-                            ? field.value.toISOString().split("T")[0]
+                            ? format(new Date(field.value), "yyyy-MM-dd")
                             : ""
                         }
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? new Date(e.target.value) : null
+                          )
+                        }
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        className="bg-[#f1f1f1]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -244,11 +237,7 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                   <FormItem>
                     <FormLabel>Date To</FormLabel>
                     <FormControl>
-                      value=
-                      {field.value
-                        ? field.value.toISOString().split("T")[0]
-                        : ""}
-                      <Input
+                      {/* <Input
                         type="date"
                         {...field}
                         value={
@@ -256,6 +245,28 @@ const WorkExperience: React.FC<Props> = ({ form }) => {
                             ? field.value.toISOString().split("T")[0]
                             : ""
                         }
+                      /> */}
+                      <Input
+                        type="date"
+                        {...field}
+                        // value={
+                        //   field.value
+                        //     ? field.value.toISOString().split("T")[0]
+                        //     : ""
+                        // }
+                        value={
+                          field.value
+                            ? format(new Date(field.value), "yyyy-MM-dd")
+                            : ""
+                        }
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? new Date(e.target.value) : null
+                          )
+                        }
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        className="bg-[#f1f1f1]"
                       />
                     </FormControl>
                     <FormMessage />
