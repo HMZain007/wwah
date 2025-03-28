@@ -13,13 +13,13 @@ import { SkeletonCard } from "@/components/skeleton";
 const Page = () => {
   // List of countries for filters
   const countries = [
-    { name: "United States of America", value: "usa", img: "/usa.png" },
+    { name: "United States of America", value: "United States of America", img: "/usa.png" },
     { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
     { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
     { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
-    { name: "United Kingdom", value: "united-kingdom", img: "/ukflag.png" },
+    { name: "United Kingdom", value: "United Kingdom", img: "/ukflag.png" },
     { name: "Ireland", value: "ireland", img: "/countryarchive/ireland_logo.png" },
-    { name: "New Zealand", value: "new-zealand", img: "/nz.png" },
+    { name: "New Zealand", value: "New Zealand", img: "/nz.png" },
     { name: "Denmark", value: "denmark", img: "/countryarchive/denmark_logo.png" },
     { name: "France", value: "france", img: "/countryarchive/france_logo.png" },
     { name: "Australia", value: "australia", img: "/countryarchive/australia_logo.png" },
@@ -30,10 +30,10 @@ const Page = () => {
     { name: "Norway", value: "norway", img: "/norway.svg" },
     { name: "Europe", value: "europe", img: "/europe.svg" },
     { name: "Hungary", value: "hungary", img: "/hungary.svg" },
-    { name: "South Korea", value: "south-korea", img: "/south-korea.svg" },
+    { name: "South Korea", value: "South korea", img: "/south-korea.svg" },
     { name: "Japan", value: "japan", img: "/japan.svg" },
     { name: "Romania", value: "romania", img: "/romania.svg" },
-    { name: "Turkiye", value: "turkiye", img: "/turkiye.svg" },
+    { name: "Turkiye", value: "Turkey", img: "/turkiye.svg" },
   ];
   // const deadlines = ["Jan 2025", "Feb 2025", "March 2025"];
   const minimumRequirements = [
@@ -617,7 +617,7 @@ const Page = () => {
                           </div>
                           <div className="flex flex-col md:flex-row justify-between flex-wrap">
                             <div className="flex items-center gap-2 mt-2 md:w-1/2">
-                              <Image src={"/Notebook.svg"} alt="degree level" width={16} height={16} />
+                              <Image src={"/Notebooksvg.svg"} alt="degree level" width={16} height={16} />
                               <p className="text-sm md:text-base text-gray-600 font-bold truncate">
                                 {item.programs
                                   ? item.programs
