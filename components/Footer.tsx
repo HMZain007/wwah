@@ -37,36 +37,51 @@ const Footer = () => {
           {/* Left Section: Contact Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
             <div className="flex  space-x-4">
-              <CiLocationOn className="h-8  sm:h-12 lg:h-8 w-8 sm:w-12 lg:w-8" />
+              <CiLocationOn className="h-8  sm:h-12 lg:h-9 w-8 sm:w-12 lg:w-10 xl:w-8" />
               <p className="text-sm 2xl:text-base">
                 12 Block F1, Main Boulevard, Khayaban-e-Firdousi, opposite to
                 LDA Office, Johar Town, Lahore
               </p>
             </div>
-            <div
+            {/* <div
               className="flex items-center space-x-4 cursor-pointer"
               onClick={() =>
-                window.open("https://wa.me/923289911998", "_blank")
+                window.open("https://wa.me/+923120762039", "_blank")
               }
             >
               <IoCallOutline />
-              <p className="text-sm 2xl:text-base">92 328 99 11 998</p>
+              <p className="text-sm 2xl:text-base">+92 3120762039</p>
+            </div> */}
+            <div
+              className="flex items-center space-x-4 cursor-pointer"
+              onClick={() => (window.location.href = "tel:+923120762039")}
+            >
+              <IoCallOutline />
+              <p className="text-sm 2xl:text-base"> 03120762039</p>
             </div>
             <div
               className="flex items-center space-x-4 cursor-pointer"
               onClick={() =>
-                (window.location.href =
-                  "mailto:info@worldwideadmissionshub.com")
+              (window.location.href =
+                "mailto:info@worldwideadmissionshub.com")
               }
             >
               <IoMailUnreadOutline />
               <p className="text-sm 2xl:text-base">
-                info@worldwideadmissionshub.com
+                www.worldwideadmissionshub.com{" "}
               </p>
             </div>
+
             <div className="flex items-center space-x-4">
               <TfiWorld />
-              <p className="text-sm 2xl:text-base">www.worldwidehub.com</p>
+              <Link
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm 2xl:text-base  hover:underline"
+              >
+                www.worldwideadmissionshub.com
+              </Link>
             </div>
           </div>
 
@@ -154,7 +169,7 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center sm:space-x-4 mt-4 space-y-4 sm:space-y-0">
           <div className="flex-1 border-t border-[#313131]"></div>
           <p className="text-center text-xs text-[#313131]">
-            2024 Copyrights reserved by Worldwide Admissions Hub.
+            2025 Copyrights reserved by Worldwide Admissions Hub.
           </p>
           <div className="flex-1 border-t border-[#313131]"></div>
         </div>
