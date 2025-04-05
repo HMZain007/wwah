@@ -20,13 +20,13 @@ export const EnglishRequirement: React.FC<EnglishRequirementProps> = ({
       description: `${data.required_ielts_score}`,
     },
     {
-      name: "TOEFL iBET",
-      link: "pte",
+      name: "TOEFL iBT",
+      link: "toefl",
       description: `${data.required_toefl_score}`,
     },
     {
       name: "PTE",
-      link: "toefl",
+      link: "pte",
       description: `${data.required_pte_score}`,
     },
   ];
@@ -67,7 +67,7 @@ export const EnglishRequirement: React.FC<EnglishRequirementProps> = ({
             <Link href="/form">
               <Button
                 className="w-full bg-[#545454] hover:bg-zinc-700 text-white py-2 rounded"
-                onClick={() => {}}
+                onClick={() => { }}
               >
                 Register Now!
               </Button>
