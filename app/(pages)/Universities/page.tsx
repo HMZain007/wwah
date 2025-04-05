@@ -16,7 +16,7 @@ import ImageWithLoader from "@/components/ImageWithLoader";
 
 const Page = () => {
   const countries = [
-    { name: "United States of America", value: "United States of America", img: "countryarchive/usa_logo.png" },
+    { name: "USA", value: "USA", img: "countryarchive/usa_logo.png" },
     { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
     { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
     { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
