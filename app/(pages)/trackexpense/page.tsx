@@ -30,7 +30,7 @@ const images = [
   { src: "/australia.png", name: "Australia", alt: "Australia" },
   { src: "/china.png", name: "China", alt: "China" },
   { src: "/canada.png", name: "Canada", alt: "Canada" },
-  { src: "/japan.png", name: "Japan", alt: "Japan" },
+  // { src: "/japan.png", name: "Japan", alt: "Japan" },
   { src: "/ireland.png", name: "Ireland", alt: "Ireland" },
   { src: "/new-zealand.png", name: "New Zealand", alt: "New Zealand" },
   { src: "/france.png", name: "France", alt: "France" },
@@ -182,11 +182,11 @@ const Page = () => {
             </div>
             <div className="w-full mx-auto">
               <p className="text-[#313131] text-justify lg:text-center">
-                Planning your study abroad journey? We&aposv;e made budgeting
-                easy! With our living expense calculator, you can break down
-                your expected costs in no time. Just follow these quick steps to
-                get an accurate snapshot of your monthly expenses for housing,
-                food, transportation, and more.
+                Planning your study abroad journey? We&#39;ve made budgeting easy!
+                With our living expense calculator, you can break down your
+                expected costs in no time. Just follow these quick steps to get
+                an accurate snapshot of your monthly expenses for housing, food,
+                transportation, and more.
               </p>
             </div>
           </div>
@@ -246,11 +246,10 @@ const Page = () => {
                                     onClick={() =>
                                       handleSelectCountry(image.name)
                                     }
-                                    className={`md:w-10 w-8 rounded-full cursor-pointer ${
-                                      selectedCountry === image.name
+                                    className={`md:w-10 w-8 rounded-full cursor-pointer ${selectedCountry === image.name
                                         ? "border-[#F0851D] border-2"
                                         : "border-0"
-                                    }`}
+                                      }`}
                                   />
                                 </div>
                                 <p className="pt-2 tracking-wide text-center text-[8px] font-bold md:text-[13px]">
@@ -347,15 +346,13 @@ const Page = () => {
                           return (
                             <button
                               key={lifestyle.type}
-                              className={`flex flex-col items-center px-2 py-4 border border-gray-300 rounded-lg hover:bg-gray-100 w-full ${
-                                lifestyle.type === "luxury_lifestyle"
+                              className={`flex flex-col items-center px-2 py-4 border border-gray-300 rounded-lg hover:bg-gray-100 w-full ${lifestyle.type === "luxury_lifestyle"
                                   ? "col-span-2"
                                   : "col-span-1"
-                              } ${
-                                selectedLifestyle === lifestyle.type
+                                } ${selectedLifestyle === lifestyle.type
                                   ? "bg-gray-100"
                                   : "bg-none"
-                              }`}
+                                }`}
                               onClick={() =>
                                 setSelectedLifestyle(lifestyle.type)
                               }
