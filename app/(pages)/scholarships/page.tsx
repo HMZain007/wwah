@@ -13,7 +13,7 @@ import { SkeletonCard } from "@/components/skeleton";
 const Page = () => {
   // List of countries for filters
   const countries = [
-    { name: "United States of America", value: "United States of America", img: "/usa.png" },
+    { name: "United States of America", value: "United States of America", img: "countryarchive/usa_logo.png" },
     { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
     { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
     { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },

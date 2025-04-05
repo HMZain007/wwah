@@ -15,17 +15,28 @@ import { debounce } from "lodash";
 import ImageWithLoader from "@/components/ImageWithLoader";
 
 const Page = () => {
-  const Countries = [
-    "USA",
-    "China",
-    "Canada",
-    "Italy",
-    "United Kingdom",
-    "Ireland",
-    "New Zealand",
-    "Denmark",
-    "France",
-    "Australia",
+  const countries = [
+    { name: "United States of America", value: "United States of America", img: "countryarchive/usa_logo.png" },
+    { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
+    { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
+    { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
+    { name: "United Kingdom", value: "United Kingdom", img: "/ukflag.png" },
+    { name: "Ireland", value: "ireland", img: "/countryarchive/ireland_logo.png" },
+    { name: "New Zealand", value: "New Zealand", img: "/nz.png" },
+    { name: "Denmark", value: "denmark", img: "/countryarchive/denmark_logo.png" },
+    { name: "France", value: "france", img: "/countryarchive/france_logo.png" },
+    { name: "Australia", value: "australia", img: "/countryarchive/australia_logo.png" },
+    { name: "Austria", value: "austria", img: "/austria.svg" },
+    { name: "Germany", value: "germany", img: "/countryarchive/germany_logo.png" },
+    { name: "Portugal", value: "portugal", img: "/portugal.svg" },
+    { name: "Poland", value: "poland", img: "/poland.svg" },
+    { name: "Norway", value: "norway", img: "/norway.svg" },
+    { name: "Europe", value: "europe", img: "/europe.svg" },
+    { name: "Hungary", value: "hungary", img: "/hungary.svg" },
+    { name: "South Korea", value: "South korea", img: "/south-korea.svg" },
+    { name: "Japan", value: "japan", img: "/japan.svg" },
+    { name: "Romania", value: "romania", img: "/romania.svg" },
+    { name: "Turkiye", value: "Turkey", img: "/turkiye.svg" },
   ];
 
   // Get zustand store values including pagination states
@@ -90,13 +101,6 @@ const Page = () => {
   };
 
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
-
-  // const toggleFavorite = (id: string) => {
-  //   setFavorites((prev) => ({
-  //     ...prev,
-  //     [id]: !prev[id],
-  //   }));
-  // };
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const updatedFavorites = { ...prev, [id]: !prev[id] };
@@ -116,8 +120,6 @@ const Page = () => {
   const displayedUniversities = showFavorites
     ? universities.filter((uni) => favorites[uni._id])
     : universities;
-  console.log(universities, "universities");
-
   return (
     <section className="w-[90%] mx-auto">
       <div className="md:flex md:justify-between py-5 md:pt-10 gap-4">
@@ -152,22 +154,23 @@ const Page = () => {
               <ScrollArea className="p-2">
                 <p className="text-[16px]">Countries:</p>
                 <ul className="py-2 space-y-4">
-                  {Countries.map((countryName) => (
-                    <li key={countryName} className="flex justify-between">
+                  {countries.map((c, indx) => (
+                    <li key={indx} className="flex justify-between">
                       <div className="flex gap-2">
                         <Image
-                          src={`/${countryName.toLowerCase()}.png`}
+                          src={c.img}
                           width={30}
                           height={30}
-                          alt={countryName}
+                          alt={c.name}
                         />
-                        <label htmlFor={countryName}>{countryName}</label>
+                        <label htmlFor={c.value}>{c.name}</label>
                       </div>
                       <input
                         type="checkbox"
-                        id={countryName}
-                        onChange={() => handleCheckboxChange(countryName)}
-                        checked={country.includes(countryName)}
+                        id={c.value}
+                        onChange={() => handleCheckboxChange(c.value)}
+                        // Check if the store's country state includes this country's value
+                        checked={country.includes(c.value)}
                         className="mr-2"
                       />
                     </li>
