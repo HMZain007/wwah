@@ -18,6 +18,7 @@ const AccCrousel = ({
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [nestedIndex, setNestedIndex] = useState(0);
 
+
   const slides = useMemo(() => [
     {
       image: "/mainbanner.jpeg",

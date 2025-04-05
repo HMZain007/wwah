@@ -72,15 +72,14 @@ const Herosec = ({ data }: { data: UniversityData }) => {
             // className="relative md:h-[80vh] h-[95%] flex justify-center items-center text-center rounded-2xl text-white sm:bg-cover sm:bg-center"
             className="relative md:h-[80vh] h-[95%] w-full overflow-hidden flex justify-center items-center text-center rounded-2xl text-white bg-cover bg-center"
             style={{
-              backgroundImage: `url(${
-                data?.universityImages?.banner
-                  ? data.universityImages.banner
-                  : "/banner.jpg"
-              })`,
+              backgroundImage: `url(${data?.universityImages?.banner
+                ? data.universityImages.banner
+                : "/banner.jpg"
+                })`,
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-100"></div>
-            <div>
+            <div className="w-full">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-2 items-center justify-evenly lg:justify-items-center   py-4 sm:py-12  relative z-10 w-[90%] xl:w-full mx-auto">
                 <div className="space-y-2 text-left">
                   <Image
@@ -88,7 +87,7 @@ const Herosec = ({ data }: { data: UniversityData }) => {
                     alt="University Logo"
                     width={80}
                     height={80}
-                    className="object-contain rounded-full w-10 md:w-16"
+                    className="object-cover rounded-full w-10 md:w-16 h-10 md:h-16"
                   />
                   <h3 className="text-white text-start font-bold">
                     {data.university_name}
@@ -123,7 +122,7 @@ const Herosec = ({ data }: { data: UniversityData }) => {
 
                 {/* Right Section */}
                 <div
-                  className="w-full md:w-4/5 md:h-4/5 lg:w-[60%]  2xl:w-[60%] bg-white bg-opacity-30 backdrop-blur-sm rounded-3xl 
+                  className="w-full md:w-4/5 md:h-4/5 lg:w-[50%]  2xl:w-[60%] bg-white bg-opacity-30 backdrop-blur-sm rounded-3xl 
 py-4 md:py-1 2xl:py-6 flex flex-col justify-center items-center text-center mt-2 sm:mt-0"
                 >
                   <Link
@@ -140,7 +139,8 @@ py-4 md:py-1 2xl:py-6 flex flex-col justify-center items-center text-center mt-2
                     <p className="mx-4 text-white">Or</p>
                     <div className="flex-1 border-t border-gray-100"></div>
                   </div>
-                  <Link href="/contactus">
+                  {/* <Link href="/contactus"> */}
+                  <Link href="/dashboard">
                     <Button className="w-full px-[12vw] md:px-[5vw] md:py-3 2xl:py-5 bg-white bg-opacity-20 backdrop-blur-md  text-white rounded-lg hover:bg-gray-300 transition duration-300 ">
                       Apply Now
                     </Button>

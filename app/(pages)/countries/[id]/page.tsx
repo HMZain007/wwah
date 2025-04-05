@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Hero from "./components/Hero";
-import StudyInUs from "./components/StudyInUk";
+import WhyStudy from "./components/WhyStudy";
 import WorkOpportunity from "./components/WorkOpportunity";
 import PermanentResidency from "./components/PermanentResidency";
 import PopularPrograms from "./components/PopularPrograms";
@@ -51,8 +51,8 @@ export default function Countrypage({
     scholarships: string[];
     visa_requirements: string[];
     work_while_studying: string;
-    teaching_and_learning_approach?: string;
-    multicultural_environment?: string;
+    teaching_and_learning_approach?: [];
+    multicultural_environment?: [];
     faqs: [];
     accomodation_options: [];
   }
@@ -85,7 +85,7 @@ export default function Countrypage({
     health: [{ name: "", description: [""] }],
     scholarships: [],
     visa_requirements: [],
-    teaching_and_learning_approach: "",
+    teaching_and_learning_approach: [],
     faqs: [],
     accomodation_options: [],
   });
@@ -113,7 +113,7 @@ export default function Countrypage({
       <div className="w-[90%] md:w-[95%] mx-auto">
         <Hero country={country} />
       </div>
-      <StudyInUs
+      <WhyStudy
         country={country.why_study}
         countryName={country.country_name || ""}
       />
@@ -131,26 +131,24 @@ export default function Countrypage({
       <PopularPrograms country={country.popular_programs} countryName={country.country_name} />
 
       <ScholarshipsInUK
-        // scholarships={country.scholarships}
+        scholarships={country.scholarships}
         countryName={country.country_name || ""}
       />
 
       <VisaRequirements
         visaRequirements={country.visa_requirements || []}
         countryName={country.country_name}
+        country={{ short_name: country.short_name }}
       />
       <AccomodationOptions accomodation={country?.accomodation_options} />
       <AccCrousel
         countryName={country.country_name}
-        teaching_and_learning_approach={
-          country.teaching_and_learning_approach
-            ? [country.teaching_and_learning_approach]
-            : []
+        teaching_and_learning_approach={country.teaching_and_learning_approach ? country.teaching_and_learning_approach : ['']
         }
         multicultural_environment={
           country.multicultural_environment
-            ? [country.multicultural_environment]
-            : []
+            ? country.multicultural_environment
+            : [""]
         }
       />
 

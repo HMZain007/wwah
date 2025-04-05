@@ -210,14 +210,16 @@ const Page = () => {
                 >
                   <div className="relative h-[200px]">
                     <div className="absolute z-10 top-5 left-0 bg-gradient-to-r from-[#FCE7D2] to-[#CEC8C3] px-2 rounded-tr-lg">
-                      <p className="text-sm font-medium">QS World: {item.qs_world_university_ranking || "N/A"}</p>
+                      <p className="text-sm font-medium">
+                        QS World: {item.qs_world_university_ranking || "N/A"}
+                      </p>
                       <p className="text-sm font-semibold">
-                        Ranking: {item.times_higher_education_ranking || "N/A"}
+                        {/* Ranking: {item.times_higher_education_ranking || "N/A"} */}
                       </p>
                     </div>
 
                     {/* Share & Favorite Buttons */}
-                    <div className="absolute z-10 top-4 right-4 flex space-x-1 py-2 px-3 bg-white bg-opacity-20 backdrop-blur-sm rounded-md">
+                    <div className="absolute z-10 top-4 right-4 flex space-x-1 py-2 px-3 bg-white bg-opacity-50 backdrop-blur-sm rounded-md">
                       <button onClick={() => copyToClipboard(item._id)}>
                         <Image
                           src="/share.svg"
@@ -270,7 +272,10 @@ const Page = () => {
                       href={`/Universities/${item._id}`}
                       key={item._id}
                     >
-                      <p className="font-bold">{item.university_name}</p>
+                      <p className="font-bold hover:underline underline-offset-2">
+                        {item.university_name}
+                      </p>
+
                     </Link>
 
                     <div className="flex justify-between">
