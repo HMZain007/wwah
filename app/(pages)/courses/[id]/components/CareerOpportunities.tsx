@@ -44,10 +44,8 @@ interface CareerOpportunitiesProps {
 export const CareerOpportunities: React.FC<CareerOpportunitiesProps> = ({ data }) => {
   return (
     <>
-
       <section className="hidden md:flex flex-col items-center bg-black text-white py-8 mt-5">
-        <h4>Scholarships in  {data?.course_title}!</h4>
-
+        <h4>Career Opportunities!</h4>
         {/* Timeline Image */}
         <div className="relative w-full flex justify-center mt-4">
           <Image
@@ -59,7 +57,6 @@ export const CareerOpportunities: React.FC<CareerOpportunitiesProps> = ({ data }
           />
         </div>
 
-        {/* Scholarship List Below Image */}
         <div className="flex w-full md:w-[95%] lg:w-[85%] mt-4">
           <p className="text-xs sm:text-sm lg:text-base text-center w-2/5">
             {data.career_opportunity_1}
@@ -83,8 +80,7 @@ export const CareerOpportunities: React.FC<CareerOpportunitiesProps> = ({ data }
       </section>
       {/* Mobile View */}
       <div className="md:hidden flex flex-col items-start bg-black text-white py-8 px-6">
-        <h4>Scholarships in  {data?.course_title}!</h4>
-
+        <h4>Scholarships in {data?.course_title}!</h4>
         <div className="flex flex-col space-y-3 mt-4">
           <div className="flex items-center space-x-2">
             <Image
@@ -138,9 +134,5 @@ export const CareerOpportunities: React.FC<CareerOpportunitiesProps> = ({ data }
         </div>
       </div>
     </>
-
-
-
-
-  )
+  );
 }
