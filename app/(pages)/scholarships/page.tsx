@@ -13,13 +13,13 @@ import { SkeletonCard } from "@/components/skeleton";
 const Page = () => {
   // List of countries for filters
   const countries = [
-    { name: "United States of America", value: "United States of America", img: "countryarchive/usa_logo.png" },
+    { name: "United States of America", value: "United States of America", img: "/countryarchive/usa_logo.png" },
     { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
     { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
     { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
     { name: "United Kingdom", value: "United Kingdom", img: "/ukflag.png" },
     { name: "Ireland", value: "ireland", img: "/countryarchive/ireland_logo.png" },
-    { name: "New Zealand", value: "New Zealand", img: "/nz.png" },
+    { name: "New Zealand", value: "New Zealand", img: "/countryarchive/nz_logo.png" },
     { name: "Denmark", value: "denmark", img: "/countryarchive/denmark_logo.png" },
     { name: "France", value: "france", img: "/countryarchive/france_logo.png" },
     { name: "Australia", value: "australia", img: "/countryarchive/australia_logo.png" },

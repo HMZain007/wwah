@@ -200,7 +200,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         backgroundImage="/bg-usa.png"
       />
       <FAQ title="Frequently Asked Questions:" items={data?.universityData?.faq || []} />
-     
+
       <Exploresection />
     </div>
   );
