@@ -212,9 +212,9 @@ const Page = () => {
                   className="bg-white shadow-xl rounded-2xl overflow-hidden p-3"
                 >
                   <div className="relative h-[200px]">
-                    <div className="absolute z-10 top-5 left-0 bg-gradient-to-r from-[#FCE7D2] to-[#CEC8C3] px-2 rounded-tr-lg">
+                    <div className="absolute z-10 top-5 left-0 bg-gradient-to-r from-[#FCE7D2] to-[#CEC8C3] px-2 rounded-tr-xl w-1/2">
                       <p className="text-sm font-medium">
-                        QS World: {item.qs_world_university_ranking || "N/A"}
+                        QS World Ranking: {item.qs_world_university_ranking || "N/A"}
                       </p>
                       <p className="text-sm font-semibold">
                         {/* Ranking: {item.times_higher_education_ranking || "N/A"} */}

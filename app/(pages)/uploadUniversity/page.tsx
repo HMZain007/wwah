@@ -73,8 +73,6 @@ export default function Home() {
 
   const handleFileRead = () => {
     if (!file) {
-      console.log("jo");
-
       setError("Please select an Excel file to read.");
       return;
     }
@@ -84,7 +82,7 @@ export default function Home() {
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const json: Record<string, string | number>[] = XLSX.utils.sheet_to_json(worksheet);
+      const json: Record<string, string | number>[] = XLSX.utils.sheet_to_json(worksheet, { raw: false });
       const normalizedData = normalizeData(json);
       setParsedData((prev) => ({
         ...prev,
