@@ -354,7 +354,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         />
       </div>
       {/* explore section */}
-      <ExploreSection data={data.courseData.countryname} />
+      <ExploreSection data={data.courseData.countryname} course={data.courseData.course_title} />
     </div>
   );
 }
