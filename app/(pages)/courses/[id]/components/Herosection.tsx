@@ -106,11 +106,11 @@ const Herosection = ({
               {/* Left Section */}
               <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-2 pl-0 lg:pl-12">
                 <Image
-                  src="/CourseDetailPage/dcu.svg"
+                  src={uniData.logo || "/dcu-hero-img.png"}
                   alt="Dcu Logo"
                   width={130}
                   height={130}
-                  className="object-contain w-[80px] h-[80px]"
+                  className="object-contain w-[80px] h-[80px] border-2 border-white rounded-full"
                 />
                 <h2 className="text-white text-center md:text-start font-semibold">
                   {data.course_title}
