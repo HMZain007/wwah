@@ -174,17 +174,17 @@ const CourseArchive = () => {
                     className="object-cover  rounded-2xl"
                   />
 
-                  <div className="absolute top-5 left-0">
-                    <div className=" bg-gradient-to-r from-white to-transparent opacity-100 w-4/5">
-                      <div className="flex items-center gap-2 p-2">
-                        <Image
-                          src={item.universityData?.universityImages.logo || "/logo.png"}
-                          width={56}
-                          height={56}
-                          className="rounded-full bg-white border border-black w-[28px] h-[28px]"
-                          alt="University Logo"
-                        />
-                        <div className="">
+                  <div className="absolute top-4 left-0">
+                    <div className=" bg-gradient-to-r from-white to-transparent opacity-100 w-[70%] ">
+                      <div className="flex items-center gap-2 ">
+                        <div className=" sm:w-16 sm:h-12 w-10 h-10 ">
+                          <img
+                            src={item.universityData?.universityImages.logo || "/logo.png"}
+                            alt="alumini"
+                            className="rounded-full border object-cover  object-center  sm:w-16 sm:h-10 w-10 h-10 "
+                          />
+                        </div>
+                        <div className="py-1">
                           <p className="leading-none text-sm font-medium">
                             {item.universityData?.university_name}
                           </p>
