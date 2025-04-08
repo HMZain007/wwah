@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 interface ExploreSectionProps {
   data: string;
@@ -8,7 +6,7 @@ interface ExploreSectionProps {
 }
 
 export const ExploreSection: React.FC<ExploreSectionProps> = ({ data, course }) => {
-  const [courses, setCourses] = useState<{ universityData?: { universityImages?: { banner?: string } }; course_titel?: string }[]>([]); // Define the type explicitly
+  const [courses, setCourses] = useState<{ universityData?: { universityImages?: { banner?: string }; university_name?: string }; course_title?: string }[]>([]); // Define the type explicitly
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
@@ -56,27 +54,34 @@ export const ExploreSection: React.FC<ExploreSectionProps> = ({ data, course }) 
             }}
           >
             {courses.slice(0, 4).map((item, index) => (
-              <>
-                <div
-                  key={index}
-                  className="relative w-[85%] md:w-[65%]  flex-shrink-0 rounded-3xl shadow-lg overflow-hidden"
-                >
-                  <Image
-                    src={item?.universityData?.universityImages?.banner || "/fallback-image.jpg"}
-                    alt="University Banner"
-                    width={430}
-                    height={350}
-                    style={{ objectFit: "cover" }}
-                    className="rounded-xl w-full h-full"
-                  />
+              <div
+                key={index}
+                className="relative w-[85%] md:w-[65%] aspect-[16/9] flex-shrink-0 rounded-3xl shadow-lg overflow-hidden"
+              >
+                <img
+                  src={item?.universityData?.universityImages?.banner ?? "/fallback-image.jpg"}
+                  alt="University Banner"
+                  className="w-full h-full object-cover rounded-xl"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
+                {/* Overlay content */}
+                <div className="absolute bottom-0 left-0 w-full text-white px-4 py-3">
+                  <p className="font-semibold mb-2">{item.course_title}</p>
+                  <p className="flex items-center gap-1">
+                    <img
+                      src="/location-white.svg"
+                      alt="Location Icon"
+                      className="w-4 h-4"
+                    />
+                    {item?.universityData?.university_name}
+                  </p>
                 </div>
-                <p className="text-white">{item.course_titel}</p>
-              </>
-
+              </div>
             ))}
           </div>
         </div>
       </div>
+
     </section>
   );
 };
