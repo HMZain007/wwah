@@ -27,7 +27,7 @@ const WhyStudy = ({ country, countryName }: StudyInUkProps) => {
 
   useEffect(() => {
     const fetchUniversities = async () => {
-      console.log("📡 Fetching universities for:", countryName);
+
       try {
         const res = await fetch(`/api/getUniversities?country=${countryName}&limit=4`);
         const data = await res.json();
