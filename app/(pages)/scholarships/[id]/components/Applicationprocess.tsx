@@ -26,7 +26,6 @@ const ReadMore: React.FC<ReadMoreProps> = ({ children }) => {
 const Applicationprocess = () => {
   const {
     scholarships,
-    loading,
     fetchScholarships,
     // New setter
   } = useScholarships();
@@ -179,7 +178,7 @@ const Applicationprocess = () => {
           <h4 className="">Explore More Scholarships!</h4>
           <p className="text-[#9D9D9D] leading-relaxed">
             Discover a range of scholarship opportunities from across the globe!
-            Whether you're aiming to study in the United States, Europe, or
+            Whether you&apos;re aiming to study in the United States, Europe, or
             beyond, there are countless scholarships designed to support your
             academic journey. These scholarships can help you access world-class
             education without financial barriers.
