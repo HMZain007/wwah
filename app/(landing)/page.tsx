@@ -326,7 +326,7 @@ function Page() {
       <section className="py-5 bg-gray-50">
         <div className=" mx-auto px-0 sm:px-4 w-[90%]">
           {/* Section Header */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center ">
             <h3 className="font-bold">Top Universities!</h3>
             {/* <Badge variant="outline" className=" bg-[#F1F1F1]">
               <DropdownMenu>
@@ -381,7 +381,7 @@ function Page() {
                 universities.slice(0, 4).map((uni, index) => (
                   <Card
                     key={index}
-                    className="min-w-[300px] overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 hover:shadow-lg"
+                    className="min-w-[300px] lg:w-full overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 hover:shadow-lg"
                   >
                     {/* University Image */}
                     <Link
@@ -418,7 +418,7 @@ function Page() {
                           <p>{uni.country_name}</p>
                           <p>Public</p>
                         </div>
-                        <p className="w-full">
+                        <p className="w-full text-xs md:text-sm">
                           Acceptance Rate: {uni.acceptance_rate}
                         </p>
                       </div>
