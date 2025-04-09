@@ -60,12 +60,12 @@ export function Sidebar() {
       fetchUserProfile(token);
     }
   }, []);
-  const router = useRouter(); // Initialize Next.js router
+    const router = useRouter(); // Initialize Next.js router
 
-  const handleLogout = async () => {
-    await logout(); // Ensure logout is completed
-    router.push("/"); // Redirect to home page
-  };
+    const handleLogout = async () => {
+      await logout(); // Ensure logout is completed
+      router.push("/"); // Redirect to home page
+    };
   useEffect(() => {
     // Auto open modal when navigating to "Complete your application"
     if (pathname === "/dashboard/completeapplication") {
@@ -133,7 +133,7 @@ export function Sidebar() {
         <CompleteApplicationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onCompleteApplication={() => { }}
+          onCompleteApplication={() => {}}
         />
       )}
     </div>

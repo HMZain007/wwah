@@ -304,27 +304,21 @@ const CourseArchive = () => {
         </div>
       )}
       <div className="flex justify-center items-center mt-6 gap-2">
-        {courses.length === 0 ? (
-          <span>{`Page ${currentPage} of ${totalPages}`}</span>
-        ) : (
-          <>
-            <Button
-              className="bg-red-600"
-              disabled={currentPage === 1}
-              onClick={() => setPage(currentPage - 1)}
-            >
-              Previous
-            </Button>
-            <span>{`Page ${currentPage} of ${totalPages}`}</span>
-            <Button
-              className="bg-red-600"
-              disabled={currentPage === totalPages}
-              onClick={() => setPage(currentPage + 1)}
-            >
-              Next
-            </Button>
-          </>
-        )}
+        <Button
+          className="bg-red-600"
+          disabled={currentPage === 1}
+          onClick={() => setPage(currentPage - 1)}
+        >
+          Previous
+        </Button>
+        <span>{`Page ${currentPage} of ${totalPages}`}</span>
+        <Button
+          className="bg-red-600"
+          disabled={currentPage === totalPages}
+          onClick={() => setPage(currentPage + 1)}
+        >
+          Next
+        </Button>
       </div>
     </section>
   );
