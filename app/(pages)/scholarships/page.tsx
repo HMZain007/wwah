@@ -697,27 +697,26 @@ const Page = () => {
                 </div>
 
                 {/* Pagination Controls */}
-                {scholarships.length > 0 && (
-                  <div className="flex justify-center items-center m-4 gap-4 p-2">
-                    <button
-                      onClick={handlePrev}
-                      disabled={page === 1}
-                      className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50 disabled:bg-blue-300"
-                    >
-                      Previous
-                    </button>
-                    <span className="text-lg font-semibold text-gray-700">
-                      Page {page} of {totalPages}
-                    </span>
-                    <button
-                      onClick={handleNext}
-                      disabled={page === totalPages}
-                      className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50 disabled:bg-blue-300"
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
+                <div className="flex justify-center items-center m-4 gap-4 p-2">
+                  <button
+                    onClick={handlePrev}
+                    disabled={page === 1}
+                    className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50 disabled:bg-blue-300"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-lg font-semibold text-gray-700">
+                    Page {page} of {totalPages}
+                  </span>
+                  <button
+                    onClick={handleNext}
+                    disabled={page === totalPages}
+                    className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50 disabled:bg-blue-300"
+                  >
+                    Next
+                  </button>
+                </div>
+
               </>
             )}
           </section>
