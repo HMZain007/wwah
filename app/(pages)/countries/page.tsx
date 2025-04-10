@@ -6,6 +6,7 @@ import { useCountry } from "@/store/useCountriesStore";
 import BookLoader from "@/components/BookLoader";
 import Link from "next/link";
 import ImageWithLoader from "@/components/ImageWithLoader";
+import Loading from "@/app/loading";
 // A dedicated spinner component for a smooth loading experience
 
 const Page = () => {
