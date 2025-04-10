@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useCountry } from "@/store/useCountriesStore";
-import BookLoader from "@/components/BookLoader";
 import Link from "next/link";
 import ImageWithLoader from "@/components/ImageWithLoader";
 import Loading from "@/app/loading";
