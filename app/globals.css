@@ -309,31 +309,25 @@ input::placeholder {
 }
 
 /* 2XL screens (extra extra large screens) */
-@media (min-width: 1536px) {
+/* @media (min-width: 1536px) {
   h1 {
     font-size: 3rem;
   }
-
   h2 {
     font-size: 2.8rem;
   }
-
   h3 {
     font-size: 2.5rem;
   }
-
   h4 {
     font-size: 2.3rem;
   }
-
   h5 {
     font-size: 2.1rem;
   }
-
   h6 {
     font-size: 1.9rem;
   }
-
   p,
   label,
   li,
@@ -343,7 +337,7 @@ input::placeholder {
   ::placeholder {
     font-size: 1.2rem;
   }
-}
+} */
 
 @layer base {
   * {
