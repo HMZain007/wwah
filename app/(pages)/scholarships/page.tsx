@@ -37,7 +37,7 @@ const Page = () => {
   ];
   // const deadlines = ["Jan 2025", "Feb 2025", "March 2025"];
   // const deadlines = ["Jan 2025", "Feb 2025", "March 2025"];
-  const minimumRequirements = [
+  const minimumRequirement = [
     "Excellent Academic Achievement",
     "2.5-3.0 CGPA",
     "3.0-3.5 CGPA",
@@ -48,6 +48,8 @@ const Page = () => {
   ];
   // Extract actions and state from Zustand store (including new filter states)
   const {
+    minimumRequirements,
+    setMinimumRequirements,
     scholarships,
     loading,
     fetchScholarships,
@@ -71,9 +73,7 @@ const Page = () => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   // We'll still use local state for search input; others are synced with Zustand.
   const [localSearch, setLocalSearch] = useState("");
-  const [selectedRequirements, setSelectedRequirements] = useState<string[]>(
-    []
-  );
+
 
   // Debounced search to optimize rapid input changes
   const debouncedSetSearch = useCallback(
@@ -82,7 +82,6 @@ const Page = () => {
     }, 500),
     [setSearch]
   );
-
   // Sync country filter selections to Zustand state
   useEffect(() => {
     setCountry(selectedValues);
@@ -96,7 +95,6 @@ const Page = () => {
         : [...prev, value]
     );
   };
-
   // For Programs, update directly using store values
   const handleProgramChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -106,7 +104,6 @@ const Page = () => {
         : [...programs, value]
     );
   };
-
   // New: Scholarship Type filter handler
   const handleScholarshipTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -116,7 +113,6 @@ const Page = () => {
         : [...scholarshipType, value]
     );
   };
-
   // New: Application Deadline filter handler
   const handleDeadlineChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -126,7 +122,16 @@ const Page = () => {
         : [...deadlineFilters, value]
     );
   };
-
+  const handleRequirementChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value, checked } = event.target;
+    setMinimumRequirements(
+      checked
+        ? [...minimumRequirements, value]
+        : minimumRequirements.filter((r) => r !== value)
+    );
+  };
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setLocalSearch(value);
@@ -140,13 +145,6 @@ const Page = () => {
 
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const [showFavorites, setShowFavorites] = useState(false);
-
-  // const toggleFavorite = (id: string) => {
-  //   setFavorites((prev) => ({
-  //     ...prev,
-  //     [id]: !prev[id],
-  //   }));
-  // };
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -164,7 +162,6 @@ const Page = () => {
       setFavorites(JSON.parse(storedFavorites));
     }
   }, []);
-
   // Filtered list based on "Favorites" button
   const displayedScholarships = showFavorites
     ? scholarships.filter((item) => favorites[item._id])
@@ -174,16 +171,6 @@ const Page = () => {
     if (page < totalPages) {
       setPage(page + 1);
     }
-  };
-  const handleRequirementChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { value, checked } = event.target;
-    setSelectedRequirements(
-      checked
-        ? [...selectedRequirements, value]
-        : selectedRequirements.filter((r) => r !== value)
-    );
   };
 
   return (
@@ -339,8 +326,7 @@ const Page = () => {
                     ].map((requirement) => (
                       <li
                         key={requirement}
-                        className="flex items-center justify-between"
-                      >
+                        className="flex items-center justify-between">
                         <span className="text-[16px] truncate">
                           {requirement}
                         </span>
@@ -349,7 +335,7 @@ const Page = () => {
                           name={requirement}
                           value={requirement}
                           onChange={handleRequirementChange}
-                          checked={selectedRequirements.includes(requirement)}
+                          checked={minimumRequirements.includes(requirement)}
                           className="ml-2"
                         />
                       </li>
@@ -362,7 +348,7 @@ const Page = () => {
         </Sheet>
         {/* Desktop Filter Sidebar */}
         <div className="flex gap-2 pt-1">
-          <section className="hidden lg:block lg:w-[25%] w-[25%]">
+          <section className="hidden lg:block lg:w-[30%] xl:w-[20%]">
             <div className="border-2 rounded-3xl p-4 md:p-0">
               <div className="hidden md:flex items-center gap-2 p-4">
                 <Image src="/filterr.svg" width={20} height={20} alt="filter" />
@@ -498,18 +484,16 @@ const Page = () => {
                   Minimum Requirement:
                 </p>
                 <ul className="py-2 space-y-3">
-                  {minimumRequirements.map((requirement) => (
-                    <li
-                      key={requirement}
-                      className="flex items-center justify-between"
-                    >
+                  {minimumRequirement.map((requirement) => (
+                    <li key={requirement}
+                      className="flex items-center justify-between">
                       <span className="text-[16px] truncate">
                         {requirement}
                       </span>
                       <input
                         type="checkbox"
                         value={requirement}
-                        checked={selectedRequirements.includes(requirement)}
+                        checked={minimumRequirements.includes(requirement)}
                         onChange={handleRequirementChange}
                         className="ml-2"
                       />
@@ -632,7 +616,7 @@ const Page = () => {
                                 width={16}
                                 height={16}
                               />
-                              <p className="text-sm md:text-base text-gray-600 font-bold truncate">
+                              <p className="text-sm text-gray-600 truncate">
                                 {item.hostCountry}
                               </p>
                             </div>
@@ -643,7 +627,7 @@ const Page = () => {
                                 width={16}
                                 height={16}
                               />
-                              <p className="text-sm md:text-base text-gray-600 font-bold truncate">
+                              <p className="text-sm text-gray-600 truncate">
                                 {item.scholarshipType}
                               </p>
                             </div>
@@ -651,7 +635,7 @@ const Page = () => {
                           <div className="flex flex-col md:flex-row justify-between flex-wrap">
                             <div className="flex items-center gap-2 mt-2 md:w-1/2">
                               <Image src={"/Notebooksvg.svg"} alt="degree level" width={16} height={16} />
-                              <p className="text-sm md:text-base text-gray-600 font-bold truncate">
+                              <p className="text-sm text-gray-600 truncate">
                                 {item.programs
                                   ? item.programs
                                   : "Not Specified"}
@@ -664,7 +648,7 @@ const Page = () => {
                                 width={16}
                                 height={16}
                               />
-                              <p className="text-sm md:text-base text-gray-600 font-bold truncate">
+                              <p className="text-sm text-gray-600 truncate">
                                 {item.deadline}
                               </p>
                             </div>
