@@ -1,12 +1,19 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Typewriter } from "react-simple-typewriter";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import Image from "next/image";
@@ -17,11 +24,7 @@ import { Bot, Headphones, Trophy, Users, Send } from "lucide-react";
 import Footer from "@/components/Footer";
 // import { ScrollArea } from "@/components/ui/scroll-area";
 import { FaCircleUser } from "react-icons/fa6";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
+
 import { useUniversityStore } from "@/store/useUniversitiesStore";
 import { SkeletonCard } from "@/components/skeleton";
 import { useUserStore } from "@/store/userStore";
@@ -29,35 +32,56 @@ import Loading from "../loading";
 // import Loading from "@/app/loading";
 
 function Page() {
+  const countries = [
+    { name: "USA", value: "USA", img: "/countryarchive/usa_logo.png" },
+    { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
+    { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
+    { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
+    { name: "United Kingdom", value: "United Kingdom", img: "/ukflag.png" },
+    {
+      name: "New Zealand",
+      value: "New Zealand",
+      img: "/countryarchive/nz_logo.png",
+    },
+    {
+      name: "Australia",
+      value: "australia",
+      img: "/countryarchive/australia_logo.png",
+    },
+  ];
   const router = useRouter();
-  // const Countries = [
-  //   "USA",
-  //   "China",
-  //   "Canada",
-  //   "Italy",
-  //   "United Kingdom",
-  //   "Ireland",
-  //   "New Zealand",
-  //   "Denmark",
-  //   "France",
-  // ];
-  useEffect(() => {
 
+  useEffect(() => {
     fetchUser(); // Fetch user on mount
   }, []);
   const [input, setInput] = useState("");
-  // const { universities, country, setCountry, fetchUniversities, loading: uniLoading } =
-  //   useUniversityStore();
+
   const {
     universities,
     fetchUniversities,
+    country,
+    setCountry,
     loading: uniLoading,
   } = useUniversityStore();
   const { isAuthenticate, loading, logout, user, fetchUser } = useUserStore();
   useEffect(() => {
     if (universities.length === 0) fetchUniversities();
   }, [fetchUniversities]);
-
+  function handleCheckboxChange(destination: string): void {
+    if (destination === "All") {
+      if (country.length === countries.length) {
+        setCountry([]); // Uncheck all
+      } else {
+        // Select all countries by mapping through the countries array
+        setCountry(countries.map((c) => c.value));
+      }
+    } else {
+      const updatedSelected = country.includes(destination)
+        ? country.filter((item) => item !== destination)
+        : [...country, destination];
+      setCountry(updatedSelected);
+    }
+  }
   const features = [
     {
       icon: <Bot className="h-8 w-8" />,
@@ -84,22 +108,6 @@ function Page() {
         "At WWAH, we are committed to your long-term success. Our career counseling support ensure that you're not only prepared for your studies but also equipped for a successful career.",
     },
   ];
-  // function handleCheckboxChange(destination: string): void {
-
-
-  //   if (destination === "All") {
-  //     if (country.length === country.length) {
-  //       setCountry([]); // Uncheck all
-  //     } else {
-  //       setCountry(country); // Select all
-  //     }
-  //   } else {
-  //     const updatedSelected = country.includes(destination)
-  //       ? country.filter((item) => item !== destination) // Remove if exists
-  //       : [...country, destination]; // Add if not exists
-  //     setCountry(updatedSelected); //  Set array directly
-  //   }
-  // }
 
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => {
@@ -114,8 +122,8 @@ function Page() {
       router.push("/chatmodel"); // Navigate without message if input is empty
     }
   };
-  if (uniLoading || loading) {
-    return <Loading />
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -208,24 +216,51 @@ function Page() {
         </header>
         {/* header section ends */}
         {/* Hero Section Start */}
-        <section className="HeroSection relative overflow-hidden flex flex-row items-center justify-center gap-4 lg:justify-evenly my-6 w-[95%] sm:w-[90%]">
+        <section className="HeroSection relative overflow-hidden flex flex-row items-center justify-center gap-4 lg:justify-evenly my-6 w-[95%] sm:w-[100%]">
           {/* hero Section Left Side starts */}
           <div className="HeroLeftSection w-[95%] md:w-[70%] lg:w-[50%] ">
             {/* Hero Content */}
             <div className="hero-content space-y-8 ">
               <div className="space-y-8">
-                <h1 className=" text-white leading-snug">
-                  Hello! <em>Zeus</em> Here!
-                  <br />
-                  How can I Help You?
-                </h1>
-                <div className="HeroRightSide relative block lg:hidden">
+                <div className="text-center lg:text-left space-y-2">
+                  {/* <h1 className="text-white">Hi there, I am ZEUS!</h1> */}
+                  <h1 className="text-white leading-snug">
+                    <Typewriter
+                      words={["Hey, Zeus Here!"]}
+                      loop={1}
+                      // cursor
+                      // cursorStyle="|"
+                      typeSpeed={120}
+                      deleteSpeed={40}
+                      delaySpeed={1000}
+                    />
+                  </h1>
+                  <h3 className="text-white leading-snug">
+                    <Typewriter
+                      words={[
+                        "Need help choosing a country?",
+                        "Ready to find your dream university?",
+                        "Got a Budget? I'll find what fits",
+                        "Let's make your study abroad journey easy",
+                      ]}
+                      loop={true}
+                      cursor
+                      cursorStyle="|"
+                      typeSpeed={120}
+                      deleteSpeed={40}
+                      delaySpeed={1000}
+                    />
+                  </h3>
+                </div>
+
+                <div className="HeroRightSide relative  lg:hidden flex items-center justify-center w-full h-[230px]">
                   <Image
-                    src="/Hero_Robot.svg"
+                    src="/Hero_Robot.png"
                     alt="Robot"
-                    width={499}
-                    height={633}
-                    // className="2xl:w-[550px] 2xl:h-[700px]"
+                    width={0}
+                    height={0}
+                    sizes="60vw"
+                    className="w-[220px] h-auto "
                   />
                 </div>
 
@@ -312,12 +347,12 @@ function Page() {
           </div>
           {/* hero Section Left Side ends */}
           {/* hero Section Right Side starts */}
-          <div className="HeroRightSide relative h-[600px] hidden lg:block">
+          <div className="HeroRightSide relative h-[500px] hidden lg:block">
             <Image
               src="/Hero_Robot.svg"
               alt="Robot"
-              width={499}
-              height={633}
+              width={400}
+              height={300}
               // className="2xl:w-[550px] 2xl:h-[700px]"
             />
           </div>
@@ -328,49 +363,71 @@ function Page() {
           {/* Section Header */}
           <div className="flex justify-between items-center ">
             <h3 className="font-bold">Top Universities!</h3>
-            {/* <Badge variant="outline" className=" bg-[#F1F1F1]">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="text-sm text-gray-900 flex items-center gap-2 bg-[#F1F1F1] rounded-lg p-2 w-[48%] h-8">
-                  <Image
-                    src="/filterr.svg"
-                    width={16}
-                    height={16}
-                    alt="filter"
-                  />{" "}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-sm text-gray-600 flex items-center gap-2 bg-[#F1F1F1] rounded-lg p-2 w-[30%] md:w-[15%] xl:w-[10%] h-10">
+                <Image src="/filterr.svg" width={16} height={14} alt="filter" />
+                <div className="flex justify-between w-full">
                   Filter
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="p-2 h-[360px]">
-                  <ScrollArea className="p-2 ">
-                    <p className="text-[16px]">Countries:</p>
-                    <ul className="py-2 space-y-4">
-                      {Countries.map((country) => (
-                        <li key={country} className="flex justify-between ">
-                          <div className="flex gap-2">
-                            <Image
-                              src={`/${country.toLowerCase()}.png`}
-                              width={30}
-                              height={30}
-                              alt={country}
-                            />
-                            <label htmlFor={country}>{country}</label>
-                          </div>
-                          <input
-                            type="checkbox"
-                            onChange={() => handleCheckboxChange(country)}
-                            className="mr-2"
+                  {/* Always reserve space for count by using opacity instead of conditional rendering */}
+                  <div
+                    className="w-1/2 transition-opacity duration-200"
+                    style={{ opacity: country.length > 0 ? 1 : 0 }}
+                  >
+                    {country.length > 0 ? `(${country.length})` : "(0)"}
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="p-2 h-[260px]">
+                <ScrollArea className="p-2">
+                  <div className="flex justify-between">
+                    <p>Countries:</p>
+                    {/* Always reserve space for the clear button by using visibility instead of conditional rendering */}
+                    <div
+                      className="transition-opacity duration-200"
+                      style={{
+                        opacity: country.length > 0 ? 1 : 0,
+                      }}
+                    >
+                      <button
+                        onClick={() => setCountry([])}
+                        className="text-blue-500 hover:underline"
+                        aria-hidden={!(country.length > 0)}
+                        tabIndex={country.length > 0 ? 0 : -1}
+                      >
+                        Clear filters
+                      </button>
+                    </div>
+                  </div>
+                  <ul className="py-2 space-y-4">
+                    {countries.map((c, indx) => (
+                      <li key={indx} className="flex justify-between">
+                        <div className="flex gap-2">
+                          <Image
+                            src={c.img}
+                            width={30}
+                            height={30}
+                            alt={c.name}
                           />
-                        </li>
-                      ))}
-                    </ul>
-                  </ScrollArea>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </Badge> */}
+                          <label htmlFor={c.value}>{c.name}</label>
+                        </div>
+                        <input
+                          type="checkbox"
+                          id={c.value}
+                          onChange={() => handleCheckboxChange(c.value)}
+                          checked={country.includes(c.value)}
+                          className="mr-2"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </ScrollArea>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           {/* University Cards Grid */}
           {!uniLoading ? (
             <div
-              className="flex gap-6 overflow-x-auto  scrollbar-hide p-4"
+              className="flex gap-6 overflow-x-auto  scrollbar-hide p-3 md:p-4"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {universities.length === 0 ? (
@@ -399,12 +456,13 @@ function Page() {
                       />
 
                       {/* University Logo Overlay */}
-                      <div className="absolute bottom-4 left-4 bg-white rounded-full p-2 shadow-md">
+                      <div className="absolute bottom-1 left-5">
                         <Image
                           src={uni.universityImages.logo}
                           alt={`${uni.university_name} logo`}
                           width={40}
                           height={40}
+                          className="rounded-full bg-white border border-black w-[56px] h-[56px]"
                         />
                       </div>
                     </Link>
@@ -435,8 +493,25 @@ function Page() {
       {/* Features Section */}
       <section className="md:py-5 bg-muted/50">
         <div className=" mx-auto w-[90%]">
-          <h2 className=" font-bold text-center mb-5 md:mb-5">
-            Why Choose WWAH?
+              {/* <h2 className="font-extrabold text-center mb-5 md:mb-5">
+            Why Choose{' '}
+            <span className="bg-gradient-to-r from-[#8e0000] via-[#d31900] to-[#ffcc33] bg-clip-text text-transparent">
+              WWAH
+            </span>
+            ?
+          </h2> */}
+
+<h2 className="font-extrabold text-center mb-5 md:mb-5">
+            Why Choose{' '}
+            <Link href="/aboutUs">
+            <Image
+              src="/wwah.svg"
+              alt="WWAH"
+              width={100} // adjust as needed
+              height={40} // adjust as needed
+              className="inline-block align-middle h-[45px] md:h-[90px] xl:h-[100px] w-[45px] md:w-[90px] xl:w-[100px]"
+            />
+            </Link>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
