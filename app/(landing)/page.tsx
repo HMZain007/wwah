@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Typewriter } from "react-simple-typewriter";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,7 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 // import { Badge } from "@/components/ui/badge";
