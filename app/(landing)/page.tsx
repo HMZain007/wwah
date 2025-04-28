@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typewriter } from "react-simple-typewriter";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,7 +24,6 @@ import { Card } from "@/components/ui/card";
 import { Bot, Headphones, Trophy, Users, Send } from "lucide-react";
 import Footer from "@/components/Footer";
 // import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { useUniversityStore } from "@/store/useUniversitiesStore";
 import { SkeletonCard } from "@/components/skeleton";
 import { useUserStore } from "@/store/userStore";
@@ -45,10 +44,12 @@ function Page() {
     { name: "Malaysia", value: "malaysia", img: "/countryarchive/my_logo.png" },
   ];
   const router = useRouter();
-  const { isAuthenticate, loading, logout, user } = useUserStore();
+  const { isAuthenticate, loading, logout, user, fetchUser } = useUserStore();
 
   const [input, setInput] = useState("");
-
+  useEffect(() => {
+    fetchUser(); // Fetch user data when the component mounts
+  }, []);
   const {
     universities,
     fetchUniversities,
@@ -118,7 +119,6 @@ function Page() {
   if (loading) {
     return <Loading />;
   }
-
   return (
     // landing page container starts
     <div className="landingPage">

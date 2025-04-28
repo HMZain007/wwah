@@ -48,8 +48,16 @@ export const useUserStore = create<UserState>((set) => ({
             console.log("Fetching user data... in");
 
             const userData = await getUserData(token);
+
+
             set({
-                user: userData || null,
+                user: {
+                    id: userData.personalInfo._id,
+                    firstName: userData.personalInfo.firstName,
+                    lastName: userData.personalInfo.lastName,
+                    phone: userData.personalInfo.phone || 121212,
+                    email: userData.personalInfo.email,
+                },
                 isAuthenticate: !!userData,
                 loading: false,
             });
