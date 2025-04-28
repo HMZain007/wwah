@@ -275,7 +275,7 @@ function Page() {
 
                 <div className="HeroRightSide relative  lg:hidden flex items-center justify-center w-full h-[230px]">
                   <Image
-                    src="/Zeushi.png"
+                    src="/Zeushicomp.png"
                     alt="Robot"
                     width={0}
                     height={0}
@@ -367,7 +367,7 @@ function Page() {
           <div className="HeroRightSide relative h-[500px] hidden lg:block">
             <Link href="/chatmodel" passHref>
               {" "}
-              <Image src="/Zeushi.png" alt="Robot" width={410} height={510} />
+              <Image src="/Zeushicomp.png" alt="Robot" width={410} height={510} />
             </Link>
           </div>
         </section>
