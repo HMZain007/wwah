@@ -60,30 +60,30 @@ export function Sidebar() {
       fetchUserProfile(token);
     }
   }, []);
-    const router = useRouter(); // Initialize Next.js router
+  const router = useRouter(); // Initialize Next.js router
 
-    const handleLogout = async () => {
-      await logout(); // Ensure logout is completed
-      router.push("/"); // Redirect to home page
-    };
-  useEffect(() => {
-    // Auto open modal when navigating to "Complete your application"
-    if (pathname === "/dashboard/completeapplication") {
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-    }
-  }, [pathname]);
+  const handleLogout = async () => {
+    await logout(); // Ensure logout is completed
+    router.push("/"); // Redirect to home page
+  };
+  // useEffect(() => {
+  //   // Auto open modal when navigating to "Complete your application"
+  //   if (pathname === "/dashboard/completeapplication") {
+  //     setIsModalOpen(true);
+  //   } else {
+  //     setIsModalOpen(false);
+  //   }
+  // }, [pathname]);
   return (
     <div className="flex flex-col ">
       {/* Profile Section */}
       <Card className="p-2 m-2 flex flex-col items-center text-center bg-white rounded-lg">
         <Image
-          src="/DashboardPage/group.svg"
-          alt="Profile"
-          width={64}
-          height={64}
-          className="w-16 h-16 rounded-full mb-2"
+          src="/icons/userred.svg"
+          alt="user"
+          width={54}
+          height={54}
+          className="w-12 h-12 rounded-full mb-2"
         />
         <h2 className="text-sm font-semibold">
           {user?.user?.firstName} {user?.user?.lastName}
@@ -100,6 +100,7 @@ export function Sidebar() {
       <div className="flex flex-1 flex-col gap-2 p-4 ">
         {sidebarItems.map((item, index) => (
           <Link
+            target="blank"
             key={index}
             href={item.href}
             className={cn(
@@ -126,6 +127,20 @@ export function Sidebar() {
             Logout
           </Button>
         </div>
+        <Link href="/chatmodel" className="w-full">
+          <div>
+            <Button className="bg-red-600 hover:bg-red-700 text-white w-full flex items-center justify-center">
+              Chat with Zeaus{" "}
+              <Image
+                src="/3@3x.png"
+                alt="chat"
+                width={24}
+                height={24}
+                className="ml-2"
+              />
+            </Button>
+          </div>
+        </Link>
       </div>
 
       {/* Complete Application Modal */}

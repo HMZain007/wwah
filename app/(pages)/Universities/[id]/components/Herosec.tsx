@@ -72,14 +72,15 @@ const Herosec = ({ data }: { data: UniversityData }) => {
             // className="relative md:h-[80vh] h-[95%] flex justify-center items-center text-center rounded-2xl text-white sm:bg-cover sm:bg-center"
             className="relative min-h-[250px] sm:min-h-[400px] w-full overflow-hidden flex justify-center items-center text-center rounded-2xl text-white bg-cover bg-center"
             style={{
-              backgroundImage: `url(${data?.universityImages?.banner
-                ? data.universityImages.banner
-                : "/banner.jpg"
-                })`,
+              backgroundImage: `url(${
+                data?.universityImages?.banner
+                  ? data.universityImages.banner
+                  : "/banner.jpg"
+              })`,
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-100"></div>
-            <div className="w-full">
+            <div className="w-[90%] mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-2 items-center justify-evenly lg:justify-items-center   py-4 sm:py-12  relative z-10 w-[90%] xl:w-full mx-auto">
                 <div className="space-y-2 text-left">
                   <Image
@@ -102,8 +103,9 @@ const Herosec = ({ data }: { data: UniversityData }) => {
                   </div>
 
                   <Link
+                    target="blank"
                     href={data.virtual_tour || "#"}
-                    target="_blank"
+                    // target="_blank"
                     rel="noopener noreferrer"
                   >
                     <div className="px-4 py-1 mt-1 md:my-4 w-4/5 bg-[#F9CEA5] rounded-lg flex items-center gap-3">
@@ -126,6 +128,7 @@ const Herosec = ({ data }: { data: UniversityData }) => {
 py-4 md:py-1 2xl:py-6 flex flex-col justify-center items-center text-center mt-2 sm:mt-0"
                 >
                   <Link
+                    target="blank"
                     href="/schedulesession"
                     className="[text-align:-webkit-center]"
                   >
@@ -139,8 +142,8 @@ py-4 md:py-1 2xl:py-6 flex flex-col justify-center items-center text-center mt-2
                     <p className="mx-4 text-white">Or</p>
                     <div className="flex-1 border-t border-gray-100"></div>
                   </div>
-                  {/* <Link href="/contactus"> */}
-                  <Link href="/dashboard">
+                  {/* <Link target="blank" href="/contactus"> */}
+                  <Link target="blank" href="/dashboard">
                     <Button className="w-full px-[12vw] md:px-[5vw] md:py-3 2xl:py-5 bg-white bg-opacity-20 backdrop-blur-md  text-white rounded-lg hover:bg-gray-300 transition duration-300 ">
                       Apply Now
                     </Button>

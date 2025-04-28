@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typewriter } from "react-simple-typewriter";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
 import {
   Dialog,
   DialogContent,
@@ -23,7 +24,6 @@ import { Card } from "@/components/ui/card";
 import { Bot, Headphones, Trophy, Users, Send } from "lucide-react";
 import Footer from "@/components/Footer";
 // import { ScrollArea } from "@/components/ui/scroll-area";
-import { FaCircleUser } from "react-icons/fa6";
 
 import { useUniversityStore } from "@/store/useUniversitiesStore";
 import { SkeletonCard } from "@/components/skeleton";
@@ -38,22 +38,15 @@ function Page() {
     { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
     { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
     { name: "United Kingdom", value: "United Kingdom", img: "/ukflag.png" },
-    {
-      name: "New Zealand",
-      value: "New Zealand",
-      img: "/countryarchive/nz_logo.png",
-    },
-    {
-      name: "Australia",
-      value: "australia",
-      img: "/countryarchive/australia_logo.png",
-    },
+    { name: "New Zealand", value: "New Zealand", img: "/countryarchive/nz_logo.png" },
+    { name: "Australia", value: "australia", img: "/countryarchive/australia_logo.png" },
+    { name: "Germany", value: "germany", img: "/countryarchive/germany_logo.png" },
+    { name: "Ireland", value: "Ireland", img: "/countryarchive/ireland_logo.png" },
+    { name: "Malaysia", value: "malaysia", img: "/countryarchive/my_logo.png" },
   ];
   const router = useRouter();
+  const { isAuthenticate, loading, logout, user } = useUserStore();
 
-  useEffect(() => {
-    fetchUser(); // Fetch user on mount
-  }, []);
   const [input, setInput] = useState("");
 
   const {
@@ -63,7 +56,7 @@ function Page() {
     setCountry,
     loading: uniLoading,
   } = useUniversityStore();
-  const { isAuthenticate, loading, logout, user, fetchUser } = useUserStore();
+
   useEffect(() => {
     if (universities.length === 0) fetchUniversities();
   }, [fetchUniversities]);
@@ -129,25 +122,54 @@ function Page() {
   return (
     // landing page container starts
     <div className="landingPage">
-      <div className="landingPageBg bg-custom-gradient w-full flex flex-col justify-center items-center">
+      <div
+        className="landingPageBg relative w-full flex flex-col justify-center items-center"
+        style={{
+          // backgroundImage: 'url("/robotic.JPG")',
+          backgroundImage: 'url("/techbg.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* <div className="absolute bg-black bg-opacity-80 w-full h-full rounded-2xl"></div>{" "}
+         */}
+        <div className="absolute inset-0 bg-black bg-opacity-20 z-0"></div>
+
         {/* header section starts */}
-        <header className="w-[90%] flex justify-between mt-5 ">
+        <header className="w-[90%] flex justify-between mt-5 z-20">
           <div className=" w-full  flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Image src="/logo.png" alt="WWAH Logo" width={112} height={45} />
+            <Link
+              target="blank"
+              href="/"
+              className="flex items-center space-x-2"
+            >
+              <Image
+                src="/logofooter.svg"
+                alt="WWAH Logo"
+                width={160}
+                height={70}
+              />
             </Link>
             {isAuthenticate ? (
               // Profile Dropdown for Logged-in Users
               <div className="relative flex items-center space-x-3 rtl:space-x-reverse">
                 <button
                   type="button"
-                  className="flex text-sm bg-white  rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                  className="flex text-sm bg-white  rounded-full focus:ring-1 focus:ring-gray-100 dark:focus:ring-gray-600"
                   id="user-menu-button"
                   aria-expanded={isDropdownOpen}
                   onClick={toggleDropdown}
                 >
                   <span className="sr-only">Open user menu</span>
-                  <FaCircleUser className="text-gray-800  w-8 h-8 text-xl " />
+                  {/* <FaCircleUser className="text-gray-800  w-8 h-8 text-xl " /> */}
+                  {/* <FaUser className="text-gray-800  w-8 h-8 text-xl p-1" /> */}
+                  <Image
+                    src="/icons/userred.svg"
+                    alt="user"
+                    width={40}
+                    height={40}
+                    className="rounded-full w-8 h-8 "
+                  />
                 </button>
 
                 {/* Dropdown Menu */}
@@ -158,15 +180,16 @@ function Page() {
                   >
                     <div className="px-4 py-3">
                       <span className="block text-sm text-gray-900 dark:text-white">
-                        {user?.personalInfo?.firstName || "User12"}
+                        {user?.firstName || "User12"}
                       </span>
                       <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-                        {user?.personalInfo?.email || "user@gmail.com"}
+                        {user?.email || "user@gmail.com"}
                       </span>
                     </div>
                     <ul className="py-2">
                       <li>
                         <Link
+                          target="blank"
                           href="/dashboard/overview"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
@@ -175,6 +198,7 @@ function Page() {
                       </li>
                       <li>
                         <Link
+                          target="blank"
                           href="/chatmodel"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
@@ -201,7 +225,7 @@ function Page() {
             ) : (
               // Login/Signup Buttons for Guests
               <>
-                <Link href="/signin">
+                <Link target="blank" href="/signin">
                   <Button
                     className="bg-[#C7161E] hover:bg-[#C7161E] text-white text-base"
                     // variant="outline"
@@ -216,20 +240,17 @@ function Page() {
         </header>
         {/* header section ends */}
         {/* Hero Section Start */}
-        <section className="HeroSection relative overflow-hidden flex flex-row items-center justify-center gap-4 lg:justify-evenly my-6 w-[95%] sm:w-[100%]">
+        <section className="HeroSection relative overflow-hidden flex flex-row items-center justify-center gap-4 lg: lg:justify-evenly mt-6 w-[95%] sm:w-[100%] z-10">
           {/* hero Section Left Side starts */}
           <div className="HeroLeftSection w-[95%] md:w-[70%] lg:w-[50%] ">
             {/* Hero Content */}
             <div className="hero-content space-y-8 ">
               <div className="space-y-8">
                 <div className="text-center lg:text-left space-y-2">
-                  {/* <h1 className="text-white">Hi there, I am ZEUS!</h1> */}
                   <h1 className="text-white leading-snug">
                     <Typewriter
                       words={["Hey, Zeus Here!"]}
                       loop={1}
-                      // cursor
-                      // cursorStyle="|"
                       typeSpeed={120}
                       deleteSpeed={40}
                       delaySpeed={1000}
@@ -255,16 +276,15 @@ function Page() {
 
                 <div className="HeroRightSide relative  lg:hidden flex items-center justify-center w-full h-[230px]">
                   <Image
-                    src="/Hero_Robot.png"
+                    src="/Zeushi.png"
                     alt="Robot"
                     width={0}
                     height={0}
                     sizes="60vw"
-                    className="w-[220px] h-auto "
+                    className="w-[190px] h-auto "
                   />
                 </div>
 
-                {/* Chat Input */}
                 <div className="chat-input rounded-lg p-2 flex items-center gap-3 2xl:gap-5 2xl:justify-evenly bg-white bg-opacity-30">
                   <Bot className="h-6 w-6 text-white/80" />
                   <input
@@ -274,14 +294,11 @@ function Page() {
                     onChange={(e) => setInput(e.target.value)}
                     className="flex-1 bg-transparent border-none  focus:outline-none text-white placeholder:text-white/60 placeholder:text-sm "
                   />
-                  {/* <Link
-                    href={`/chatmodel?message=${encodeURIComponent(input)}`}
-                  > */}
+
                   <Send
                     onClick={handleNavigate}
                     className="h-5 w-5 text-white/80 cursor-pointer hover:text-white transition-colors"
                   />
-                  {/* </Link> */}
                 </div>
               </div>
               {/* Action Buttons */}
@@ -311,6 +328,7 @@ function Page() {
                   },
                 ].map((item, i) => (
                   <Link
+                    target="blank"
                     key={i}
                     href={item.href}
                     passHref
@@ -348,23 +366,20 @@ function Page() {
           {/* hero Section Left Side ends */}
           {/* hero Section Right Side starts */}
           <div className="HeroRightSide relative h-[500px] hidden lg:block">
-            <Image
-              src="/Hero_Robot.svg"
-              alt="Robot"
-              width={400}
-              height={300}
-              // className="2xl:w-[550px] 2xl:h-[700px]"
-            />
+            <Link href="/chatmodel" passHref>
+              {" "}
+              <Image src="/Zeushi.png" alt="Robot" width={410} height={510} />
+            </Link>
           </div>
         </section>
       </div>
-      <section className="py-5 bg-gray-50">
+      <section className="py-5 bg-gray-50 z-10">
         <div className=" mx-auto px-0 sm:px-4 w-[90%]">
           {/* Section Header */}
           <div className="flex justify-between items-center ">
             <h3 className="font-bold">Top Universities!</h3>
             <DropdownMenu>
-              <DropdownMenuTrigger className="text-sm text-gray-600 flex items-center gap-2 bg-[#F1F1F1] rounded-lg p-2 w-[30%] md:w-[15%] xl:w-[10%] h-10">
+              <DropdownMenuTrigger className="text-sm text-gray-600 flex items-center justify-center gap-2 bg-[#F1F1F1] rounded-lg p-2 w-[30%] md:w-[15%] xl:w-[10%] h-10">
                 <Image src="/filterr.svg" width={16} height={14} alt="filter" />
                 <div className="flex justify-between w-full">
                   Filter
@@ -426,23 +441,20 @@ function Page() {
           </div>
           {/* University Cards Grid */}
           {!uniLoading ? (
-            <div
-              className="flex gap-6 overflow-x-auto  scrollbar-hide p-3 md:p-4"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-3 md:p-4">
               {universities.length === 0 ? (
-                <p className="text-[20px] font-semibold text-center p-4 w-full">
+                <p className="text-[20px] font-semibold text-center p-4 w-full col-span-full">
                   No Universities Found
                 </p>
               ) : (
                 universities.slice(0, 4).map((uni, index) => (
                   <Card
                     key={index}
-                    className="min-w-[300px] lg:w-full overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 hover:shadow-lg"
+                    className="overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 hover:shadow-lg"
                   >
                     {/* University Image */}
                     <Link
-                      target="_blank"
+                      target="blank"
                       rel="noopener noreferrer"
                       href={`/Universities/${uni._id}`}
                       key={uni._id}
@@ -466,6 +478,7 @@ function Page() {
                         />
                       </div>
                     </Link>
+
                     {/* University Details */}
                     <div className="p-4">
                       <h6 className="font-semibold mb-2">
@@ -491,9 +504,9 @@ function Page() {
         </div>
       </section>
       {/* Features Section */}
-      <section className="md:py-5 bg-muted/50">
+      <section className="md:py-5 bg-muted/50 z-10">
         <div className=" mx-auto w-[90%]">
-              {/* <h2 className="font-extrabold text-center mb-5 md:mb-5">
+          {/* <h2 className="font-extrabold text-center mb-5 md:mb-5">
             Why Choose{' '}
             <span className="bg-gradient-to-r from-[#8e0000] via-[#d31900] to-[#ffcc33] bg-clip-text text-transparent">
               WWAH
@@ -501,16 +514,16 @@ function Page() {
             ?
           </h2> */}
 
-<h2 className="font-extrabold text-center mb-5 md:mb-5">
-            Why Choose{' '}
-            <Link href="/aboutUs">
-            <Image
-              src="/wwah.svg"
-              alt="WWAH"
-              width={100} // adjust as needed
-              height={40} // adjust as needed
-              className="inline-block align-middle h-[45px] md:h-[90px] xl:h-[100px] w-[45px] md:w-[90px] xl:w-[100px]"
-            />
+          <h2 className="font-extrabold text-center mb-5 md:mb-5">
+            Why Choose{" "}
+            <Link target="blank" href="/aboutUs">
+              <Image
+                src="/logowwah.svg"
+                alt="WWAH"
+                width={100} // adjust as needed
+                height={40} // adjust as needed
+                className="inline-block align-middle h-[45px] md:h-[90px] xl:h-[100px] w-[45px] md:w-[90px] xl:w-[150px]"
+              />
             </Link>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

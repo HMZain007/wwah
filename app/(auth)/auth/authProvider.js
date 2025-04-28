@@ -10,6 +10,10 @@ export const AuthProvider = ({ children }) => {
   const { setUser } = useUserStore(); // ✅ Zustand state management
   const [user, setUserState] = useState(null);
   const [token, setToken] = useState(null);
+  // const { fetchUser } = useUserStore();
+  // useEffect(() => {
+  //   fetchUser(); // Fetch once when app loads
+  // }, []);
 
   const loginAction = async (userData) => {
     try {
@@ -20,10 +24,11 @@ export const AuthProvider = ({ children }) => {
       });
 
       const loggedInUser = await res.json();
-      if (loggedInUser.success) {
-        document.cookie = `authToken=${loggedInUser.token}; path=/`;
-        setToken(loggedInUser.token);
+      if (!loggedInUser.success) {
+        return { success: false, message: loggedInUser.message || "Login failed." };
       }
+      document.cookie = `authToken=${loggedInUser.token}; path=/`;
+      setToken(loggedInUser.token);
       return loggedInUser;
     } catch (err) {
       console.error("Login error", err);
@@ -47,16 +52,15 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok || !res.signup) {
         return { success: false, message: res.message || "Sign-up failed." };
       }
-
       document.cookie = `authToken=${res.token}; path=/`;
       setToken(res.token);
-      return { success: true };
+      return res;
     } catch (err) {
       console.error("Signup error", err);
-      return { success: false, message: "An error occurred during sign-up." };
+      return { success: false, message: "Server error occurred during sign-up." };
     }
   };
-//create admin action
+  //create admin action
   // const createAdminAction = async (userData) => {
   //   try {
   //     const response = await fetch(
@@ -81,38 +85,38 @@ export const AuthProvider = ({ children }) => {
   //     return { success: false, message: "An error occurred while creating error." };
   //   }
   // };
-const createAdminAction = async (userData) => {
-  console.log("Sending request to backend with data:", userData);
+  const createAdminAction = async (userData) => {
+    console.log("Sending request to backend with data:", userData);
 
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API}createAdmin`, // Ensure correct API URL
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API}createAdmin`, // Ensure correct API URL
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        }
+      );
+
+      console.log("Response received:", response);
+
+      const res = await response.json();
+      console.log("Response JSON:", res);
+
+      if (!response.ok || !res.adminId) {
+        return { success: false, message: res.message || "Admin not created." };
       }
-    );
 
-    console.log("Response received:", response);
-
-    const res = await response.json();
-    console.log("Response JSON:", res);
-
-    if (!response.ok || !res.adminId) {
-      return { success: false, message: res.message || "Admin not created." };
+      document.cookie = `authToken=${res.token}; path=/`;
+      return { success: true };
+    } catch (err) {
+      console.error("Create admin error:", err);
+      return {
+        success: false,
+        message: "An error occurred while creating admin.",
+      };
     }
-
-    document.cookie = `authToken=${res.token}; path=/`;
-    return { success: true };
-  } catch (err) {
-    console.error("Create admin error:", err);
-    return {
-      success: false,
-      message: "An error occurred while creating admin.",
-    };
-  }
-};
+  };
 
   // Forget Password function
 

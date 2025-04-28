@@ -106,7 +106,9 @@ const AboutGalway = React.memo(({ city, images }: AboutGalwayProps) => {
   // Automatically change images within each slide every 3 seconds
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImages((prevIndex) => (prevIndex + 1) % slides[currentSlide].images.length);
+      setCurrentImages(
+        (prevIndex) => (prevIndex + 1) % slides[currentSlide].images.length
+      );
     }, 3000);
     return () => clearInterval(interval);
   }, [currentSlide, slides]);
@@ -137,8 +139,9 @@ const AboutGalway = React.memo(({ city, images }: AboutGalwayProps) => {
         <CarouselContent>
           {slides.map((slide, index) => (
             <CarouselItem key={index}>
-              <div className="flex justify-center items-center h-full min-h-[350px] py-6 md:py-8"> {/* ensures full height */}
-
+              <div className="flex justify-center items-center h-full min-h-[350px] py-6 md:py-8">
+                {" "}
+                {/* ensures full height */}
                 {index === 0 ? (
                   // First slide: TEXT ONLY
                   <div className="flex flex-col items-center justify-center text-center w-[85%] md:w-[70%] lg:w-[60%] xl:w-[50%]">
@@ -153,7 +156,9 @@ const AboutGalway = React.memo(({ city, images }: AboutGalwayProps) => {
                     <div className="w-full">
                       <div className="rounded-3xl overflow-hidden shadow-lg w-full">
                         <Image
-                          src={slide.images[currentImages] ?? "/placeholder.jpg"}
+                          src={
+                            slide.images[currentImages] ?? "/placeholder.jpg"
+                          }
                           alt={slide.title}
                           width={400}
                           height={300}
@@ -162,7 +167,7 @@ const AboutGalway = React.memo(({ city, images }: AboutGalwayProps) => {
                       </div>
                     </div>
                     {/* Text Section */}
-                    <div className="w-[90%] xl:w-full">
+                    <div className="w-[90%] xl:w-full ">
                       <h4>{slide.title}</h4>
                       {slide.isList ? (
                         <ul className="text-gray-300 list-disc pl-0 lg:pl-5">
@@ -171,7 +176,13 @@ const AboutGalway = React.memo(({ city, images }: AboutGalwayProps) => {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-300 leading-relaxed text-justify md:text-start">
+                        <p
+                          className="text-gray-300 leading-relaxed text-justify md:text-start h-64 overflow-hidden overflow-y-auto scrollbar-hide"
+                          style={{
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                          }}
+                        >
                           {slide.description}
                         </p>
                       )}
@@ -182,7 +193,6 @@ const AboutGalway = React.memo(({ city, images }: AboutGalwayProps) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-
 
         <CarouselPrevious className="text-black" />
         <CarouselNext className="text-black" />

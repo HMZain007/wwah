@@ -27,6 +27,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       required_pte_score: string;
       required_toefl_score: string;
       entry_requirement: string;
+      entry_requirements: string;
       education_level: string;
       course_level: string;
       intake: string;
@@ -36,7 +37,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       location_campus: string;
       annual_tuition_fee: {
         currency: string;
-        amount: string;
+        amount: number;
       };
       initial_deposit: string;
       overview: string;
@@ -271,7 +272,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                       <p className="text-white xl:px-4 mb-3">
                         NEED MORE INFO ABOUT {data.courseData.universityname}?
                       </p>
-                      <Link href="/universityarchievepage">
+                      <Link target="blank" href="/universityarchievepage">
                         <Button className="bg-white text-[#C7161E] px-2 py-2 sm:py-3 rounded-md hover:bg-gray-300 transition w-full">
                           Explore Here
                         </Button>
@@ -282,7 +283,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 {/* Card 2 */}
                 <div className="relative rounded-3xl shadow-lg w-full h-[180px] lg:h-[275px]">
                   <Image
-                    src="/dcu.jpg"
+                    src={
+                      data?.universityData?.universityImages?.banner ||
+                      "/default-banner.jpg"
+                    }
                     alt="Future at DCU"
                     layout="fill"
                     objectFit="cover"
@@ -294,7 +298,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                         Get a glimpse of your future at{" "}
                         {data?.courseData?.universityname}!
                       </p>
-                      <Link href="/universityarchievepage">
+                      <Link target="blank" href="/universityarchievepage">
                         <Button className="bg-white text-[#C7161E] font-normal px-1 md:px-8 py-2 sm:py-3 rounded-md hover:bg-gray-300 transition w-full">
                           Discover More
                         </Button>
@@ -319,7 +323,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                     <span className="text-[#F0851D]">AI - Powered </span>
                     platform Zeus to find your dream university in 3 minutes.
                   </p>
-                  <Link href="/chatmodel">
+                  <Link target="blank" href="/chatmodel">
                     <Button className="mt-4 bg-white text-red-700 hover:bg-gray-300 w-4/5">
                       Start your Abroad Journey
                     </Button>

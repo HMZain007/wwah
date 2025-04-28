@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { FaCircleUser } from "react-icons/fa6";
+import { useState } from "react";
+// import { FaCircleUser } from "react-icons/fa6";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,14 +12,18 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useUserStore } from "@/store/userStore";
 import Loading from "@/app/loading";
-
+import { usePathname, useRouter } from "next/navigation";
 const Navbar = () => {
   const { isAuthenticate, loading, logout, user } = useUserStore();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
-
+  const router = useRouter();
+  const pathname = usePathname(); // current page path
+  const handleLoginClick = () => {
+    router.push(`/signin?callbackUrl=${encodeURIComponent(pathname)}`);
+  };
   if (loading) return <Loading />;
   return (
     <header className="h-0 md:h-[50px] lg:mb-10">
@@ -29,10 +33,10 @@ const Navbar = () => {
             {/* Logo */}
             <Link href="/">
               <Image
-                src="/logo.svg"
+                src="/wwah-textb.svg"
                 alt="logo"
-                width={113}
-                height={45}
+                width={150}
+                height={60}
               // className="2xl:w-[150px] 2xl:h-[60px]"
               />
             </Link>
@@ -55,7 +59,6 @@ const Navbar = () => {
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
-
                   {/* Link to Programs Page */}
                   <NavigationMenuItem>
                     <Link href="/coursearchive" passHref>
@@ -64,7 +67,6 @@ const Navbar = () => {
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
-
                   {/* Link to Scholarships Page */}
                   <NavigationMenuItem>
                     <Link href="/scholarships" passHref>
@@ -76,7 +78,6 @@ const Navbar = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-
             {/* Conditional Rendering */}
             <div className="flex gap-3 lg:gap-5">
               {isAuthenticate ? (
@@ -90,9 +91,15 @@ const Navbar = () => {
                     onClick={toggleDropdown}
                   >
                     <span className="sr-only">Open user menu</span>
-                    <FaCircleUser className="text-gray-800  w-8 h-8 text-xl " />
+                    {/* <FaCircleUser className="text-gray-800  w-8 h-8 text-xl " /> */}
+                    <Image
+                      src="/icons/userred.svg"
+                      alt="user"
+                      width={40}
+                      height={40}
+                      className="rounded-full w-8 h-8 "
+                    />{" "}
                   </button>
-
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div
@@ -101,10 +108,10 @@ const Navbar = () => {
                     >
                       <div className="px-4 py-3">
                         <span className="block text-sm text-gray-900 dark:text-white">
-                          {user?.personalInfo.firstName || "Hi"}
+                          {user?.firstName || "Loading"}
                         </span>
                         <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-                          {user?.personalInfo?.email || "user12gmail.com"}
+                          {user?.email || "user12gmail.com"}
                         </span>
                       </div>
                       <ul className="py-2">
@@ -139,15 +146,16 @@ const Navbar = () => {
               ) : (
                 // Login/Signup Buttons for Guests
                 <>
-                  <Link href="/signin">
-                    <Button
-                      className="bg-[#C7161E] text-white text-base"
-                      variant="outline"
-                      size="lg"
-                    >
-                      Login
-                    </Button>
-                  </Link>
+                  {/* <Link href="/signin"> */}
+                  <Button
+                    className="bg-[#C7161E] text-white text-base"
+                    variant="outline"
+                    size="lg"
+                    onClick={handleLoginClick}
+                  >
+                    Login
+                  </Button>
+                  {/* </Link> */}
                 </>
               )}
             </div>
@@ -157,5 +165,4 @@ const Navbar = () => {
     </header>
   );
 };
-
 export default Navbar;

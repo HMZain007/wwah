@@ -1,3 +1,4 @@
+
 import { deleteAuthToken } from "@/utils/authHelper";
 import { create } from "zustand";
 interface AcademmicInfo {
@@ -32,10 +33,23 @@ interface UserPref {
   createdAt: Date;
   updatedAt: Date;
 }
-interface user {
-  id: string;
+interface workExp {
+  hasWorkExperience: boolean;
+  jobTitle: string;
+  organizationName: string;
+  employmentType: string;
+  duration: number;
+  endDate: Date;
+  startDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface user {
+  _id: string;
   firstName: string;
   lastName: string;
+  phone: string;
+  phoneNo: string;
   email: string;
   contactNo: string;
   dob: string;
@@ -47,15 +61,29 @@ interface user {
   updatedAt: string;
   countryCode: string;
 }
-interface workExp {
-  hasWorkExperience: boolean;
-  jobTitle: string;
-  organizationName: string;
-  employmentType: string;
-  endDate: Date;
-  startDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
+type LanguageProficiency = {
+  score: string;
+  test: string;
+};
+
+type StudyPreferenced = {
+  country: string;
+  degree: string;
+  subject: string;
+};
+
+export interface SuccessData {
+  studyLevel: string;
+  gradetype: string;
+  grade: number;
+  dateOfBirth: string;
+  nationality: string;
+  majorSubject: string;
+  livingCosts: string;
+  tuitionFee: string;
+  languageProficiency: LanguageProficiency;
+  workExperience: string;
+  studyPreferenced: StudyPreferenced;
 }
 interface User {
   firstName: string;
@@ -66,10 +94,12 @@ interface User {
   UserPref: UserPref;
   workExp: workExp;
 }
-interface UserStore {
+export interface UserStore {
   user: User | null;
   loading: boolean;
   error: string | null;
+  successChances: SuccessData | null; // :white_tick: Add this property
+  isAuthenticate: boolean; // Add this property
   fetchUserProfile: (token: string) => Promise<void>;
   setUser: (user: User) => void;
   logout: () => void;
@@ -77,6 +107,9 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
   loading: false,
+  userSuccessInfo: null,
+  successChances: null,
+  isAuthenticate: false,
   error: null,
   fetchUserProfile: async (token) => {
     try {
@@ -86,10 +119,10 @@ export const useUserStore = create<UserStore>((set) => ({
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // ✅ Send token in Authorization header
+            Authorization: `Bearer ${token}`, // :white_tick: Send token in Authorization header
             "Content-Type": "application/json",
           },
-          credentials: "include", // ✅ Ensure cookies are sent
+          credentials: "include", // :white_tick: Ensure cookies are sent
         }
       );
       if (!response) {
@@ -100,15 +133,15 @@ export const useUserStore = create<UserStore>((set) => ({
       const user: User = {
         ...userData,
       };
-      set({ user, loading: false });
+      set({ user, loading: false, isAuthenticate: true });
     } catch (error) {
       console.error("Error fetching profile in wwah:", error);
       set({ error: (error as Error).message, loading: false });
     }
   },
-  setUser: (user) => set({ user }),
+  setUser: (user) => set({ user, isAuthenticate: !!user }),
   logout: () => {
-    deleteAuthToken(); // ✅ Remove token first
-    set(() => ({ user: null, isAuthenticate: false, loading: false })); // ✅ Reset store state
+    deleteAuthToken(); // :white_tick: Remove token first
+    set(() => ({ user: null, isAuthenticate: false, loading: false })); // :white_tick: Reset store state
   },
 }));
