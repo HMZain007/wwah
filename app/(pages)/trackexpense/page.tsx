@@ -255,11 +255,10 @@ const Page = () => {
                                     onClick={() =>
                                       handleSelectCountry(image.name)
                                     }
-                                    className={`md:w-10 w-8 rounded-full cursor-pointer ${
-                                      selectedCountry === image.name
+                                    className={`md:w-10 w-8 rounded-full cursor-pointer ${selectedCountry === image.name
                                         ? "border-[#F0851D] border-2"
                                         : "border-0"
-                                    }`}
+                                      }`}
                                   />
                                 </div>
                                 <p className="pt-2 tracking-wide text-center text-[8px] font-bold md:text-[13px]">
@@ -346,9 +345,8 @@ const Page = () => {
                   <div className="grid grid-cols-2 gap-6">
                     <button
                       onClick={() => toggleOption("shared")}
-                      className={`flex flex-col items-center px-6 py-4 border border-gray-300 rounded-lg ${
-                        activeOption === "shared" ? "bg-gray-100" : ""
-                      }`}
+                      className={`flex flex-col items-center px-6 py-4 border border-gray-300 rounded-lg ${activeOption === "shared" ? "bg-gray-100" : ""
+                        }`}
                     >
                       <GoShareAndroid className="w-8 h-8 mb-2" />
                       <div className="flex flex-col items-center">
@@ -361,9 +359,8 @@ const Page = () => {
 
                     <button
                       onClick={() => toggleOption("single")}
-                      className={`flex flex-col items-center px-6 py-4 border border-gray-300 rounded-lg ${
-                        activeOption === "single" ? "bg-gray-100" : ""
-                      }`}
+                      className={`flex flex-col items-center px-6 py-4 border border-gray-300 rounded-lg ${activeOption === "single" ? "bg-gray-100" : ""
+                        }`}
                     >
                       <PiPersonSimpleCircleLight className="w-8 h-8 mb-2" />
                       <div className="flex flex-col items-center">
@@ -414,10 +411,10 @@ const Page = () => {
                     {(expenses && expenses[0]?.lifestyles?.length > 0
                       ? expenses[0].lifestyles
                       : [
-                          { type: "basic_lifestyle" },
-                          { type: "moderate_lifestyle" },
-                          { type: "luxury_lifestyle" },
-                        ]
+                        { type: "basic_lifestyle" },
+                        { type: "moderate_lifestyle" },
+                        { type: "luxury_lifestyle" },
+                      ]
                     ).map(
                       (lifestyle: { type: keyof typeof lifestyleIcons }) => {
                         const LifestyleIcon =
@@ -425,15 +422,13 @@ const Page = () => {
                         return (
                           <button
                             key={lifestyle.type}
-                            className={`flex flex-col items-center px-2 py-4 border border-gray-300 rounded-lg hover:bg-gray-100 w-full ${
-                              lifestyle.type === "luxury_lifestyle"
+                            className={`flex flex-col items-center px-2 py-4 border border-gray-300 rounded-lg hover:bg-gray-100 w-full ${lifestyle.type === "luxury_lifestyle"
                                 ? "col-span-2"
                                 : "col-span-1"
-                            } ${
-                              selectedLifestyle === lifestyle.type
+                              } ${selectedLifestyle === lifestyle.type
                                 ? "bg-gray-100"
                                 : "bg-none"
-                            }`}
+                              }`}
                             onClick={() => setSelectedLifestyle(lifestyle.type)}
                           >
                             <LifestyleIcon className="w-8 h-8 mb-2 text-gray-700" />
@@ -475,9 +470,9 @@ const Page = () => {
                         placeholder="£ 1140 - 1840"
                         className="w-full border border-gray-300 rounded-lg text-start font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-600 px-4 py-2"
                       />
-                      <p className="text-[#9D9D9D] text-[14px] pt-4">
+                      {/* <p className="text-[#9D9D9D] text-[14px] pt-4">
                         = (PKR 517,334 - PKR 661,038)
-                      </p>
+                      </p> */}
                     </div>
                     <div className="bg-[#F1F1F1] rounded-2xl md:px-2 lg:px-5">
                       <h3 className="font-bold text-center pt-4 sm:py-6">
