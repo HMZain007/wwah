@@ -10,10 +10,11 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import Link from "next/link";
 export default function ContactUs() {
   const countries = [
     { code: "+92", flag: "/pakflag.png", country: "Pakistan" },
-    { code: "+1", flag: "/usa.png", country: "USA" },
+    { code: "+1", flag: "/countryarchive/usa_logo.png", country: "USA" },
     { code: "+91", flag: "/countryarchive/india_logo.png", country: "India" },
     {
       code: "+61",
@@ -35,11 +36,7 @@ export default function ContactUs() {
       flag: "/countryarchive/germany_logo.png",
       country: "Germany",
     },
-    {
-      code: "+60",
-      flag: "/countryarchive/malaysia_logo.png",
-      country: "Malaysia",
-    },
+    { code: "+60", flag: "/countryarchive/my_logo.png", country: "Malaysia" },
     { code: "+33", flag: "/countryarchive/france_logo.png", country: "France" },
     {
       code: "+45",
@@ -302,7 +299,7 @@ export default function ContactUs() {
               </div>
               <div>
                 <p>Phone Number</p>
-                <p className="text-gray-600">+923120762039</p>
+                <p className="text-gray-600">+971582514675</p>
               </div>
             </div>
             <div className="flex items-center gap-4 rounded-lg bg-[#F1F1F1] p-2">
@@ -317,7 +314,9 @@ export default function ContactUs() {
               </div>
               <div>
                 <p>Website</p>
-                <p className="text-gray-600">www.worldwideadmissionshub.com</p>
+                <Link href="https://wwah.ai" target="_blank">
+                  <p className="text-gray-600">wwah.ai </p>
+                </Link>
               </div>
             </div>
           </div>

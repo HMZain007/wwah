@@ -26,7 +26,7 @@ interface FeeAndScholarshipsProps {
     location_campus: string;
     annual_tuition_fee: {
       currency: string;
-      amount: string;
+      amount: number;
     };
     initial_deposit: string;
     overview: string;
@@ -91,6 +91,7 @@ export const FeeAndScholarships = ({ data }: FeeAndScholarshipsProps) => {
             <p>
               Have Questions about University Fee?{" "}
               <Link
+                
                 href="#"
                 className="text-red-600 hover:underline font-semibold"
               >
@@ -123,28 +124,31 @@ export const FeeAndScholarships = ({ data }: FeeAndScholarshipsProps) => {
             <button
               onClick={() => setActiveTab("scholarship")}
               className={`flex-1 py-2 px-1 text-center rounded-lg text-xs sm:text-sm transition-colors duration-300 ${activeTab === "scholarship"
-                  ? "bg-[#F57C00] text-white"
-                  : "bg-transparent text-black"
+                ? "bg-[#F57C00] text-white"
+                : "bg-transparent text-black"
                 }`}
             >
-              <Link href="">
+              <Link target="blank" href="">
                 Scholarship Details
               </Link>
             </button>
             <button
               onClick={() => setActiveTab("funding")}
               className={`flex-1 py-2 text-center rounded-lg text-xs sm:text-sm transition-colors duration-300 ${activeTab === "funding"
-                  ? "bg-[#F57C00] text-white"
-                  : "bg-transparent text-black"
+                ? "bg-[#F57C00] text-white"
+                : "bg-transparent text-black"
                 }`}
             >
-              <Link href="https://mta.ca/current-students/student-finances/financial-aid-current-students">
+              <Link
+                target="blank"
+                href="https://mta.ca/current-students/student-finances/financial-aid-current-students"
+              >
                 Funding Details
               </Link>
             </button>
           </div>
 
-          <Link href="/contactus">
+          <Link target="blank" href="/contactus">
             <Button
               variant="outline"
               className="w-full mt-4 border-2 border-red-500 text-red-500 bg-[#FCEAD8] 
@@ -186,7 +190,7 @@ export const FeeAndScholarships = ({ data }: FeeAndScholarshipsProps) => {
               fee at {data.universityname}.
             </p>
 
-            <Link href="#">
+            <Link target="blank" href="#">
               <Button
                 variant="outline"
                 className="w-full border-2 border-red-500 text-red-500 bg-[#FCEAD8] 
@@ -213,7 +217,7 @@ export const FeeAndScholarships = ({ data }: FeeAndScholarshipsProps) => {
               <p>
                 Calculate your Living Expense at <br /> {data.universityname}
               </p>
-              <Link href="/trackexpense">
+              <Link target="blank" href="/trackexpense">
                 <Button
                   variant="secondary"
                   className="w-full bg-white text-black  px-6 rounded-lg hover:bg-gray-200 transition duration-300 py-4"

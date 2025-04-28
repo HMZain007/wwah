@@ -12,9 +12,13 @@ import {
 } from "react-icons/io5";
 import { useAuth } from "../auth/authProvider";
 import { useUserStore } from "@/store/userStore";
+import { useSearchParams } from "next/navigation";
 
 const Page = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
   const { loginAction } = useAuth(); // Get login function from context
   const { setUser, loading } = useUserStore();
   const [userData, setUserData] = useState({
@@ -29,12 +33,6 @@ const Page = () => {
 
   const [generalError, setGeneralError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  //   setErrors({ ...errors, [name]: "" });
-  //   setGeneralError("");
-  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,27 +41,6 @@ const Page = () => {
     setGeneralError("");
     setIsDisabled(false); // Re-enable button when user types again
   };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!userData.email || !userData.password) {
-  //     setGeneralError("Please fill in all fields.");
-  //     return;
-  //   }
-  //   setIsDisabled(true);
-  //   try {
-  //     const loginRes = await loginAction(userData);
-  //     if (loginRes.success && loginRes.user) {
-  //       setUser(loginRes.user);
-  //       router.push("/");
-  //     } else {
-  //       setGeneralError("Invalid email or password");
-  //     }
-  //   } catch (err) {
-  //     setGeneralError("Login failed, please try again.");
-  //     console.error("Login failed", err);
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,13 +53,19 @@ const Page = () => {
     try {
       const loginRes = await loginAction(userData);
       if (loginRes.success && loginRes.user) {
-        setUser(loginRes.user);
+        setUser({
+          id: loginRes.user._id,
+          firstName: loginRes.user.firstName,
+          lastName: loginRes.user.lastName,
+          phone: loginRes.user.phone,
+          email: loginRes.user.email,
+        });
         if (loginRes.user) {
-          router.push("/");
-        }
+          router.push(callbackUrl);
 
+        }
       } else {
-        setGeneralError("Server In Busy, please try again later.");
+        setGeneralError("Invalid credentials");
         setIsDisabled(false); // Re-enable the button so the user can try again
       }
     } catch (err) {
@@ -98,22 +81,16 @@ const Page = () => {
       <div className="md:w-1/2 flex items-center justify-center">
         <div className="w-6/7 pt-5 md:pt-0 px-8 flex flex-col items-end justify-center">
           <div className="w-full sm:w-full lg:w-4/5">
-            {/* <Image
-              src={logo}
-              alt="Logo"
-              width={100}
-              height={100}
-              unoptimized={true}
-              className="lg:mb-0 w-16 sm:w-24 mx-auto md:w-[100px] 2xl:w-40 2xl:h-34"
-            /> */}
-            <Image
-              src={logo}
-              alt="Logo"
-              width={100}
-              height={100}
-              className="lg:mb-0 w-16 sm:w-24 mx-auto md:w-[120px] 2xl:w-40 2xl:h-36"
-              unoptimized={true}
-            />
+            <Link href="/">
+              <Image
+                src={logo}
+                alt="Logo"
+                width={100}
+                height={100}
+                className="lg:mb-0 w-16 sm:w-24 mx-auto md:w-[120px] 2xl:w-40 2xl:h-36"
+                unoptimized={true}
+              />
+            </Link>
             <h3 className="text-center lg:mb-2">Welcome back</h3>
             <p className="text-gray-600 mb-2 text-center sm:px-8 md:mb-2 md:w-full lg:text-[14px] lg:mb-2 lg:leading-5 2xl:leading-10 2xl:text-[28px] 2xl:space-y-4">
               Achieve your study dreams in your ideal country with global
@@ -181,7 +158,7 @@ const Page = () => {
                 />
                 <span className="text-[12px] 2xl:text-[24px]">Remember me</span>
               </div>
-              <Link href="/forget" className="text-red-400">
+              <Link target="blank" href="/forget" className="text-red-400">
                 <span className="text-[12px] 2xl:text-[24px]">
                   Forget password?
                 </span>
@@ -207,6 +184,7 @@ const Page = () => {
             <span className="block text-[12px] lg:text-[14px] 2xl:text-[24px] text-center 2xl:w-full">
               Don&#39;t have an account?{" "}
               <Link
+                target="blank"
                 href="/signup"
                 className="text-[#F0851D] text-[12px] 2xl:text-[24px] lg:text-[14px]"
               >
