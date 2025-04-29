@@ -44,7 +44,7 @@ type AnswerType = string | Date | boolean | number | null;
 
 interface Grade {
   gradeType: string;
-  score: number;
+  score: string;
 }
 
 interface StudentData {
@@ -230,11 +230,20 @@ const SuccessChances = () => {
       const timer = setTimeout(() => {
         setSuccessOpen(false); // Close the modal
         router.back(); // Go back to the previous page
-      }, 15000); // Close after 2 seconds
+
+        // Wait briefly, then reload the previous page
+        setTimeout(() => {
+          window.location.reload();
+        }, 300); // Small delay to allow router.back() to complete
+      }, 2000); // Close after 2 seconds
 
       return () => clearTimeout(timer);
     }
   }, [successOpen]);
+
+
+
+
 
   const [showWelcome, setShowWelcome] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -244,7 +253,7 @@ const SuccessChances = () => {
   >({});
   const [gradeData, setGradeData] = useState<Grade>({
     gradeType: "",
-    score: 0,
+    score: "",
   });
 
   const [studentData, setStudentData] = useState<StudentData | null>(null);
@@ -254,6 +263,18 @@ const SuccessChances = () => {
     const timer = setTimeout(() => setShowWelcome(false), 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (answers[7] !== "Completed a test") {
+      setAnswers((prev) => ({
+        ...prev,
+        8: 0,
+        9: 0,
+      }));
+    }
+  }, [answers[7]]);
+
+
 
   const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
     // Prevent any form submission when clicking Next
@@ -294,7 +315,7 @@ const SuccessChances = () => {
   };
 
   const handleGradeScoreChange = (value: string) => {
-    setGradeData((prev) => ({ ...prev, score: Number(value) }));
+    setGradeData((prev) => ({ ...prev, score: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -361,7 +382,7 @@ const SuccessChances = () => {
       setCurrentQuestion(0);
       setAnswers({});
       setSelectedCurrency({});
-      setGradeData({ gradeType: "", score: 0 });
+      setGradeData({ gradeType: "", score: "" });
       setShowWelcome(true);
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -499,6 +520,7 @@ const SuccessChances = () => {
     // Only render questions 8 and 9 if user selected "Completed a test" for question 7
     return answers[7] === "Completed a test";
   };
+
 
   const renderFormContent = () => (
     <div className="min-h-screen flex items-center justify-center ">
@@ -649,7 +671,18 @@ const SuccessChances = () => {
     return (
       <div>
         {/* ShadCN Dialog for Success Message */}
-        <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+        <Dialog
+          open={successOpen}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setSuccessOpen(false);
+              router.back();
+              setTimeout(() => {
+                window.location.reload();
+              }, 100); // Small delay ensures previous page has loaded
+            }
+          }}
+        >
           <DialogContent className="flex flex-col justify-center items-center max-w-72 md:max-w-96 !rounded-3xl">
             <Image
               src="/DashboardPage/success.svg"
@@ -667,6 +700,7 @@ const SuccessChances = () => {
       </div>
     );
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 px-4">
