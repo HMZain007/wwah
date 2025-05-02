@@ -216,7 +216,7 @@ export const ProgressSection = ({ data }: { data: CourseData }) => {
   );
 
   return (
-
+    
     <section className="md:my-4 flex flex-col items-center justify-center p-4 sm:p-6">
       <h3 className="">Application Success Chances!</h3>
       <p className="text-gray-600 mb-2">

@@ -145,10 +145,11 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 <Button
                   key={tab.label}
                   onClick={() => handleTabClick(tab)}
-                  className={`border-b md:border-none font-medium text-left md:text-center transition px-4 md:text-[16px] text-[12px] md:py-2 py-1 md:rounded-t-xl  border-gray-400  w-full hover:bg-[#FCE7D2] hover:text-black ${activeTab === tab.label
+                  className={`border-b md:border-none font-medium text-left md:text-center transition px-4 md:text-[16px] text-[12px] md:py-2 py-1 md:rounded-t-xl  border-gray-400  w-full hover:bg-[#FCE7D2] hover:text-black ${
+                    activeTab === tab.label
                       ? "bg-[#C7161E] text-white"
                       : "bg-transparent text-gray-800"
-                    }
+                  }
                           hover:bg-[#FCE7D2] hover:text-black`}
                   aria-label={`Navigate to ${tab.label}`}
                   aria-selected={activeTab === tab.label}
