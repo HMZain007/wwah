@@ -119,12 +119,12 @@ const GalwayCampuslife = ({ data, uniname, images }: GalwayCampuslifeProps) => {
                     <h6 className="text-[#F6B677] my-1">{data.title}</h6>
                     {/* <p className="text-justify md:text-start lg:leading-tight xl:leading-6 text-[#9D9D9D]"> */}
                     <p
-                      className="text-gray-300 md:leading-relaxed text-justify md:text-start h-44 overflow-hidden overflow-y-auto scrollbar-hide"
-                      style={{
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                      }}
-                    >
+                          className="text-gray-300 md:leading-relaxed text-justify md:text-start h-44 overflow-hidden overflow-y-auto scrollbar-hide"
+                          style={{
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                          }}
+                        >
                       {data.description}</p>
                   </div>
 

@@ -225,25 +225,25 @@ const SuccessChances = () => {
   const router = useRouter();
 
   // Open the dialog when the form is successfully submitted
-  useEffect(() => {
-    if (successOpen) {
-      const timer = setTimeout(() => {
-        setSuccessOpen(false); // Close the modal
-        router.back(); // Go back to the previous page
+useEffect(() => {
+  if (successOpen) {
+    const timer = setTimeout(() => {
+      setSuccessOpen(false); // Close the modal
+      router.back(); // Go back to the previous page
 
-        // Wait briefly, then reload the previous page
-        setTimeout(() => {
-          window.location.reload();
-        }, 300); // Small delay to allow router.back() to complete
-      }, 2000); // Close after 2 seconds
+      // Wait briefly, then reload the previous page
+      setTimeout(() => {
+        window.location.reload();
+      }, 300); // Small delay to allow router.back() to complete
+    }, 2000); // Close after 2 seconds
 
-      return () => clearTimeout(timer);
-    }
-  }, [successOpen]);
-
-
+    return () => clearTimeout(timer);
+  }
+}, [successOpen]);
 
 
+
+  
 
   const [showWelcome, setShowWelcome] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -264,15 +264,15 @@ const SuccessChances = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (answers[7] !== "Completed a test") {
-      setAnswers((prev) => ({
-        ...prev,
-        8: 0,
-        9: 0,
-      }));
-    }
-  }, [answers[7]]);
+useEffect(() => {
+  if (answers[7] !== "Completed a test") {
+    setAnswers((prev) => ({
+      ...prev,
+      8: null,
+      9: null,
+    }));
+  }
+}, [answers[7]]);
 
 
 
@@ -382,7 +382,7 @@ const SuccessChances = () => {
       setCurrentQuestion(0);
       setAnswers({});
       setSelectedCurrency({});
-      setGradeData({ gradeType: "", score: "" });
+      setGradeData({ gradeType: "", score: ""});
       setShowWelcome(true);
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -520,7 +520,7 @@ const SuccessChances = () => {
     // Only render questions 8 and 9 if user selected "Completed a test" for question 7
     return answers[7] === "Completed a test";
   };
-
+  
 
   const renderFormContent = () => (
     <div className="min-h-screen flex items-center justify-center ">
@@ -590,8 +590,8 @@ const SuccessChances = () => {
                           value={
                             answers[q.id]
                               ? new Date(answers[q.id] as string)
-                                .toISOString()
-                                .split("T")[0]
+                                  .toISOString()
+                                  .split("T")[0]
                               : ""
                           }
                           onChange={(e) => handleAnswer(e.target.value, q.id)}
@@ -700,7 +700,7 @@ const SuccessChances = () => {
       </div>
     );
   };
-
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 px-4">

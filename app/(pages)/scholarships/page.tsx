@@ -570,8 +570,9 @@ const Page = () => {
               <div className="mt-4 md:mt-0">
                 <button
                   onClick={() => setShowFavorites((prev) => !prev)}
-                  className={`text-sm flex items-center justify-center  gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 px-4 md:px-6 xl:px-4  whitespace-nowrap h-10 ${showFavorites ? "text-red-500 font-bold" : "text-gray-600"
-                    }`}
+                  className={`text-sm flex items-center justify-center  gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 px-4 md:px-6 xl:px-4  whitespace-nowrap h-10 ${
+                    showFavorites ? "text-red-500 font-bold" : "text-gray-600"
+                  }`}
                 >
                   <Image
                     src={favoritesCount > 0 ? "/redheart.svg" : "/hearti.svg"}
@@ -662,10 +663,11 @@ const Page = () => {
                                     </Label>
                                     <Input
                                       id={`link-${item._id}`}
-                                      value={`${typeof window !== "undefined"
+                                      value={`${
+                                        typeof window !== "undefined"
                                           ? window.location.origin
                                           : ""
-                                        }/scholarships/${item._id}`}
+                                      }/scholarships/${item._id}`}
                                       readOnly
                                     />
                                   </div>
@@ -710,8 +712,9 @@ const Page = () => {
 
                             <button
                               onClick={() => toggleFavorite(item._id)}
-                              className={`relative ${heartAnimation === item._id ? "animate-pop" : ""
-                                }`}
+                              className={`relative ${
+                                heartAnimation === item._id ? "animate-pop" : ""
+                              }`}
                             >
                               {favorites[item._id] ? (
                                 <Image

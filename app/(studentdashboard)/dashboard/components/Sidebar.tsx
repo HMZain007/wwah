@@ -51,6 +51,7 @@ const sidebarItems = [
   },
 ];
 export function Sidebar() {
+  const router = useRouter(); // Initialize Next.js router
   const { user, fetchUserProfile, logout } = useUserStore();
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -60,12 +61,8 @@ export function Sidebar() {
       fetchUserProfile(token);
     }
   }, []);
-  const router = useRouter(); // Initialize Next.js router
 
-  const handleLogout = async () => {
-    await logout(); // Ensure logout is completed
-    router.push("/"); // Redirect to home page
-  };
+
   // useEffect(() => {
   //   // Auto open modal when navigating to "Complete your application"
   //   if (pathname === "/dashboard/completeapplication") {
@@ -121,7 +118,10 @@ export function Sidebar() {
           </Button> */}
           <Button
             className="bg-red-600 hover:bg-red-700 text-white w-full flex items-center justify-center"
-            onClick={handleLogout}
+            onClick={() => {
+              logout()
+              router.push("/signin")
+            }}
           >
             <ArrowLeftToLine size={16} className="mr-2" />
             Logout

@@ -7,7 +7,7 @@ const AuthContext = createContext();
 
 // AuthProvider Component
 export const AuthProvider = ({ children }) => {
-  const { setUser } = useUserStore(); // ✅ Zustand state management
+  const { logout: userLogout } = useUserStore(); // ✅ Zustand state management
   const [user, setUserState] = useState(null);
   const [token, setToken] = useState(null);
   // const { fetchUser } = useUserStore();
@@ -211,6 +211,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     console.log("Logging out...");
+    userLogout()
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_API}logout`,
@@ -223,9 +224,7 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) {
         throw new Error("Failed to log out");
       }
-
       deleteAuthToken();
-      setUser(null); // ✅ Clear Zustand
       setUserState(null); // ✅ Clear local state
       setToken(null);
 
