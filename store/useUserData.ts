@@ -1,149 +1,257 @@
-
-import { deleteAuthToken } from "@/utils/authHelper";
 import { create } from "zustand";
-interface AcademmicInfo {
-  highestQualification: string;
-  majorSubject: string;
-  previousGradingScale: string;
-  previousGradingScore: string;
-  standardizedTest: string;
-  standardizedTestScore: string;
-  institutionName: string;
-  startDate: Date;
-  endDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  otherGradingScale: string,
+import { getAuthToken, deleteAuthToken } from "@/utils/authHelper";
 
-}
-interface LanguageProf {
-  proficiencyLevel: string;
-  proficiencyTest: string;
-  proficiencyTestScore: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-interface UserPref {
-  perferredCountry: string;
-  perferredCity: string;
-  degreeLevel: string;
-  fieldOfStudy: string;
-  livingcost: string;
-  tutionfees: string;
-  studyMode: string;
-  currency: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-interface workExp {
-  hasWorkExperience: boolean;
-  jobTitle: string;
-  organizationName: string;
-  employmentType: string;
-  duration: number;
-  endDate: Date;
-  startDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-export interface user {
+// Basic user profile data
+export interface User {
   _id: string;
   firstName: string;
   lastName: string;
-  phone: string;
   email: string;
-  contactNo: string;
-  phoneNo: string;
-  dob: string;
-  country: string;
-  nationality: string;
+  phone: number;
   gender: string;
-  city: string;
   createdAt: string;
   updatedAt: string;
-  countryCode: string;
 }
-type LanguageProficiency = {
-  score: string;
-  test: string;
-};
 
-type StudyPreferenced = {
-  country: string;
-  degree: string;
-  subject: string;
-};
-
-export interface SuccessData {
+// Detailed profile information
+export interface DetailedInfo {
   studyLevel: string;
-  gradetype: string;
+  gradeType: string;
   grade: number;
   dateOfBirth: string;
   nationality: string;
   majorSubject: string;
-  livingCosts: string;
-  tuitionFee: string;
-  languageProficiency: LanguageProficiency;
-  workExperience: string;
-  studyPreferenced: StudyPreferenced;
+  livingCosts: {
+    amount: number;
+    currency: string;
+  };
+  tuitionFee: {
+    amount: number;
+    currency: string;
+  };
+  languageProficiency: {
+    test: string;
+    score: string;
+  };
+  workExperience: number;
+  studyPreference: {
+    country: string;
+    degree: string;
+    subject: string;
+  };
+  updatedAt: string;
 }
-interface User {
-  firstName: string;
-  lastName: string;
-  user: user;
-  AcademmicInfo: AcademmicInfo;
-  LanguageProf: LanguageProf;
-  UserPref: UserPref;
-  workExp: workExp;
-}
+
+// Complete user store interface
 export interface UserStore {
+  // State
   user: User | null;
+  detailedInfo: DetailedInfo | null;
   loading: boolean;
   error: string | null;
-  successChances: SuccessData | null; // :white_tick: Add this property
-  isAuthenticate: boolean; // Add this property
-  fetchUserProfile: (token: string) => Promise<void>;
-  setUser: (user: User) => void;
+  isAuthenticated: boolean;
+  // Actions
+  fetchUserProfile: () => Promise<void>;
+  updateUserProfile: (updateData: Partial<User>) => Promise<void>;
+  updateDetailedInfo: (updateData: Partial<DetailedInfo>) => Promise<void>;
+  setUser: (userData: User) => void;
   logout: () => void;
 }
-export const useUserStore = create<UserStore>((set) => ({
+
+// Default empty detailed info
+const defaultDetailedInfo: DetailedInfo = {
+  livingCosts: { amount: 0, currency: '' },
+  tuitionFee: { amount: 0, currency: '' },
+  languageProficiency: { test: '', score: '' },
+  studyPreference: { country: '', degree: '', subject: '' },
+  studyLevel: '',
+  gradeType: '',
+  grade: 0,
+  dateOfBirth: '',
+  nationality: '',
+  majorSubject: '',
+  workExperience: 0,
+  updatedAt: ''
+};
+
+// Create the unified store
+export const useUserStore = create<UserStore>((set, get) => ({
   user: null,
+  detailedInfo: null,
   loading: false,
-  userSuccessInfo: null,
-  successChances: null,
-  isAuthenticate: false,
   error: null,
-  fetchUserProfile: async (token) => {
+  isAuthenticated: false,
+
+  fetchUserProfile: async () => {
+    const token = getAuthToken();
+    if (!token) {
+      set({
+        error: "No authentication token found",
+        loading: false,
+        isAuthenticated: false
+      });
+      return;
+    }
+
     try {
       set({ loading: true, error: null });
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API}profile`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API}profile/data`,
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // :white_tick: Send token in Authorization header
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          credentials: "include", // :white_tick: Ensure cookies are sent
+          credentials: "include",
         }
       );
-      if (!response) {
-        throw new Error("Failed to fetch user data");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user data: ${response.status} ${response.statusText}`);
       }
-      const userData = await response.json();
-      // Map API response to match the updated User interface
-      const user: User = {
-        ...userData,
-      };
-      set({ user, loading: false, isAuthenticate: true });
+
+      const apiData = await response.json();
+
+      if (!apiData.success) {
+        throw new Error(apiData.message || "Failed to fetch user data");
+      }
+
+      // Set user data and detailed info
+      set({
+        user: apiData.user,
+        detailedInfo: apiData.detailedInfo || { ...defaultDetailedInfo },
+        loading: false,
+        isAuthenticated: true,
+        error: null
+      });
     } catch (error) {
-      console.error("Error fetching profile in wwah:", error);
-      set({ error: (error as Error).message, loading: false });
+      console.error("Error fetching profile:", error);
+      set({
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+        loading: false,
+        isAuthenticated: false
+      });
     }
   },
-  setUser: (user) => set({ user, isAuthenticate: !!user }),
-  logout: () => {
-    deleteAuthToken(); // :white_tick: Remove token first
-    set(() => ({ user: null, isAuthenticate: false, loading: false })); // :white_tick: Reset store state
+
+  updateUserProfile: async (updateData) => {
+    const token = getAuthToken();
+    if (!token) {
+      set({ error: "No authentication token found" });
+      return;
+    }
+
+    try {
+      set({ loading: true, error: null });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API}profile/update/basic`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(updateData)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to update profile: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to update profile");
+      }
+
+      // Update the local store with new user data
+      set((state) => ({
+        user: state.user ? { ...state.user, ...updateData } : null,
+        loading: false
+      }));
+
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      set({
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+        loading: false
+      });
+    }
   },
+
+  updateDetailedInfo: async (updateData) => {
+    const token = getAuthToken();
+    if (!token) {
+      set({ error: "No authentication token found" });
+      return;
+    }
+
+    try {
+      set({ loading: true, error: null });
+
+      // Format the data structure as expected by your API
+      const apiUpdateData = {
+        detailedInfo: updateData
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API}profile/update/detailed`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(apiUpdateData)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to update detailed info: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to update detailed info");
+      }
+
+      // Update the local store with new detailed info
+      set((state) => ({
+        detailedInfo: state.detailedInfo
+          ? { ...state.detailedInfo, ...updateData }
+          : { ...defaultDetailedInfo, ...updateData },
+        loading: false
+      }));
+
+    } catch (error) {
+      console.error("Error updating detailed info:", error);
+      set({
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+        loading: false
+      });
+    }
+  },
+
+  setUser: (userData) => set({
+    user: userData,
+    isAuthenticated: true
+  }),
+
+  logout: () => {
+    deleteAuthToken();
+    set({
+      user: null,
+      detailedInfo: null,
+      isAuthenticated: false,
+      loading: false,
+      error: null
+    });
+  }
 }));

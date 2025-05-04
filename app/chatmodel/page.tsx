@@ -6,12 +6,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 // import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useUserStore } from "@/store/useUserData";
 import { Message as MessageType } from "@/lib/types";
 import Message from "./components/Message";
 import { Card } from "@/components/ui/card";
-import { getAuthToken } from "@/utils/authHelper";
 import { Navbar } from "./components/Navbar";
+import { useUserStore } from "@/store/useUserData";
 
 // Precompiled answers for common queries
 const INSTANT_RESPONSES = {
@@ -61,9 +60,7 @@ export default function Home() {
 
   const fetchUser = useCallback(async () => {
     try {
-      const token = getAuthToken();
-      if (!token) return;
-      fetchUserProfile(token);
+      fetchUserProfile();
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
@@ -125,7 +122,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           message: userMessage.content,
-          userId: user?.user._id || null,
+          userId: user?._id || null,
           conversationHistory: messages,
         }),
       });

@@ -133,11 +133,11 @@ const MobileNavbar = () => {
               </div>
             ) : (
               // <Link href="/signin" onClick={() => setIsOpen(false)}>
-              <Button className="text-sm w-20 sm:w-24 h-8 sm:h-10 bg-red-700 text-white"
-                onClick={handleLoginClick}
-              >
-                Login
-              </Button>
+                <Button className="text-sm w-20 sm:w-24 h-8 sm:h-10 bg-red-700 text-white"
+                                    onClick={handleLoginClick}
+>
+                  Login
+                </Button>
               // </Link>
             )}
           </div>

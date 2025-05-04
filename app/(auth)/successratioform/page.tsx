@@ -6,13 +6,14 @@ import React from 'react'
 
 function Page() {
     return (
-        <div>
-            <MobileNavbar />
-            <Navbar />
-            <SuccessChances />
-            <Footer />
-
-        </div>
+      <div>
+        <MobileNavbar />
+        <Navbar />
+        <SuccessChances />
+        <Footer />
+        
+      </div>
     );
 }
-export default Page;
+
+export default Page

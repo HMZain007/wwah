@@ -154,8 +154,7 @@ const Navbar = () => {
                     className="bg-[#C7161E] text-white text-base"
                     variant="outline"
                     size="lg"
-                    onClick={handleLoginClick}
-                  >
+                    onClick={handleLoginClick}>
                     Login
                   </Button>
                   {/* </Link> */}
