@@ -59,17 +59,14 @@
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
 }
-
 /* hide-scrollbar utility */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 .hide-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 @layer base {
@@ -367,7 +364,6 @@ input::placeholder {
   overflow-y: auto;
   scroll-behavior: smooth;
 }
-
 /* Add this to your global.css or equivalent */
 .markdown-content a {
   color: #2563eb;
@@ -429,7 +425,6 @@ input::placeholder {
 .markdown-content li {
   margin-bottom: 0.25rem;
 }
-
 /* Add to your globals.css */
 .markdown-content h1,
 .markdown-content h2,
@@ -443,7 +438,7 @@ input::placeholder {
 }
 
 /* Force proper spacing between elements */
-.markdown-content>* {
+.markdown-content > * {
   display: block;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
