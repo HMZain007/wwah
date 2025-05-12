@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MdOutlineSortByAlpha } from "react-icons/md";
-import { FaSortAlphaDown, FaSortAlphaDownAlt } from "react-icons/fa";
+import { FaFacebook, FaSortAlphaDown, FaSortAlphaDownAlt } from "react-icons/fa";
 import Link from "next/link";
 import { useCourseStore } from "@/store/useCoursesStore";
 import FilterComponent from "./components/Filtercomponent";
@@ -18,6 +18,8 @@ import { SkeletonCard } from "@/components/skeleton";
 import { debounce } from "lodash";
 import ImageWithLoader from "@/components/ImageWithLoader";
 import { Copy } from "lucide-react";
+import { BsWhatsapp } from "react-icons/bs";
+import { AiOutlineMail } from "react-icons/ai";
 
 import {
   Dialog,
@@ -30,6 +32,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+
 const Page = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -50,7 +53,6 @@ const CourseArchive = () => {
     fetchCourses,
   } = useCourseStore();
 
-
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [localSearch, setLocalSearch] = useState("");
@@ -58,42 +60,41 @@ const CourseArchive = () => {
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
   const [heartAnimation, setHeartAnimation] = useState<string | null>(null);
 
-  // No need to load favorites from localStorage
-
+  // Toggle favorite and animate heart
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const updatedFavorites = { ...prev, [id]: !prev[id] };
-
-      // Update count
-      const newCount = Object.values(updatedFavorites).filter(Boolean).length;
-      setFavoritesCount(newCount);
-
-      // Animate heart
+      setFavoritesCount(Object.values(updatedFavorites).filter(Boolean).length);
       setHeartAnimation(id);
       setTimeout(() => setHeartAnimation(null), 1000);
-
       return updatedFavorites;
     });
   };
 
-  // Debounced search
+  // Debounced search handler
   const handleSearch = useCallback(
     debounce((value: string) => {
-      setSearch(value); // assuming setSearch is defined
+      setSearch(value);
     }, 500),
-    []
+    [setSearch]
   );
 
   // Fetch courses on mount
   useEffect(() => {
-    fetchCourses(); // assuming fetchCourses is defined
-  }, []);
+    fetchCourses();
+  }, [fetchCourses]);
 
-  // Filtered courses based on favorites toggle
+  // Scroll to top whenever the currentPage changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentPage]);
+
+  // Determine which courses to display (all or favorites only)
   const displayedCourses = showFavorites
     ? courses.filter((course) => favorites[course._id])
     : courses;
-
   return (
     <section className="w-[95%] mx-auto p-2 ">
       <div className="flex flex-col lg:flex-row lg:items-center">
@@ -142,7 +143,7 @@ const CourseArchive = () => {
           </DropdownMenu>
           <button
             onClick={() => setShowFavorites((prev) => !prev)}
-            className={`text-sm flex items-center justify-start md:justify-center gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 w-[82%] md:w-[95%] lg:w-[90%] xl:w-[70%] h-10 ${showFavorites ? "text-red-500 font-bold" : "text-gray-600"
+            className={`text-sm flex items-center justify-start md:justify-center gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 w-full md:w-[95%] lg:w-[90%] xl:w-[70%] h-10 ${showFavorites ? "text-red-500 font-bold" : "text-gray-600"
               }`}
           >
             <Image
@@ -178,7 +179,6 @@ const CourseArchive = () => {
                   <Link
                     target="blank"
                     href={`/courses/${item._id}`}
-
                     rel="noopener noreferrer"
                     className="w-1/2"
                   >
@@ -245,8 +245,8 @@ const CourseArchive = () => {
                             <Input
                               id={`link-${item._id}`}
                               value={`${typeof window !== "undefined"
-                                ? window.location.origin
-                                : ""
+                                  ? window.location.origin
+                                  : ""
                                 }/courses/${item._id}`}
                               readOnly
                             />
@@ -275,6 +275,38 @@ const CourseArchive = () => {
                           </p>
                         )}
 
+                           {/* Share buttons */}
+                                                  <div className="mt-2 flex gap-4 justify-left">
+                                                    <a
+                                                      href={`https://wa.me/?text=${encodeURIComponent(
+                                                        `${window.location.origin}/courses/${item._id}`
+                                                      )}`}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="text-green-600 hover:underline"
+                                                    >
+                                                      <BsWhatsapp className="text-2xl" />{" "}
+                                                    </a>
+                                                    <a
+                                                      href={`mailto:?subject=Check this out&body=${encodeURIComponent(
+                                                        `${window.location.origin}/courses/${item._id}`
+                                                      )}`}
+                                                      className="text-blue-600 hover:underline"
+                                                    >
+                                                      <AiOutlineMail className="text-2xl text-red-600" />{" "}
+                                                    </a>
+                                                    <a
+                                                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                                                        `${window.location.origin}/courses/${item._id}`
+                                                      )}`}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="text-[#1877F2] hover:underline"
+                                                    >
+                                                      <FaFacebook className="text-blue-600 text-2xl" />
+                                                    </a>
+                                                  </div>
+
                         <DialogFooter className="sm:justify-start">
                           <DialogClose asChild>
                             <Button type="button" variant="secondary">
@@ -287,8 +319,9 @@ const CourseArchive = () => {
 
                     <button
                       onClick={() => toggleFavorite(item._id)}
-                      className={`relative ${heartAnimation === item._id ? "animate-pop" : ""
-                        }`}
+                      className={`relative ${
+                        heartAnimation === item._id ? "animate-pop" : ""
+                      }`}
                     >
                       {favorites[item._id] ? (
                         <Image
@@ -313,7 +346,6 @@ const CourseArchive = () => {
                   <Link
                     target="blank"
                     href={`/courses/${item._id}`}
-
                     rel="noopener noreferrer"
                     className="w-1/2"
                   >
@@ -402,7 +434,7 @@ const CourseArchive = () => {
       )}
       <div className="flex justify-center items-center mt-6 gap-2">
         <Button
-          className="bg-red-600"
+          className="bg-red-600 hover:bg-red-600"
           disabled={currentPage === 1}
           onClick={() => setPage(currentPage - 1)}
         >
@@ -410,7 +442,7 @@ const CourseArchive = () => {
         </Button>
         <span>{`Page ${currentPage} of ${totalPages}`}</span>
         <Button
-          className="bg-red-600"
+          className="bg-red-600 hover:bg-red-600"
           disabled={currentPage === totalPages}
           onClick={() => setPage(currentPage + 1)}
         >
