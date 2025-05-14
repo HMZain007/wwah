@@ -9,7 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MdOutlineSortByAlpha } from "react-icons/md";
-import { FaFacebook, FaSortAlphaDown, FaSortAlphaDownAlt } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaSortAlphaDown,
+  FaSortAlphaDownAlt,
+} from "react-icons/fa";
 import Link from "next/link";
 import { useCourseStore } from "@/store/useCoursesStore";
 import FilterComponent from "./components/Filtercomponent";
@@ -90,7 +94,13 @@ const CourseArchive = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [currentPage]);
+  const handlePrevPage = () => {
+    if (currentPage > 1) setPage(currentPage - 1);
+  };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setPage(currentPage + 1);
+  };
   // Determine which courses to display (all or favorites only)
   const displayedCourses = showFavorites
     ? courses.filter((course) => favorites[course._id])
@@ -143,8 +153,9 @@ const CourseArchive = () => {
           </DropdownMenu>
           <button
             onClick={() => setShowFavorites((prev) => !prev)}
-            className={`text-sm flex items-center justify-start md:justify-center gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 w-full md:w-[95%] lg:w-[90%] xl:w-[70%] h-10 ${showFavorites ? "text-red-500 font-bold" : "text-gray-600"
-              }`}
+            className={`text-sm flex items-center justify-start md:justify-center gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 w-full md:w-[95%] lg:w-[90%] xl:w-[70%] h-10 ${
+              showFavorites ? "text-red-500 font-bold" : "text-gray-600"
+            }`}
           >
             <Image
               src={favoritesCount > 0 ? "/redheart.svg" : "/hearti.svg"}
@@ -195,16 +206,12 @@ const CourseArchive = () => {
                   <div className="absolute top-4 left-0">
                     <div className=" bg-gradient-to-r from-white to-transparent opacity-100 w-[70%] ">
                       <div className="flex items-center gap-2 ">
-                        <div className=" sm:w-16 sm:h-12 w-10 h-10 ">
-                          <img
-                            src={
-                              item.universityData?.universityImages.logo ||
-                              "/logo.png"
-                            }
-                            alt="alumini"
-                            className="rounded-full border object-cover  object-center  sm:w-16 sm:h-10 w-10 h-10 "
-                          />
-                        </div>
+  <img
+    src={item.universityData?.universityImages.logo || "/logo.png"}
+    alt="alumni"
+    className="w-14 h-14 object-cover  object-center rounded-full aspect-square"
+  />
+
                         <div className="py-1">
                           <p className="leading-none text-sm font-medium cursor-pointer">
                             {item.universityData?.university_name}
@@ -244,10 +251,11 @@ const CourseArchive = () => {
                             </Label>
                             <Input
                               id={`link-${item._id}`}
-                              value={`${typeof window !== "undefined"
+                              value={`${
+                                typeof window !== "undefined"
                                   ? window.location.origin
                                   : ""
-                                }/courses/${item._id}`}
+                              }/courses/${item._id}`}
                               readOnly
                             />
                           </div>
@@ -275,37 +283,37 @@ const CourseArchive = () => {
                           </p>
                         )}
 
-                           {/* Share buttons */}
-                                                  <div className="mt-2 flex gap-4 justify-left">
-                                                    <a
-                                                      href={`https://wa.me/?text=${encodeURIComponent(
-                                                        `${window.location.origin}/courses/${item._id}`
-                                                      )}`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      className="text-green-600 hover:underline"
-                                                    >
-                                                      <BsWhatsapp className="text-2xl" />{" "}
-                                                    </a>
-                                                    <a
-                                                      href={`mailto:?subject=Check this out&body=${encodeURIComponent(
-                                                        `${window.location.origin}/courses/${item._id}`
-                                                      )}`}
-                                                      className="text-blue-600 hover:underline"
-                                                    >
-                                                      <AiOutlineMail className="text-2xl text-red-600" />{" "}
-                                                    </a>
-                                                    <a
-                                                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                                                        `${window.location.origin}/courses/${item._id}`
-                                                      )}`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      className="text-[#1877F2] hover:underline"
-                                                    >
-                                                      <FaFacebook className="text-blue-600 text-2xl" />
-                                                    </a>
-                                                  </div>
+                        {/* Share buttons */}
+                        <div className="mt-2 flex gap-4 justify-left">
+                          <a
+                            href={`https://wa.me/?text=${encodeURIComponent(
+                              `${window.location.origin}/courses/${item._id}`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-600 hover:underline"
+                          >
+                            <BsWhatsapp className="text-2xl" />{" "}
+                          </a>
+                          <a
+                            href={`mailto:?subject=Check this out&body=${encodeURIComponent(
+                              `${window.location.origin}/courses/${item._id}`
+                            )}`}
+                            className="text-blue-600 hover:underline"
+                          >
+                            <AiOutlineMail className="text-2xl text-red-600" />{" "}
+                          </a>
+                          <a
+                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                              `${window.location.origin}/courses/${item._id}`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#1877F2] hover:underline"
+                          >
+                            <FaFacebook className="text-blue-600 text-2xl" />
+                          </a>
+                        </div>
 
                         <DialogFooter className="sm:justify-start">
                           <DialogClose asChild>
@@ -319,9 +327,8 @@ const CourseArchive = () => {
 
                     <button
                       onClick={() => toggleFavorite(item._id)}
-                      className={`relative ${
-                        heartAnimation === item._id ? "animate-pop" : ""
-                      }`}
+                      className={`relative ${heartAnimation === item._id ? "animate-pop" : ""
+                        }`}
                     >
                       {favorites[item._id] ? (
                         <Image
@@ -432,23 +439,143 @@ const CourseArchive = () => {
           )}
         </div>
       )}
-      <div className="flex justify-center items-center mt-6 gap-2">
-        <Button
-          className="bg-red-600 hover:bg-red-600"
-          disabled={currentPage === 1}
-          onClick={() => setPage(currentPage - 1)}
-        >
-          Previous
-        </Button>
-        <span>{`Page ${currentPage} of ${totalPages}`}</span>
-        <Button
-          className="bg-red-600 hover:bg-red-600"
-          disabled={currentPage === totalPages}
-          onClick={() => setPage(currentPage + 1)}
-        >
-          Next
-        </Button>
+
+      <div className="flex flex-wrap justify-center items-center mt-10  gap-3">
+        {/* Pagination controls always visible container */}
+        <div className="flex items-center gap-3" >
+          {/* First page button */}
+          <button
+            onClick={() => setPage(1)}
+            className={`text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200 ${currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            aria-label="First page"
+            disabled={currentPage <= 1}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              <path fillRule="evenodd" d="M9.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+
+          {/* Previous button */}
+          <button
+            onClick={handlePrevPage}
+            className={`text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200 ${currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            aria-label="Previous page"
+            disabled={currentPage <= 1}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </button>
+
+          {/* Page numbers */}
+          <div className="hidden sm:flex space-x-2 ">
+            {(() => {
+              // Calculate pagination range
+              let startPage = 1;
+              let endPage = totalPages;
+
+              if (totalPages > 10) {
+                if (currentPage <= 6) {
+                  // Show first 5 pages
+                  endPage = 10;
+                } else if (currentPage + 4 >= totalPages) {
+                  // Show last 5 pages
+                  startPage = Math.max(totalPages - 8, 1);
+                } else {
+                  // Show current page with neighbors
+                  startPage = currentPage - 4;
+                  endPage = currentPage + 4;
+                }
+              }
+
+              const pages = [];
+
+              // Add ellipsis at the beginning if needed
+              if (startPage > 1) {
+                pages.push(
+                  <button
+                    key="start-ellipsis"
+                    className="rounded-lg px-4 py-2 text-gray-500"
+                    disabled
+                  >
+                    ...
+                  </button>
+                );
+              }
+
+              // Add page buttons
+              for (let i = startPage; i <= endPage; i++) {
+                pages.push(
+                  <button
+                    key={i}
+                    onClick={() => setPage(i)}
+                    className={`rounded-lg px-4 py-2 font-medium transition-colors duration-200 ${currentPage === i
+                      ? "bg-red-700 text-white shadow-md"
+                      : "bg-gray-100 text-gray-700 hover:bg-red-100"
+                      }`}
+                    aria-current={currentPage === i ? "page" : undefined}
+                  >
+                    {i}
+                  </button>
+                );
+              }
+
+              // Add ellipsis at the end if needed
+              if (endPage < totalPages) {
+                pages.push(
+                  <button
+                    key="end-ellipsis"
+                    className="rounded-lg px-4 py-2 text-gray-500"
+                    disabled
+                  >
+                    ...
+                  </button>
+                );
+              }
+
+              return pages;
+            })()}
+          </div>
+
+          {/* Mobile-friendly current page indicator */}
+          <div className="flex sm:hidden items-center border-2 border-red-600">
+            <span className="text-gray-700 font-medium px-3">
+              Page {currentPage} of {totalPages}
+            </span>
+          </div>
+
+          {/* Next button */}
+          {currentPage < totalPages && (
+            <button
+              onClick={handleNextPage}
+              className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200"
+              aria-label="Next page"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+
+          {/* Last page button */}
+          {currentPage < totalPages && (
+            <button
+              onClick={() => setPage(totalPages)}
+              className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200"
+              aria-label="Last page"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 15.707a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-5-5a1 1 0 00-1.414 1.414L8.586 10l-4.293 4.293a1 1 0 000 1.414z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M10.293 15.707a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-5-5a1 1 0 00-1.414 1.414L14.586 10l-4.293 4.293a1 1 0 000 1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
+
     </section>
   );
 };
