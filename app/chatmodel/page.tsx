@@ -2,15 +2,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+// import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
-// import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Message as MessageType } from "@/lib/types";
-import Message from "./components/Message";
-import { Card } from "@/components/ui/card";
-import { Navbar } from "./components/Navbar";
+// import Message from "./components/Message";
+// import { Card } from "@/components/ui/card";
+// import { Navbar } from "./components/Navbar";
 import { useUserStore } from "@/store/useUserData";
+import ZeusMaintenance from "./components/Zeusmain";
 
 // Precompiled answers for common queries
 const INSTANT_RESPONSES = {
@@ -29,14 +29,18 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [streamingMessage, setStreamingMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
-  // const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  // const initialMessage = searchParams.get("message");
   const { user, fetchUserProfile } = useUserStore();
   const abortController = useRef<AbortController | null>(null);
   const [streamingComplete, setStreamingComplete] = useState(false);
-  console.log(messages, "messages from chat component");
-  console.log(streamingComplete)
+  console.log(streamingComplete, "streamingComplete");
+
+  const [hasProcessedInitialMessage, setHasProcessedInitialMessage] =
+    useState(false);
+
+  // Add a ref to prevent multiple submissions
+  const isProcessingRef = useRef(false);
+
   // Check if query matches a common pattern for instant response
   const checkForInstantResponse = (query: string): string | null => {
     const normalizedQuery = query.toLowerCase().trim();
@@ -74,12 +78,12 @@ export default function Home() {
     scrollToBottom();
   }, [messages, streamingMessage, scrollToBottom]);
 
+  // Function to send a message (extracted for reuse)
+  const sendMessage = async (messageContent: string) => {
+    if (!messageContent.trim() || isLoading || isProcessingRef.current) return;
 
-  // submit function
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!input.trim() || isLoading) return;
+    // Set processing flag to prevent duplicate calls
+    isProcessingRef.current = true;
 
     // Abort any ongoing request
     if (abortController.current) {
@@ -91,13 +95,12 @@ export default function Home() {
     setStreamingMessage("");
     setStreamingComplete(false);
 
-    const userMessage: MessageType = { role: "user", content: input };
+    const userMessage: MessageType = { role: "user", content: messageContent };
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
     setIsLoading(true);
 
     // Check for instant response first
-    const instantResponse = checkForInstantResponse(input);
+    const instantResponse = checkForInstantResponse(messageContent);
     if (instantResponse) {
       // Add a slight delay for a better UX
       setTimeout(() => {
@@ -106,6 +109,7 @@ export default function Home() {
           { role: "assistant", content: instantResponse },
         ]);
         setIsLoading(false);
+        isProcessingRef.current = false; // Reset processing flag
       }, 300);
       return;
     }
@@ -179,9 +183,7 @@ export default function Home() {
         }
 
         // When streaming is done, add the message to the state ONLY if we have content
-        // This additional check prevents adding empty messages
         if (completeResponse && completeResponse.trim() !== "") {
-          // Use function form of setState to ensure we have the latest state
           setMessages((prevMessages) => [
             ...prevMessages,
             { role: "assistant", content: completeResponse },
@@ -212,148 +214,128 @@ export default function Home() {
       setIsLoading(false);
       setStreamingMessage("");
       abortController.current = null;
+      isProcessingRef.current = false; // Reset processing flag
     }
   };
-  // Add this to your component:
+
+  // Fixed useEffect for initial message processing
   useEffect(() => {
-    // Cleanup function to handle component unmount or query changes
+    const processInitialMessage = async () => {
+      if (hasProcessedInitialMessage) return;
+
+      const initialMessage = sessionStorage.getItem("initialMessage");
+      if (initialMessage) {
+        console.log("Processing initial message:", initialMessage);
+
+        // Mark as processed immediately
+        setHasProcessedInitialMessage(true);
+        sessionStorage.removeItem("initialMessage");
+
+        // Set input and send message
+        setInput(initialMessage);
+
+        // Small delay to ensure state is updated
+        setTimeout(async () => {
+          await sendMessage(initialMessage);
+          setInput(""); // Clear input after sending
+        }, 100);
+      } else {
+        setHasProcessedInitialMessage(true);
+      }
+    };
+
+    processInitialMessage();
+  }, []); // Empty dependency array - only run once
+
+  // submit function
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading || isProcessingRef.current) return;
+
+    const messageToSend = input;
+    setInput(""); // Clear input immediately
+    await sendMessage(messageToSend);
+  };
+
+  // Cleanup effect
+  useEffect(() => {
     return () => {
       if (abortController.current) {
         abortController.current.abort();
         abortController.current = null;
       }
+      isProcessingRef.current = false;
     };
   }, []);
-
-  // Then in your handleSubmit function:
-
-
+  const [condition] = useState(true);
   return (
     <div className="flex min-h-screen flex-col">
       {/* Background */}
       <div className="absolute top-0 left-0 w-full h-full z-0">
         {/* Header */}
-        <Navbar />
+        {/* <Navbar /> */}
         {/* Chat Area */}
-        <main className="relative flex-1 w-[90%] mx-auto sm:px-4 pt-16 pb-18">
-          <ScrollArea className="h-[calc(100vh-8rem)] overflow-hidden p-6 scrollbar-hide">
-            <div className="space-y-4 py-0 pb-16">
-              {messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full">
-                  <p>Send a message to start chatting</p>
-                </div>
-              ) : (
-                messages.map((message, index) =>
-                  message && message.role ? (
-                    <Message key={index} message={message} />
-                  ) : null
-                )
-              )}
+        {condition ? (<ZeusMaintenance />) : (
 
-              {/* Show streaming message if available */}
-              {streamingMessage && (
-                <div className="flex gap-10 md:max-w-[80%] lg:max-w-[75%] xl:max-w-[70%] max-w-[80%]">
-                  <div className="flex items-start pt-3 gap-2 mb-3">
-                    <Image
-                      src="/icons/zeusrobo.svg"
-                      width={32}
-                      height={32}
-                      alt="Zeus Avatar"
-                    />
-                    <h6 className="font-bold text-gray-800">ZEUS</h6>
-                  </div>
-                  <Card className="px-4 py-3 bg-white text-black">
-                    <p className="whitespace-pre-line md:text-[18px]">
-                      {streamingMessage}
-                    </p>
-                  </Card>
-                </div>
-              )}
-
-              {/* Show "Thinking..." when loading but not streaming */}
-              {isLoading && !streamingMessage && (
-                <div className="flex gap-10 md:max-w-[100%] lg:max-w-[100%] xl:max-w-[100%] max-w-[100%]">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Image
-                      src="/icons/zeusrobo.svg"
-                      width={32}
-                      height={32}
-                      alt="Zeus Avatar"
-                    />
-                    <h6 className="font-bold text-gray-800">ZEUS</h6>
-                  </div>
-                  <Card className="px-4 py-3 bg-white text-black">
-                    <p className="whitespace-pre-line italic text-center text-gray-500">
-                      Zeus is Thinking...
-                    </p>
-                  </Card>
-                </div>
-              )}
-
-              {/* keep your scroll anchor */}
-              <div ref={scrollRef} />
-            </div>
-          </ScrollArea>
-        </main>
-
-        {/* Chat Input */}
-        <div className="fixed bottom-0 w-full">
-          <div className="absolute inset-0 bg-[#D9D9D966] opacity-80 z-0 blur-2xl "></div>
-          <div className="relative w-[90%] sm:w-[70%] lg:w-[58%] mx-auto pb-1 ">
-            <form onSubmit={handleSubmit}>
-              <div className="flex items-center rounded-xl shadow-sm bg-white gap-2 px-3 py-1">
-                <Image
-                  src="/chatbot.svg"
-                  alt="chatrobot"
-                  width={20}
-                  height={20}
-                />
-                <Input
-                  placeholder="Chat with ZEUS"
-                  className="flex-1 border-none focus:ring-0 xl:placeholder:text-[16px]"
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={isLoading}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={isLoading}
-                  className="p-0 bg-transparent hover:bg-transparent rounded-full"
-                >
+          <div className="fixed bottom-0 w-full">
+            <div className="absolute inset-0 bg-[#D9D9D966] opacity-80 z-0 blur-2xl "></div>
+            <div className="relative w-[90%] sm:w-[70%] lg:w-[58%] mx-auto pb-1 ">
+              <form onSubmit={handleSubmit}>
+                <div className="flex items-center rounded-xl shadow-sm bg-white gap-2 px-3 py-1">
                   <Image
-                    src="/icons/sendicon.svg"
-                    alt="Send"
-                    width={24}
-                    height={24}
+                    src="/chatbot.svg"
+                    alt="chatrobot"
+                    width={20}
+                    height={20}
                   />
-                </Button>
+                  <Input
+                    placeholder="Chat with ZEUS"
+                    className="flex-1 border-none focus:ring-0 xl:placeholder:text-[16px]"
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    disabled={isLoading}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={isLoading || isProcessingRef.current}
+                    className="p-0 bg-transparent hover:bg-transparent rounded-full"
+                  >
+                    <Image
+                      src="/icons/sendicon.svg"
+                      alt="Send"
+                      width={24}
+                      height={24}
+                    />
+                  </Button>
+                </div>
+              </form>
+              {/* Buttons */}
+              <div className="flex flex-row sm:justify-center overflow-x-auto hide-scrollbar gap-1 sm:gap-3 mt-2">
+                <Link target="blank" href="/Universities">
+                  <Button className="bg-red-700 text-sm md:text-md text-white hover:text-[#FED7B1] border-[#F0851D] rounded-xl hover:bg-red-700">
+                    Explore Top Universities
+                  </Button>
+                </Link>
+                <Link target="blank" href="/countries">
+                  <Button className="bg-red-700 text-sm md:text-md text-white hover:text-[#FED7B1] border-[#F0851D] rounded-xl hover:bg-red-700">
+                    Explore Study Destinations
+                  </Button>
+                </Link>
+                <Link target="blank" href="/scholarships">
+                  <Button className="bg-red-700 text-sm md:text-md text-white hover:text-[#FED7B1] border-[#F0851D] rounded-xl hover:bg-red-700">
+                    Explore Latest Scholarships
+                  </Button>
+                </Link>
               </div>
-            </form>
-            {/* Buttons */}
-            <div className="flex flex-row justify-center overflow-x-auto hide-scrollbar gap-3 mt-2">
-              <Link target="blank" href="/Universities">
-                <Button className="bg-red-700 text-sm md:text-md text-white hover:text-[#FED7B1] border-[#F0851D] rounded-xl hover:bg-red-700">
-                  Explore Top Universities
-                </Button>
-              </Link>
-              <Link target="blank" href="/countries">
-                <Button className="bg-red-700 text-sm md:text-md text-white hover:text-[#FED7B1] border-[#F0851D] rounded-xl hover:bg-red-700">
-                  Explore Study Destinations
-                </Button>
-              </Link>
-              <Link target="blank" href="/scholarships">
-                <Button className="bg-red-700 text-sm md:text-md text-white hover:text-[#FED7B1] border-[#F0851D] rounded-xl hover:bg-red-700">
-                  Explore Latest Scholarships
-                </Button>
-              </Link>
+              <p className="text-gray-500 mt-1 text-[13px] text-center">
+                ZEUS adapts to your preferences — change them anytime!
+              </p>
             </div>
-            <p className="text-gray-500 mt-1 text-[13px] text-center">
-              ZEUS adapts to your preferences — change them anytime!
-            </p>
           </div>
-        </div>
+        )
+        }
       </div>
     </div>
   );

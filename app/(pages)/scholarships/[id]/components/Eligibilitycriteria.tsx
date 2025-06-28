@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import Banner from "@/components/ui/enrollment/Banner";
+// import Banner from "@/components/ui/enrollment/Banner";
 
 interface EligibilityItem {
   _id?: string;
@@ -11,10 +11,12 @@ interface EligibilityItem {
 
 interface EligibilityCriteriaProps {
   eligibilityCriteria: EligibilityItem[];
+  name: string;
 }
 
 const Eligibilitycriteria: React.FC<EligibilityCriteriaProps> = ({
   eligibilityCriteria,
+  name,
 }) => {
   return (
     <div>
@@ -22,8 +24,8 @@ const Eligibilitycriteria: React.FC<EligibilityCriteriaProps> = ({
         <div className="text-center md:w-3/5 mx-auto">
           <h3 className="font-bold text-2xl mb-2">Eligibility Criteria!</h3>
           <p className="md:pb-4">
-            To be eligible for the Global Korea Scholarship, applicants must
-            meet specific academic, age, and residency requirements.
+            To be eligible for the {name}, applicants must meet specific
+            academic, age, and residency requirements.
           </p>
         </div>
 
@@ -62,21 +64,19 @@ const Eligibilitycriteria: React.FC<EligibilityCriteriaProps> = ({
               />
               <div>
                 <p className="font-medium">{criteria.criterion}</p>
-                {criteria.details && (
-                  <p className="">{criteria.details}</p>
-                )}
+                {criteria.details && <p className="">{criteria.details}</p>}
               </div>
             </div>
           ))}
         </div>
       </section>
-      <Banner
+      {/* <Banner
         title="Know that you&#39;re Eligible, Take Action! Apply Now and take a
 Step toward your educational goals."
         buttonText="Apply Now!"
         buttonLink="/dashboard"
         backgroundImage="/bg-usa.png"
-      />{" "}
+      />{" "} */}
     </div>
   );
 };

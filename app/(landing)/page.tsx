@@ -107,7 +107,7 @@ function Page() {
       icon: <Bot className="h-8 w-8" />,
       title: "AI powered platform",
       description:
-        "Our state-of-the-art, AI platform simplifies the admission process. For assessing your eligibility to matching you with suitable programs, our technology ensures a smooth and efficient application experience.",
+        "Our state-of-the-art, AI platform simplifies the admission process. By assessing your eligibility, it matches you with suitable programs ensuring a smooth and efficient application experience.",
     },
     {
       icon: <Headphones className="h-8 w-8" />,
@@ -135,13 +135,17 @@ function Page() {
   };
   const [successOpen, setSuccessOpen] = useState(false);
 
+  // Updated handleNavigate function to properly pass the message
   const handleNavigate = () => {
     if (input.trim()) {
-      router.push(`/chatmodel?message=${encodeURIComponent(input)}`);
+      // Store the message in sessionStorage for the chat model to pick up
+      sessionStorage.setItem("initialMessage", input.trim());
+      router.push("/chatmodel");
     } else {
       router.push("/chatmodel"); // Navigate without message if input is empty
     }
   };
+
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -279,11 +283,11 @@ function Page() {
                   <h3 className="text-white leading-snug">
                     <Typewriter
                       words={[
-                        "Let’s explore your study options.",
+                        "Let's explore your study options.",
                         "I simplify your university search",
                         "Find courses that truly fit",
                         "Smart scholarship search starts here.",
-                        "Know your success chances before applying",
+                        "Know your success chances first",
                       ]}
                       loop={true}
                       cursor
@@ -296,13 +300,21 @@ function Page() {
                 </div>
 
                 <div className="HeroRightSide relative lg:hidden flex items-center justify-center w-full h-[230px]">
-                  <Image
+                  {/* <Image
                     src="/Zeushicomp.png"
                     alt="Robot"
                     width={0}
                     height={0}
                     sizes="60vw"
                     className="w-[190px] h-auto"
+                  /> */}
+                  <img
+                    src="/zeus.gif"
+                    alt="Animated Robot"
+                    width={0}
+                    height={0}
+                    sizes="60vw"
+                    className="w-[250px] h-auto"
                   />
                 </div>
 
@@ -387,15 +399,15 @@ function Page() {
               </div>
             </div>
           </div>
-          {/* hero Section Left Side ends */}
-          {/* hero Section Right Side starts */}
-          <div className="HeroRightSide relative h-[500px] hidden lg:block">
+          <div className="HeroRightSide relative hidden lg:block">
             <Link href="/chatmodel" passHref>
-              <Image
-                src="/Zeushicomp.png"
-                alt="Robot"
-                width={410}
-                height={510}
+              <img
+                src="/zeus.gif"
+                alt="Animated Robot"
+                width={0}
+                height={0}
+                // sizes="60vw"
+                className="w-[440px]"
               />
             </Link>
           </div>
@@ -407,7 +419,7 @@ function Page() {
           <div className="flex justify-between items-center">
             <h3 className="font-bold">Top Universities!</h3>
             <DropdownMenu>
-              <DropdownMenuTrigger className="text-sm text-gray-600 flex items-center justify-center gap-2 bg-[#F1F1F1] rounded-lg  w-[30%] md:w-[14%] xxl:w-[9%] h-10 text-center">
+              <DropdownMenuTrigger className="text-sm text-gray-600 flex items-center justify-center gap-2 bg-[#F1F1F1] rounded-lg  w-[30%] md:w-[14%] xl:w-[9%] h-10 text-center">
                 <Image src="/filterr.svg" width={16} height={14} alt="filter" />
                 <div className="flex items-center gap-1">
                   Filter
@@ -518,7 +530,9 @@ function Page() {
                             <span>{uni.country_name}</span>
                             <span>Public</span>
                           </div>
-                          <div className="leading-tight">Acceptance Rate: {uni.acceptance_rate}</div>
+                          <div className="leading-tight">
+                            Acceptance Rate: {uni.acceptance_rate}
+                          </div>
                         </div>
                       </div>
                     </Card>
@@ -557,14 +571,14 @@ function Page() {
               {/* Right Arrow */}
               <button
                 onClick={() => scroll("right")}
-                className="absolute -right-5 z-10 top-1/2 -translate-y-1/2 bg-white shadow-xl p-2 rounded-full hover:bg-gray-100 border border-gray-200"
+                className="absolute -right-0 md:-right-5 z-10 top-1/2 -translate-y-1/2 bg-white shadow-xl p-2 rounded-full hover:bg-gray-100 border border-gray-200"
               >
                 <FaArrowRight />
               </button>
 
               <div
                 ref={sliderRef}
-                className="flex items-center space-x-3 md:space-x-6 overflow-x-auto p-3 scrollbar-hide"
+                className="flex items-center space-x-3 md:space-x-6 overflow-x-auto py-3 scrollbar-hide"
                 style={{
                   scrollBehavior: "smooth",
                   scrollbarWidth: "none",
@@ -576,21 +590,21 @@ function Page() {
                     No Universities Found
                   </p>
                 ) : (
-                  universities.slice(0, 7).map((uni) => (
-                    <Card
+                  universities.slice(1, 7).map((uni) => (
+                    <div
                       key={uni._id}
-                      className="flex-shrink-0 w-[270px] h-[340px] overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 hover:shadow-lg"
+                      className="flex-shrink-0 w-[260px] md:w-[300px] h-[328px] md:h-[364px] bg-white shadow-md rounded-2xl overflow-hidden p-3"
                     >
                       {/* Image + Logo */}
                       <Link
                         href={`/Universities/${uni._id}`}
-                        className="relative h-48 block"
+                        className="relative h-44 md:h-52 block"
                       >
                         <Image
                           src={uni.universityImages.banner}
                           alt={uni.name}
                           layout="fill"
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover rounded-xl"
                         />
                         <div className="absolute bottom-1 left-5">
                           <Image
@@ -604,24 +618,93 @@ function Page() {
                       </Link>
 
                       {/* Details */}
-                      <div className="p-4">
-                        <h6 className="font-semibold mb-2">
-                          {uni.university_name}
-                        </h6>
-                        <div className="text-muted-foreground text-sm space-y-1">
-                          <div className="flex justify-between">
-                            <span>{uni.country_name}</span>
-                            <span>Public</span>
-                          </div>
-                          <div>Acceptance Rate: {uni.acceptance_rate}</div>
+                      <div className="flex flex-col justify-between">
+                        <div className="mt-1 mb-2 md:mb-3">
+                          <Link href={`/Universities/${uni._id}`}>
+                            {/* <p className="hover:underline underline-offset-2 pt-1 text-md truncate font-semibold max-w-[300px] overflow-hidden"> */}
+
+                            <div className="relative group w-fit">
+                              <p className="cursor-pointer text-md truncate font-semibold max-w-[250px] overflow-hidden">
+                                {uni.university_name}
+                              </p>
+                              <span className="absolute md:left-8 mt-1 hidden group-hover:block bg-gray-100 text-black text-sm font-medium p-2 rounded-md w-[200px] text-center shadow-lg z-10">
+                                {uni.university_name}
+                              </span>
+                            </div>
+                          </Link>
                         </div>
+                        {/* <div className="text-muted-foreground text-sm space-y-1"> */}
+                        <div className="mt-1 flex justify-between">
+                          <span className="text-sm text-gray-600">
+                            {uni.country_name}
+                          </span>
+                          <span className="text-sm text-gray-600">Public</span>
+                        </div>
+                        {/* <div>Acceptance Rate: {uni.acceptance_rate}</div> */}
+                        <hr className="my-1" />
+                        <p className="text-sm font-bold pb-2 text-black">
+                          Acceptance Rate:
+                        </p>
+                        <div className="relative bg-[#F1F1F1] rounded-md h-7">
+                          {(() => {
+                            const rate = uni.acceptance_rate?.toString().trim();
+                            let displayRate = rate;
+                            let numericWidth = 0;
+                            let isValidNumber = true;
+
+                            // Normalize known non-numeric labels like "n/a"
+                            if (rate?.toLowerCase() === "n/a") {
+                              displayRate = "N/A";
+                              isValidNumber = false;
+                              numericWidth = 100; // Fallback width
+                            } else if (rate.includes("to")) {
+                              const [start, end] = rate
+                                .split("to")
+                                .map((val: string) => parseFloat(val.trim()));
+
+                              if (isNaN(start) || isNaN(end)) {
+                                isValidNumber = false;
+                                numericWidth = 100;
+                              } else {
+                                const avg = ((start + end) / 2).toFixed(1);
+                                numericWidth = parseFloat(avg);
+                                displayRate = `${start}% - ${end}%`;
+                              }
+                            } else {
+                              numericWidth = parseFloat(rate);
+                              if (isNaN(numericWidth)) {
+                                isValidNumber = false;
+                                numericWidth = 100;
+                              }
+                            }
+
+                            const bgColor = isValidNumber
+                              ? "#16C47F"
+                              : "#FFE5B4"; // green or soft yellow
+
+                            return (
+                              <div
+                                className="text-white flex items-center justify-center h-7 rounded-lg transition-all duration-500"
+                                style={{
+                                  width: `${numericWidth}%`,
+                                  backgroundColor: bgColor,
+                                }}
+                              >
+                                <p className="text-sm font-normal leading-3 px-2 text-black">
+                                  {displayRate}
+                                </p>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                        {/* </div> */}
                       </div>
-                    </Card>
+                    </div>
                   ))
                 )}
 
                 {/* Explore All */}
-                <div className="relative flex items-center border-2 border-gray-200  h-[340px] group cursor-pointer rounded-2xl transition-all duration-300 hover:shadow-lg">
+                <div className="relative flex items-center border-2 border-gray-200 h-[328px] md:h-[364px] p-2 group cursor-pointer rounded-2xl ">
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-400 to-transparent opacity-30 rounded-2xl pointer-events-none"></div>
 
                   <Link
@@ -642,7 +725,7 @@ function Page() {
         </div>
       </section>
       {/* Features Section */}
-      <section className="md:py-5 bg-muted/50 z-10">
+      <section className="md:pb-5 bg-muted/50 z-10">
         <div className=" mx-auto w-[90%]">
           <h2 className="font-extrabold text-center mb-1 md:mb-5">
             Why Choose{" "}
@@ -652,7 +735,7 @@ function Page() {
                 alt="WWAH"
                 width={100}
                 height={40}
-                className="inline-block align-middle h-[45px] md:h-[90px] xl:h-[100px] w-[70px] md:w-[90px] xl:w-[150px]"
+                className="inline-block align-middle h-[45px] md:h-[90px]  xl:h-[100px] w-[70px] md:w-[15%] lg:w-[13%] xl:w-[11%]"
               />
             </Link>
           </h2>
@@ -674,8 +757,8 @@ function Page() {
             <div>
               <h2 className="font-bold my-4">WWAH Mobile App:</h2>
               <p className="mb-8">
-                Study Abroad dreams made simple: Just Download WWAH app, Upload
-                & Travel.
+                Study Abroad dreams made simple! Just Download the WWAH app,
+                Upload & Travel.
               </p>
               <div>
                 <div className="text-sm flex flex-col sm:flex-row gap-4">

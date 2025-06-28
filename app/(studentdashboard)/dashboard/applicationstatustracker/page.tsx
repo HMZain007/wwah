@@ -1,8 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import ActiveApplication from "./components/ActiveApplication";
-import CompletedApplication from "./components/CompletedApplication";
+// import CompletedApplication from "./components/CompletedApplication";
 import { Button } from "@/components/ui/button";
+import CompletedApplication from "./components/CompletedApplication";
 
 
 type Tab = {
