@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
 import {
   Form,
   FormControl,
@@ -25,44 +24,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import * as z from "zod";
 import { useEffect } from "react";
 import Image from "next/image";
 import { FaPlaneDeparture } from "react-icons/fa6";
-
-// Comprehensive country data with flag image URLs
-const countries = [
-  {
-    code: "US",
-    name: "United States",
-    phoneCode: "+1",
-    flagUrl: "https://flagcdn.com/w40/us.png",
-  },
-  {
-    code: "GB",
-    name: "United Kingdom",
-    phoneCode: "+44",
-    flagUrl: "https://flagcdn.com/w40/gb.png",
-  },
-  {
-    code: "AU",
-    name: "Australia",
-    phoneCode: "+61",
-    flagUrl: "https://flagcdn.com/w40/au.png",
-  },
-  {
-    code: "CA",
-    name: "Canada",
-    phoneCode: "+1",
-    flagUrl: "https://flagcdn.com/w40/ca.png",
-  },
-];
+import { countries } from "@/lib/countries";
 
 const formSchema = z.object({
   // Personal Information
@@ -78,7 +48,9 @@ const formSchema = z.object({
   dropOffLocation: z.string().min(1, "Drop off location is required"),
   // Additional Information
   additionalPreference: z.string().optional(),
-  ticket: z.any().optional(), // Change to any to handle file upload
+  ticket: z
+    .any()
+    .refine((files) => files?.length >= 1, "Ticket file is required."),
 });
 
 export default function Home() {
@@ -87,18 +59,14 @@ export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // Personal Information
       email: "",
-      phoneCountry: "+1",
+      phoneCountry: "Pakistan|+92",
       phoneNo: "",
-      // Location Details
       country: "",
       university: "",
       city: "",
-      // Pickup Details
       pickupOption: "",
       dropOffLocation: "",
-      // Additional Information
       additionalPreference: "",
     },
   });
@@ -107,9 +75,12 @@ export default function Home() {
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "country") {
-        const selectedCountry = countries.find((c) => c.code === value.country);
+        const selectedCountry = countries.find((c) => c.name === value.country);
         if (selectedCountry) {
-          form.setValue("phoneCountry", selectedCountry.phoneCode);
+          form.setValue(
+            "phoneCountry",
+            `${selectedCountry.name}|${selectedCountry.code}`
+          );
         }
       }
     });
@@ -132,7 +103,7 @@ export default function Home() {
 
   const handleSave = () => {
     console.log("Saved Flight Details:", flightData);
-    setOpen(false); // Close modal after saving
+    setOpen(false);
   };
 
   const handleCancel = () => {
@@ -143,7 +114,7 @@ export default function Home() {
       flightNumber: "",
       airlineName: "",
     });
-    setOpen(false); // Close modal on cancel
+    setOpen(false);
   };
 
   // Form submission function
@@ -155,30 +126,55 @@ export default function Home() {
       // Create FormData object to handle file upload
       const formData = new FormData();
 
-      // Add all form fields
+      // Add all form fields (excluding ticket)
       Object.keys(values).forEach((key) => {
         if (key !== "ticket") {
-          formData.append(key, values[key as keyof typeof values] as string);
+          const value = values[key as keyof typeof values];
+          if (value !== undefined && value !== null) {
+            formData.append(key, String(value));
+          }
         }
       });
 
-      // Add file if it exists
-      const ticketField = form.getValues("ticket");
-      if (ticketField && ticketField[0]) {
-        formData.append("ticket", ticketField[0]);
+      // Add file - Fixed file handling
+      const fileInput = values.ticket;
+      if (fileInput && fileInput.length > 0) {
+        formData.append("ticket", fileInput[0]);
+        console.log("File selected:", fileInput[0].name, fileInput[0].size);
+      } else {
+        throw new Error("Please select a ticket file");
       }
+
       // Add flight details as JSON string
       formData.append("flightDetails", JSON.stringify(flightData));
+
+      // Log form data for debugging
+      console.log("Submitting form with data:");
+      for (const [key, value] of formData.entries()) {
+        if (key === "ticket") {
+          console.log(key, "File:", value);
+        } else {
+          console.log(key, value);
+        }
+      }
+
       // Submit the form to backend
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_API}studentDashboard/airportPickup`,
         {
           method: "POST",
           body: formData,
-          // Note: Don't set Content-Type header when using FormData
+          // Don't set Content-Type header when using FormData
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log("Response from server:", data);
+
       if (data.success) {
         setSubmitMessage({
           type: "success",
@@ -201,23 +197,42 @@ export default function Home() {
       console.error("Error submitting form:", error);
       setSubmitMessage({
         type: "error",
-        message: "Failed to submit your request. Please try again.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to submit your request. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
     }
   }
-  const CountryFlag = ({ url }: { url: string }) => (
-    <div className="relative w-4 h-4 rounded-full overflow-hidden">
-      <Image
-        src={url}
-        alt="Country flag"
-        fill
-        className="object-cover"
-        sizes="24px"
-      />
-    </div>
-  );
+
+  // Improved CountryFlag component with error handling
+  const CountryFlag = ({ url }: { url: string }) => {
+    const [imageError, setImageError] = useState(false);
+
+    if (!url || imageError) {
+      return (
+        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
+          <span className="text-xs text-gray-500">🌍</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-5 h-5 rounded-full overflow-hidden">
+        <Image
+          src={url}
+          alt="Country flag"
+          fill
+          className="object-cover"
+          sizes="24px"
+          onError={() => setImageError(true)}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="p-4">
       <div className="mx-auto max-w-3xl">
@@ -230,7 +245,6 @@ export default function Home() {
             we can arrange a hassle-free pickup for you.
           </p>
         </div>
-        
 
         {submitMessage.message && (
           <div
@@ -248,7 +262,6 @@ export default function Home() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Location Information Section */}
-
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -258,46 +271,30 @@ export default function Home() {
                       <FormLabel>Country</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="bg-[#f1f1f1]">
                             <SelectValue placeholder="Select country">
                               {field.value && (
                                 <span className="flex items-center gap-2">
-                                  <CountryFlag
-                                    url={
-                                      countries.find(
-                                        (c) => c.code === field.value
-                                      )?.flagUrl || ""
-                                    }
-                                  />
-                                  <span>
-                                    {
-                                      countries.find(
-                                        (c) => c.code === field.value
-                                      )?.name
-                                    }
-                                  </span>
+                                  <span>{field.value}</span>
                                 </span>
                               )}
                             </SelectValue>
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {countries.map((country, index) => (
-                            <SelectItem key={index} value={country.code}>
+                          {countries.map((country) => (
+                            <SelectItem key={country.name} value={country.name}>
                               <span className="flex items-center gap-2">
-                                <CountryFlag url={country.flagUrl} />
                                 <span>{country.name}</span>
                               </span>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage>
-                        {form.formState.errors.country?.message}
-                      </FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -308,31 +305,14 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>University</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="bg-[#f1f1f1]">
-                            <SelectValue placeholder="Select university" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="harvard">
-                            Harvard University
-                          </SelectItem>
-                          <SelectItem value="mit">MIT</SelectItem>
-                          <SelectItem value="stanford">
-                            Stanford University
-                          </SelectItem>
-                          <SelectItem value="oxford">
-                            Oxford University
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage>
-                        {form.formState.errors.university?.message}
-                      </FormMessage>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter university"
+                          {...field}
+                          className="bg-[#f1f1f1] placeholder:text-sm"
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -343,50 +323,38 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>City</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="bg-[#f1f1f1]">
-                            <SelectValue placeholder="Select city" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="newyork">New York</SelectItem>
-                          <SelectItem value="london">London</SelectItem>
-                          <SelectItem value="toronto">Toronto</SelectItem>
-                          <SelectItem value="sydney">Sydney</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage>
-                        {form.formState.errors.city?.message}
-                      </FormMessage>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter city"
+                          {...field}
+                          className="bg-[#f1f1f1] placeholder:text-sm"
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-                {/* Document Upload Section */}
+
+                {/* Document Upload Section - Fixed */}
                 <FormField
                   control={form.control}
                   name="ticket"
-                  render={({ field: { onChange, ...fieldProps } }) => (
+                  render={({ field: { onChange, name, ref } }) => (
                     <FormItem>
-                      <FormLabel>Upload Ticket</FormLabel>
-                      <FormControl className="bg-[#f1f1f1]">
-                        <Input
+                      <FormLabel>Upload Ticket *</FormLabel>
+                      <FormControl>
+                        <input
                           type="file"
-                          {...fieldProps}
+                          name={name}
+                          ref={ref}
+                          accept=".pdf,.jpg,.jpeg,.png"
                           onChange={(e) => {
-                            // Only update if files exist
-                            onChange(e.target.files ? e.target.files : null);
+                            onChange(e.target.files);
                           }}
-                          // Important: Explicitly set value to undefined
-                          value={undefined}
+                          className="flex h-10 w-full rounded-md border border-input bg-[#f1f1f1] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       </FormControl>
-                      <FormMessage>
-                        {String(form.formState.errors.ticket?.message || "")}
-                      </FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -399,7 +367,7 @@ export default function Home() {
                       <FormLabel>Choose your Pickup Option</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="bg-[#f1f1f1]">
@@ -416,9 +384,7 @@ export default function Home() {
                           <SelectItem value="group">Group Pickup</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormMessage>
-                        {form.formState.errors.pickupOption?.message}
-                      </FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -429,43 +395,39 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Drop Off Location</FormLabel>
-                      <FormControl className="bg-[#f1f1f1]">
+                      <FormControl>
                         <Input
                           placeholder="Enter drop off location"
                           {...field}
+                          className="bg-[#f1f1f1] placeholder:text-sm"
                         />
                       </FormControl>
-                      <FormMessage>
-                        {form.formState.errors.dropOffLocation?.message}
-                      </FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
               {/* Additional Preferences Section */}
-
               <FormField
                 control={form.control}
                 name="additionalPreference"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Additional Preference</FormLabel>
-                    <FormControl className="bg-[#f1f1f1] placeholder:text-sm ">
+                    <FormControl>
                       <Textarea
                         placeholder="Enter any additional preferences or requirements"
                         {...field}
+                        className="bg-[#f1f1f1] placeholder:text-sm"
                       />
                     </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.additionalPreference?.message}
-                    </FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
               {/* Contact Information Section */}
-
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -483,7 +445,7 @@ export default function Home() {
                               value={countryField.value}
                             >
                               <FormControl>
-                                <SelectTrigger className="w-[120px] bg-[#f1f1f1] ">
+                                <SelectTrigger className="w-[150px] bg-[#f1f1f1]">
                                   <SelectValue>
                                     {countryField.value && (
                                       <span className="flex items-center gap-2">
@@ -491,12 +453,20 @@ export default function Home() {
                                           url={
                                             countries.find(
                                               (c) =>
-                                                c.phoneCode ===
+                                                `${c.name}|${c.code}` ===
                                                 countryField.value
-                                            )?.flagUrl || ""
+                                            )?.flag || ""
                                           }
                                         />
-                                        <span>{countryField.value}</span>
+                                        <span>
+                                          {
+                                            countries.find(
+                                              (c) =>
+                                                `${c.name}|${c.code}` ===
+                                                countryField.value
+                                            )?.code
+                                          }
+                                        </span>
                                       </span>
                                     )}
                                   </SelectValue>
@@ -505,12 +475,14 @@ export default function Home() {
                               <SelectContent>
                                 {countries.map((country) => (
                                   <SelectItem
-                                    key={country.code}
-                                    value={country.phoneCode}
+                                    key={`${country.name}|${country.code}`}
+                                    value={`${country.name}|${country.code}`}
                                   >
-                                    <span className="flex items-center gap-2 ">
-                                      <CountryFlag url={country.flagUrl} />
-                                      <span>{country.phoneCode}</span>
+                                    <span className="flex items-center gap-2">
+                                      <CountryFlag url={country.flag} />
+                                      <span>
+                                        {country.name} ({country.code})
+                                      </span>
                                     </span>
                                   </SelectItem>
                                 ))}
@@ -518,13 +490,14 @@ export default function Home() {
                             </Select>
                           )}
                         />
-                        <FormControl className="bg-[#f1f1f1] placeholder:text-sm">
-                          <Input placeholder="Enter phone number" {...field} />
-                        </FormControl>
+                        <Input
+                          {...field}
+                          type="tel"
+                          placeholder="Enter phone number"
+                          className="flex-1 bg-[#f1f1f1] placeholder:text-sm"
+                        />
                       </div>
-                      <FormMessage>
-                        {form.formState.errors.phoneNo?.message}
-                      </FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -535,15 +508,14 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
-                      <FormControl className="bg-[#f1f1f1] placeholder:text-sm">
+                      <FormControl>
                         <Input
                           placeholder="Enter your email address"
                           {...field}
+                          className="bg-[#f1f1f1] placeholder:text-sm"
                         />
                       </FormControl>
-                      <FormMessage>
-                        {form.formState.errors.email?.message}
-                      </FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -551,7 +523,10 @@ export default function Home() {
 
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#FCE7D2] hover:bg-[#FCE7D2] text-black">
+                  <Button
+                    type="button"
+                    className="bg-[#FCE7D2] hover:bg-[#FCE7D2] text-black"
+                  >
                     <FaPlaneDeparture className="mr-2" /> Add Flight Details
                   </Button>
                 </DialogTrigger>
@@ -618,10 +593,16 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="outline" onClick={handleCancel}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                    >
                       Cancel
                     </Button>
-                    <Button onClick={handleSave}>Save</Button>
+                    <Button type="button" onClick={handleSave}>
+                      Save
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>

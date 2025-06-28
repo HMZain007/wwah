@@ -26,6 +26,12 @@ import { toast } from "sonner";
 import { countries } from "@/lib/countries";
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/useUserData";
+import currency from "currency-codes";
+
+const currencyOptions = currency.data.map((c) => ({
+  value: c.code,
+  label: `${c.code} - ${c.currency}`,
+}));
 
 
 const formSchema = z.object({
@@ -60,8 +66,8 @@ const formSchema = z.object({
   budgetMax: z.string({
     required_error: "Please enter maximum budget.",
   }),
-  phone: z.number().min(10, {
-    message: "Phone number must be at least 10 digits.",
+  phone: z.string({
+    required_error: "Phone number must be at least 10 digits.",
   }),
   countryCode: z.string().default("+92"),
   email: z.string().email({
@@ -130,7 +136,7 @@ export default function Home() {
         currency: "",
         budgetMin: "",
         budgetMax: "",
-        phone: 0,
+        phone: "",
         countryCode: "+92",
         email: "",
       });
@@ -179,9 +185,15 @@ export default function Home() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
+                        <SelectItem value="nz">New Zealand</SelectItem>
                         <SelectItem value="au">Australia</SelectItem>
+                        <SelectItem value="ca">Canada</SelectItem>
+                        <SelectItem value="de">Germany</SelectItem>
+                        <SelectItem value="my">Malaysia</SelectItem>
+                        <SelectItem value="ie">Ireland</SelectItem>
+                        <SelectItem value="us">United States</SelectItem>
+                        <SelectItem value="cn">China</SelectItem>
+                        <SelectItem value="it">Italy</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -195,28 +207,13 @@ export default function Home() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>University</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-[#f1f1f1] placeholder-[#313131] text-sm">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="oxford">
-                          Oxford University
-                        </SelectItem>
-                        <SelectItem value="cambridge">
-                          Cambridge University
-                        </SelectItem>
-                        <SelectItem value="harvard">
-                          Harvard University
-                        </SelectItem>
-                        <SelectItem value="mit">MIT</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter university name"
+                        className="bg-[#f1f1f1] placeholder:text-sm placeholder:text-black"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -228,22 +225,13 @@ export default function Home() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>City</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-[#f1f1f1] placeholder-[#313131] text-sm">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="london">London</SelectItem>
-                        <SelectItem value="manchester">Manchester</SelectItem>
-                        <SelectItem value="birmingham">Birmingham</SelectItem>
-                        <SelectItem value="leeds">Leeds</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter city name"
+                        className="bg-[#f1f1f1] placeholder:text-sm placeholder:text-black"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -362,9 +350,11 @@ export default function Home() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="usd">USD ($)</SelectItem>
-                          <SelectItem value="gbp">GBP (£)</SelectItem>
-                          <SelectItem value="eur">EUR (€)</SelectItem>
+                          {currencyOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -407,78 +397,83 @@ export default function Home() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone No.</FormLabel>
-                    <div className="flex">
-                      <FormField
-                        control={form.control}
-                        name="countryCode"
-                        render={({ field: countryField }) => (
-                          <Select
-                            onValueChange={countryField.onChange}
-                            defaultValue={countryField.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-[140px] bg-[#f1f1f1] rounded-r-none border-r-0">
-                                <SelectValue>
-                                  <div className="flex items-center gap-2">
-                                    <Image
-                                      src={
-                                        countries.find(
-                                          (c) => c.code + c.name === countryField.value
-                                        )?.flag || countries[0].flag
-                                      }
-                                      alt="Country Flag"
-                                      width={20}
-                                      height={20}
-                                      className="object-contain"
-                                      unoptimized
-                                    />
-                                    <span className="text-sm">
-                                      {countryField.value}
-                                    </span>
-                                  </div>
-                                </SelectValue>
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {countries.map((country) => (
-                                <SelectItem
-                                  key={country.code}
-                                  value={country.code}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <Image
-                                      src={country.flag}
-                                      alt={`${country.name} Flag`}
-                                      width={20}
-                                      height={20}
-                                      className="object-contain"
-                                      unoptimized
-                                    />
-                                    <span className="text-sm">{`${country.code} (${country.name})`}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                      <Input
-                        {...field}
-                        className="rounded-l-none bg-[#f1f1f1] placeholder-[#313131] placeholder:text-sm text-sm"
-                        placeholder="Enter your phone number"
-                        name="phoneNumber"
-                      />
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+             <FormField
+  control={form.control}
+  name="phone"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Phone No.</FormLabel>
+      <div className="flex">
+        <FormField
+          control={form.control}
+          name="countryCode"
+          render={({ field: countryField }) => {
+            const selectedCountry = countries.find(
+              (c) => `${c.code}-${c.name}` === countryField.value
+            );
+
+            return (
+              <Select
+                onValueChange={(val) => {
+                  countryField.onChange(val); // Store full value like "+1-Canada"
+                }}
+                defaultValue={countryField.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-[140px] bg-[#f1f1f1] rounded-r-none border-r-0">
+  <div className="flex items-center gap-2">
+    <Image
+      src={selectedCountry?.flag || "/pakflag.png"} // fallback flag
+      alt="Country Flag"
+      width={20}
+      height={20}
+      className="object-contain"
+      unoptimized
+    />
+    <span className="text-sm">
+      {selectedCountry?.code || "+92"}
+    </span>
+  </div>
+</SelectTrigger>
+
+                </FormControl>
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem
+                      key={`${country.code}-${country.name}`}
+                      value={`${country.code}-${country.name}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={country.flag}
+                          alt={`${country.name} Flag`}
+                          width={20}
+                          height={20}
+                          className="object-contain"
+                          unoptimized
+                        />
+                        <span className="text-sm">
+                          {`${country.code} (${country.name})`}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            );
+          }}
+        />
+        <Input
+          {...field}
+          className="rounded-l-none bg-[#f1f1f1] placeholder-[#313131] placeholder:text-sm text-sm"
+          placeholder="Enter your phone number"
+          name="phoneNumber"
+        />
+      </div>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
               <FormField
                 control={form.control}
