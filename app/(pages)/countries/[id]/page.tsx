@@ -51,12 +51,13 @@ export default function Countrypage({
     teaching_and_learning_approach?: [];
     multicultural_environment?: [];
     faqs: [];
-    
+
     accomodation_options: [];
   }
+
   // Initialize as null to avoid rendering before data is fetched.
   const [country, setCountry] = useState<Country | null>(null);
-
+  const [visaId, setVisaId] = useState<string | null>(null);
   const fetchData = async () => {
     try {
       const response = await fetch(`/api/getCountry?id=${id}`);
@@ -64,6 +65,8 @@ export default function Countrypage({
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const posts = await response.json();
+      setVisaId(posts.visaId._id); // Set the visa ID from the response
+
       setCountry(posts.country);
     } catch (error) {
       if (error instanceof Error) {
@@ -105,35 +108,36 @@ export default function Countrypage({
       <PopularPrograms
         country={country.popular_programs}
         countryName={country.country_name}
-    costOfLiving={{
-      rent: country.rent,   
-      groceries: country.groceries,
-      transportation: country.transportation,
-      eating_out: country.eating_out,
-      household_bills: country.household_bills,
-      miscellaneous: country.miscellaneous,
-      healthcare: country.healthcare,
-      health: country.health,
-    }}
+        costOfLiving={{
+          rent: country.rent,
+          groceries: country.groceries,
+          transportation: country.transportation,
+          eating_out: country.eating_out,
+          household_bills: country.household_bills,
+          miscellaneous: country.miscellaneous,
+          healthcare: country.healthcare,
+          health: country.health,
+        }}
       />
       <ScholarshipsInUK
         scholarships={country.scholarships}
         countryName={country.country_name || ""}
       />
-      <VisaRequirements
-        visaRequirements={country.visa_requirements || []}
-        countryName={country.country_name}
-        country={{ short_name: country.short_name }}
-      />
+      {visaId && (
+        <VisaRequirements
+          visaRequirements={country.visa_requirements || []}
+          countryName={country.country_name}
+          country={{ short_name: country.short_name }}
+          visa={{ _id: visaId }}
+        />
+      )}
       <AccomodationOptions accomodation={country.accomodation_options} />
       <AccCrousel
         countryName={country.country_name}
         teaching_and_learning_approach={
           country.teaching_and_learning_approach || [""]
         }
-        multicultural_environment={
-          country.multicultural_environment || [""]
-        }
+        multicultural_environment={country.multicultural_environment || [""]}
       />
       <Healthcare health={country.health} countryName={country.country_name} />
       <FAQ title="Frequently Asked Questions:" items={country.faqs} />
