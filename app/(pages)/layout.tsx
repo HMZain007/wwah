@@ -42,7 +42,7 @@ export default function PagesLayout({
     <html lang="en">
       <body>
         <MobileNavbar />
-        <Navbar />
+        <Navbar/>
         <AuthProvider>{children}</AuthProvider>
         <Footer />
       </body>
