@@ -1,3 +1,4 @@
+// middleware/api.ts
 import { NextRequest } from "next/server";
 import {
   getCachedUserData,
@@ -40,7 +41,7 @@ export async function withCaching(
   const isSimpleQuery = simpleQueryPatterns.some((pattern) =>
     pattern.test(message.trim())
   );
-  
+
   if (isSimpleQuery) {
     let userName = "there";
 
@@ -116,7 +117,7 @@ async function fetchAndCacheUserData(userId: string) {
   // Fetch user data from MongoDB
   const [user, detailedInfo] = await Promise.all([
     db.collection("userdbs").findOne({ _id: new ObjectId(userId) }),
-    db.collection("successchances").findOne({ userId }),
+    db.collection("successchances").findOne({ userId: new ObjectId(userId) }),
   ]);
 
   // Create a UserStore compatible object
@@ -127,11 +128,11 @@ async function fetchAndCacheUserData(userId: string) {
     loading: false,
     error: null,
     isAuthenticated: !!user,
-    fetchUserProfile: async () => { },  // stub
-    setUser: () => { },       // stub
-    logout: () => { },       // stub
-    updateUserProfile: async () => { }, // stub
-    updateDetailedInfo: async () => { },     // stub
+    fetchUserProfile: async () => {}, // stub
+    setUser: () => {}, // stub
+    logout: () => {}, // stub
+    updateUserProfile: async () => {}, // stub
+    updateDetailedInfo: async () => {}, // stub
   };
 
   console.log("userData", userData);
