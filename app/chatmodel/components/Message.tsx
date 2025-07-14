@@ -1,3 +1,4 @@
+//app/chatmodel/components/Message.tsx
 import React from "react";
 import { Message as MessageType } from "@/lib/types";
 import { Card } from "@/components/ui/card";
@@ -7,7 +8,6 @@ import ReactMarkdown from "react-markdown";
 interface MessageProps {
   message: MessageType;
 }
-
 const Message: React.FC<MessageProps> = ({ message }) => {
   const isUser = message.role === "user";
 
@@ -31,24 +31,70 @@ const Message: React.FC<MessageProps> = ({ message }) => {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
       {isUser ? (
-        <Card className="md:px-3 px-3 py-2 md:py-1 bg-[#D9D9D966] text-black max-w-[80%] sm:max-w-[55%]">
-          <p className="whitespace-pre-line md:text-[18px]">
-            {message.content}
-          </p>
+        <Card className="px-4 py-3 bg-[#D9D9D966] text-black max-w-[80%] sm:max-w-[55%]">
+          <div className="markdown-content">
+            <ReactMarkdown
+              components={{
+                // Style links to make them visually distinct
+                a: (props) => (
+                  <a
+                    className="text-blue-600 underline hover:text-blue-800"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    {...props}
+                  />
+                ),
+                // Ensure headers have proper styling and spacing
+                h1: (props) => (
+                  <h1
+                    className="text-2xl font-bold mt-4 mb-2 block"
+                    {...props}
+                  />
+                ),
+                h2: (props) => (
+                  <h2
+                    className="text-xl font-bold mt-4 mb-2 block"
+                    {...props}
+                  />
+                ),
+                h3: (props) => (
+                  <h3
+                    className="text-lg font-bold mt-3 mb-2 block"
+                    {...props}
+                  />
+                ),
+                h4: (props) => (
+                  <h4
+                    className="text-base font-bold mt-3 mb-1 block"
+                    {...props}
+                  />
+                ),
+                // Ensure paragraphs have proper spacing
+                p: (props) => <p className="my-2 block" {...props} />,
+                // Style lists properly
+                ul: (props) => (
+                  <ul className="list-disc pl-5 my-2 block" {...props} />
+                ),
+                ol: (props) => (
+                  <ol className="list-decimal pl-5 my-2 block" {...props} />
+                ),
+                li: (props) => <li className="my-1" {...props} />,
+              }}
+            >
+              {processContent(message.content) || "No content available"}
+            </ReactMarkdown>
+          </div>
         </Card>
       ) : (
         <div className="flex  justify-center items-start max-w-[95%] sm:max-w-[80%] md:w-[65%] lg:w-[55%]">
-          <div className=" w-[15%] hidden sm:flex sm:justify-end ">
-           
+          <div className="flex flex-col items-center gap-2 mb-3 w-[15%]">
             <Image
               src="/zeus_face.png"
-              width={800}
-              height={800}
+              width={32}
+              height={32}
               alt="Zeus Avatar"
-              className="lg:w-[44px] lg:h-[36px] md:w-[44px] md:h-[34px] w-[32px] h-[28px]"
-              priority={true}
-              quality={95}
             />
+            <p className="font-bold text-gray-800 italic">ZEUS</p>
           </div>
 
           <Card className="w-[100%]  md:px-3 px-2 py-1 md:py-1 bg-white text-black">
