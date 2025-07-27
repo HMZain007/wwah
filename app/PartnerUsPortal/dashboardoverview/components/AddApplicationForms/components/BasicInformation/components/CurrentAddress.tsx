@@ -29,35 +29,42 @@ const CurrentAddress = ({ form }: { form: UseFormReturn<FormValues> }) => {
   const [sameAsContact, setSameAsContact] = useState(false);
 
   // Function to copy contact details to current address
-const copyContactDetails = () => {
-  form.setValue("currentHomeAddress", form.getValues("homeAddress") || "");
-  form.setValue("currentDetailedAddress", form.getValues("detailedAddress") || "");
-  form.setValue("currentCountry", form.getValues("country") || "");
-  form.setValue("currentCity", form.getValues("city") || "");
-  form.setValue("currentZipCode", form.getValues("zipCode") || "");
-  form.setValue("currentEmail", form.getValues("email") || "");
-  form.setValue("currentCountryCode", form.getValues("countryCode") || "+92-Pakistan");
-  form.setValue("currentPhoneNo", form.getValues("phoneNo") || "");
-};
-
+  const copyContactDetails = () => {
+    // form.setValue(
+    //   "currentcurrentAddress",
+    //   form.getValues("currentAddress") || ""
+    // );
+    // form.setValue(
+    //   "currentpermanentAddress",
+    //   form.getValues("permanentAddress") || ""
+    // );
+    form.setValue("currentCountry", form.getValues("country") || "");
+    form.setValue("currentCity", form.getValues("city") || "");
+    form.setValue("currentZipCode", form.getValues("zipCode") || "");
+    form.setValue("currentEmail", form.getValues("email") || "");
+    form.setValue(
+      "currentCountryCode",
+      form.getValues("countryCode") || "+92-Pakistan"
+    );
+    form.setValue("currentPhoneNo", form.getValues("phoneNo") || "");
+  };
 
   // Effect to update values when contact details change and checkbox is checked
   useEffect(() => {
-  if (sameAsContact) {
-    copyContactDetails();
-  }
-}, [
-  sameAsContact,
-  form.watch("homeAddress"),
-  form.watch("detailedAddress"),
-  form.watch("country"),
-  form.watch("city"),
-  form.watch("zipCode"),
-  form.watch("email"),
-  form.watch("countryCode"),
-  form.watch("phoneNo"),
-]);
-
+    if (sameAsContact) {
+      copyContactDetails();
+    }
+  }, [
+    sameAsContact,
+    // form.watch("currentAddress"),
+    // form.watch("permanentAddress"),
+    form.watch("country"),
+    form.watch("city"),
+    form.watch("zipCode"),
+    form.watch("email"),
+    form.watch("countryCode"),
+    form.watch("phoneNo"),
+  ]);
 
   return (
     <div className="my-4">
@@ -81,11 +88,11 @@ const copyContactDetails = () => {
           </label>
         </div>
 
-        {[
-          { name: "currentHomeAddress" as const, label: "Home Address" },
+        {/* {[
+          { name: "currentcurrentAddress" as const, label: "Current Address" },
           {
-            name: "currentDetailedAddress" as const,
-            label: "Detailed Address",
+            name: "currentpermanentAddress" as const,
+            label: "Permanent Address",
           },
         ].map(({ name, label }) => (
           <FormField
@@ -102,14 +109,14 @@ const copyContactDetails = () => {
                     className="bg-[#f1f1f1] placeholder-[#313131] placeholder:text-sm"
                     {...field}
                     value={field.value || ""}
-                    // disabled={sameAsContact}
+                  // disabled={sameAsContact}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        ))}
+        ))} */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {/* country */}
           <FormField
@@ -130,7 +137,7 @@ const copyContactDetails = () => {
                     }
                   }}
                   value={field.value || ""}
-                  // disabled={sameAsContact}
+                // disabled={sameAsContact}
                 >
                   <FormControl>
                     <SelectTrigger className="bg-[#f1f1f1] placeholder-[#313131]">
@@ -159,7 +166,7 @@ const copyContactDetails = () => {
                 <Select
                   onValueChange={field.onChange}
                   value={field.value || ""}
-                  // disabled={sameAsContact}
+                // disabled={sameAsContact}
                 >
                   <FormControl>
                     <SelectTrigger className="bg-[#f1f1f1] placeholder-[#313131]">
@@ -192,7 +199,7 @@ const copyContactDetails = () => {
                     className="bg-[#f1f1f1] placeholder-[#313131] placeholder:text-sm"
                     {...field}
                     value={field.value || ""}
-                    // disabled={sameAsContact}
+                  // disabled={sameAsContact}
                   />
                 </FormControl>
                 <FormMessage />
@@ -214,7 +221,7 @@ const copyContactDetails = () => {
                       className="bg-[#f1f1f1] placeholder-[#313131] pl-10"
                       {...field}
                       value={field.value || ""}
-                      // disabled={sameAsContact}
+                    // disabled={sameAsContact}
                     />
                     <span className="absolute left-3 top-1/2 -translate-y-1/2">
                       <Image
@@ -232,78 +239,81 @@ const copyContactDetails = () => {
           />
         </div>
         <FormField
-  control={form.control}
-  name="currentPhoneNo"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Phone No.</FormLabel>
-      <div className="flex gap-2">
-        <FormField
           control={form.control}
-          name="currentCountryCode"
-          render={({ field: countryCodeField }) => (
-            <Select
-              value={countryCodeField.value || "+92-Pakistan"}
-              onValueChange={countryCodeField.onChange}
-              // disabled={sameAsContact}
-            >
-              <FormControl>
-                <SelectTrigger className="w-[140px] bg-[#f1f1f1] rounded-lg border-r-0">
-                  <SelectValue>
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={
-                          countries.find(
-                            (c) =>
-                              `${c.code}-${c.name}` ===
-                              (countryCodeField.value || "+92-Pakistan")
-                          )?.flag || "/default-flag.png"
-                        }
-                        alt="Country Flag"
-                        width={20}
-                        height={20}
-                      />
-                      <span className="text-sm">
-                        {(countryCodeField.value || "+92-Pakistan").split("-")[0]}
-                      </span>
-                    </div>
-                  </SelectValue>
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {countries.map((country) => (
-                  <SelectItem
-                    key={`${country.code}-${country.name}`}
-                    value={`${country.code}-${country.name}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={country.flag}
-                        alt={`${country.name} Flag`}
-                        width={20}
-                        height={20}
-                      />
-                      <span className="text-sm">{`${country.code} (${country.name})`}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          name="currentPhoneNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone No.</FormLabel>
+              <div className="flex gap-2">
+                <FormField
+                  control={form.control}
+                  name="currentCountryCode"
+                  render={({ field: countryCodeField }) => (
+                    <Select
+                      value={countryCodeField.value || "+92-Pakistan"}
+                      onValueChange={countryCodeField.onChange}
+                    // disabled={sameAsContact}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-[140px] bg-[#f1f1f1] rounded-lg border-r-0">
+                          <SelectValue>
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={
+                                  countries.find(
+                                    (c) =>
+                                      `${c.code}-${c.name}` ===
+                                      (countryCodeField.value || "+92-Pakistan")
+                                  )?.flag || "/default-flag.png"
+                                }
+                                alt="Country Flag"
+                                width={20}
+                                height={20}
+                              />
+                              <span className="text-sm">
+                                {
+                                  (
+                                    countryCodeField.value || "+92-Pakistan"
+                                  ).split("-")[0]
+                                }
+                              </span>
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {countries.map((country) => (
+                          <SelectItem
+                            key={`${country.code}-${country.name}`}
+                            value={`${country.code}-${country.name}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={country.flag}
+                                alt={`${country.name} Flag`}
+                                width={20}
+                                height={20}
+                              />
+                              <span className="text-sm">{`${country.code} (${country.name})`}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <Input
+                  {...field}
+                  value={field.value || ""}
+                  placeholder="Enter your phone number"
+                  className="rounded-lg bg-[#f1f1f1] placeholder-[#313131] text-sm"
+                // disabled={sameAsContact}
+                />
+              </div>
+              <FormMessage />
+            </FormItem>
           )}
         />
-        <Input
-          {...field}
-          value={field.value || ""}
-          placeholder="Enter your phone number"
-          className="rounded-lg bg-[#f1f1f1] placeholder-[#313131] text-sm"
-          // disabled={sameAsContact}
-        />
-      </div>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-
       </div>
     </div>
   );

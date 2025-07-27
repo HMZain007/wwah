@@ -1,11 +1,20 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
+
 import { AuthProvider } from "./(auth)/auth/authProvider";
 import UserProvider from "@/components/UserProvider";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 
+// ✅ Import only the unified socket provider
+import SocketProvider from "@/context/socket-context"; // Use your unified context
+
+// ✅ Toast component
+import { Toaster } from "react-hot-toast";
+
+// ✅ Fonts
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -22,31 +31,6 @@ export const metadata: Metadata = {
   title: "World Wide Admission",
   description: "Your study abroad journey, simplified with AI",
 };
-// export const metadata: Metadata = {
-//   title: "World Wide Admission Hub",
-//   description: "Your study abroad journey, simplified with AI",
-//   openGraph: {
-//     title: "World Wide Admission Hub",
-//     description: "Your study abroad journey, simplified with AI",
-//     url: "https://www.wwah.ai/",
-//     siteName: "World Wide Admission",
-//     images: [
-//       {
-//         url: "https://www.wwah.ai/wwahpnglogo.png",
-//         width: 800,
-//         height: 600,
-//         alt: "WWAH Logo",
-//       },
-//     ],
-//     type: "website",
-//   },
-//   twitter: {
-//     card: "summary_large_image",
-//     title: "World Wide Admission Hub",
-//     description: "Your study abroad journey, simplified with AI",
-//     images: ["https://www.wwah.ai/WWAHlogo.svg"],
-//   },
-// };
 
 export default function RootLayout({
   children,
@@ -86,6 +70,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -100,9 +85,14 @@ export default function RootLayout({
         </noscript>
 
         <AuthProvider>
-          <UserProvider />
-          {children}
-          <WhatsAppWidget />
+          {/* ✅ Only use the unified SocketProvider */}
+          <SocketProvider>
+            <UserProvider />
+            
+            {children}
+            <WhatsAppWidget />
+            <Toaster position="top-center" />
+          </SocketProvider>
         </AuthProvider>
       </body>
     </html>
