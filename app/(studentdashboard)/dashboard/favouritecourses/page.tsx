@@ -186,7 +186,7 @@ const FavoriteCoursesPage = () => {
             Start exploring courses and add them to your favorites!
           </p>
           <Link
-            href="/courses"
+            href="/coursearchive"
             className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
           >
             Browse Courses
@@ -241,11 +241,10 @@ const FavoriteCoursesPage = () => {
                   <button
                     onClick={() => removeFavorite(item._id)}
                     disabled={removingId === item._id}
-                    className={`transition-opacity ${
-                      removingId === item._id
+                    className={`transition-opacity ${removingId === item._id
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:opacity-80"
-                    }`}
+                      }`}
                     title="Remove from favorites"
                   >
                     {removingId === item._id ? (
@@ -335,7 +334,7 @@ const FavoriteCoursesPage = () => {
                     />
                     <p className="text-sm text-gray-600 truncate">
                       {item.annual_tuition_fee?.currency &&
-                      item.annual_tuition_fee?.amount
+                        item.annual_tuition_fee?.amount
                         ? `${item.annual_tuition_fee.currency} ${item.annual_tuition_fee.amount}`
                         : "Contact University"}
                     </p>

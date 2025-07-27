@@ -163,6 +163,7 @@ export default function Home() {
         `${process.env.NEXT_PUBLIC_BACKEND_API}studentDashboard/airportPickup`,
         {
           method: "POST",
+          credentials: "include",
           body: formData,
           // Don't set Content-Type header when using FormData
         }
@@ -248,11 +249,10 @@ export default function Home() {
 
         {submitMessage.message && (
           <div
-            className={`p-4 my-4 rounded ${
-              submitMessage.type === "success"
+            className={`p-4 my-4 rounded ${submitMessage.type === "success"
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
-            }`}
+              }`}
           >
             {submitMessage.message}
           </div>
