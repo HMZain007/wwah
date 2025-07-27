@@ -18,12 +18,13 @@ import EducationalBackground from "./components/EducationalBackground";
 import { toast } from "sonner";
 import { formSchema } from "./components/Schema";
 import { Button } from "@/components/ui/button";
+import { getAuthToken } from "@/utils/authHelper";
 
 const ApplicationInfo = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const totalPages = 4;
-
+  const token = getAuthToken();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -87,6 +88,7 @@ const ApplicationInfo = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
           body: JSON.stringify(formattedData),
@@ -178,9 +180,8 @@ const ApplicationInfo = () => {
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(prev - 1, 1))
                   }
-                  className={`p-2 text-sm ${
-                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                  }`}
+                  className={`p-2 text-sm ${currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }`}
                 >
                   Previous
                 </PaginationPrevious>
@@ -196,11 +197,10 @@ const ApplicationInfo = () => {
                 <PaginationNext
                   href="#"
                   onClick={handleNext}
-                  className={`p-2 text-sm ${
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }`}
+                  className={`p-2 text-sm ${currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                    }`}
                 >
                   Next
                 </PaginationNext>
