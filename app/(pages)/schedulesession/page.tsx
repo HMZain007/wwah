@@ -25,6 +25,7 @@ import { useState, useMemo } from "react";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import countriesData from "world-countries";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -177,6 +178,21 @@ export default function Home() {
       setIsSubmitting(false);
     }
   };
+
+
+const timeOptions = Array.from({ length: 20 }, (_, i) => {
+  const hour24 = 10 + Math.floor(i / 2); // 10 to 19
+  const minute = i % 2 === 0 ? "00" : "30";
+  const value = `${hour24.toString().padStart(2, "0")}:${minute}`;
+
+  // Convert to 12-hour format
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  const ampm = hour24 < 12 ? "AM" : "PM";
+  const label = `${hour12}:${minute} ${ampm}`;
+
+  return { value, label };
+});
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 py-12 px-4">
@@ -336,75 +352,73 @@ export default function Home() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="date"
-                      render={({ field }) => {
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        const minDate = tomorrow.toISOString().split("T")[0];
+<FormField
+  control={form.control}
+  name="date"
+  render={({ field }) => {
+    // Set minDate to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const minDate = tomorrow.toISOString().split("T")[0];
 
-                        return (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              Session Date *
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                className="placeholder:text-gray-400 placeholder:text-sm w-full h-11 border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg"
-                                type="date"
-                                min={minDate}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
+    return (
+      <FormItem>
+        <FormLabel className="text-gray-700 font-medium">
+          Session Date *
+        </FormLabel>
+        <FormControl>
+          <Input
+            type="date"
+            min={minDate}
+            value={field.value || ""}
+            onChange={field.onChange}
+            className="placeholder:text-gray-400 placeholder:text-sm w-full h-11 border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg"
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
 
-                    <FormField
-                      control={form.control}
-                      name="fromTime"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700 font-medium">
-                            Start Time *
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              className="placeholder:text-gray-400 placeholder:text-sm w-full h-11 border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-lg"
-                              type="time"
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                const selectedTime = e.target.value;
-                                if (selectedTime) {
-                                  const [hour, minute] = selectedTime
-                                    .split(":")
-                                    .map(Number);
-                                  const startDate = new Date();
-                                  startDate.setHours(hour);
-                                  startDate.setMinutes(minute + 30);
+                <FormField
+  control={form.control}
+  name="fromTime"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel className="text-gray-700 font-medium">Start Time *</FormLabel>
+      <Select
+        onValueChange={(value) => {
+          field.onChange(value);
+          const [hour, minute] = value.split(":").map(Number);
+          const startDate = new Date();
+          startDate.setHours(hour);
+          startDate.setMinutes(minute + 30);
 
-                                  const endHour = String(
-                                    startDate.getHours()
-                                  ).padStart(2, "0");
-                                  const endMinute = String(
-                                    startDate.getMinutes()
-                                  ).padStart(2, "0");
-                                  form.setValue(
-                                    "toTime",
-                                    `${endHour}:${endMinute}`
-                                  );
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          const endHour = String(startDate.getHours()).padStart(2, "0");
+          const endMinute = String(startDate.getMinutes()).padStart(2, "0");
+          form.setValue("toTime", `${endHour}:${endMinute}`);
+        }}
+        value={field.value}
+      >
+        <FormControl>
+          <SelectTrigger className="h-11 w-full">
+            <SelectValue placeholder="Select time" />
+          </SelectTrigger>
+        </FormControl>
+       <SelectContent className="w-48">
+  {timeOptions.map(({ value, label }) => (
+    <SelectItem key={value} value={value}>
+      {label}
+    </SelectItem>
+  ))}
+</SelectContent>
+
+      </Select>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
                     <FormField
                       control={form.control}
@@ -440,7 +454,7 @@ export default function Home() {
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-row gap-8 mt-2"
+                            className="flex flex-row gap-6 mt-2"
                           >
                             <div className="flex items-center space-x-3 bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-red-300 transition-colors">
                               <RadioGroupItem
@@ -628,22 +642,15 @@ export default function Home() {
       {showModal && isSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-            <div className="text-center p-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-                <svg
-                  className="h-8 w-8 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  ></path>
-                </svg>
-              </div>
+            <div className="flex flex-col items-center text-center p-8">
+              <Image
+                src="/modalImg.svg"
+                alt="Modal"
+                width={32}
+                height={32}
+              className="w-2/5 mb-3" 
+              />
+
               <h3 className="text-2xl font-bold text-gray-800 mb-4">
                 Session Booked Successfully!
               </h3>
@@ -654,7 +661,7 @@ export default function Home() {
               </p>
               <Button
                 onClick={() => setShowModal(false)}
-                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-[#F0851D] hover:bg-[#F0851D] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 Perfect, Thank You!
               </Button>
