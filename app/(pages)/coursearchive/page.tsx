@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useEffect, Suspense, useCallback, useState } from "react";
 import Image from "next/image";
@@ -36,7 +37,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { useSearchParams } from "next/navigation";
+import { useUserStore } from "@/store/useUserData";
+import toast from "react-hot-toast";
+import { getAuthToken } from "@/utils/authHelper";
 
 const Page = () => {
   return (
@@ -56,7 +59,6 @@ const CourseArchive = () => {
     setPage,
     loading,
     fetchCourses,
-    setCountryFilter,
   } = useCourseStore();
 
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
@@ -65,31 +67,189 @@ const CourseArchive = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
   const [heartAnimation, setHeartAnimation] = useState<string | null>(null);
-  
   //  Step 1: Add this new state to store full course data
   const [favoriteCourses, setFavoriteCourses] = useState<
     Record<string, (typeof courses)[0]>
   >({});
 
+  // const { isAuthenticated , user} = useUserStore();
+  const { user } = useUserStore();
+
+  const [loadingFavorites, setLoadingFavorites] = useState<
+    Record<string, boolean>
+  >({});
+  console.log(user?.favouriteCourse, "user.favouriteCourse");
   // Toggle favorite and animate heart
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => {
-      const updatedFavorites = { ...prev, [id]: !prev[id] };
+  // Function to add/remove course from favorites in database
+  const toggleFavorite = async (courseId: string, action: "add" | "remove") => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API}favorites`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            courseId,
+            action,
+          }),
+        }
+      );
 
-      // ✅ Update count
-      const newCount = Object.values(updatedFavorites).filter(Boolean).length;
-      setFavoritesCount(newCount);
+      if (!response.ok) {
+        throw new Error("Failed to update favorites");
+      }
 
-      // ✅ Animate heart
+      console.log("Favorite updated successfully", response);
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating favorites:", error);
+      throw error;
+    }
+  };
+  const showLoginPrompt = () => {
+    toast.error("Please login to add courses to your favorites!", {
+      duration: 4000,
+      position: "top-center",
+      style: {
+        background: "#fee2e2",
+        color: "#dc2626",
+        padding: "16px",
+        borderRadius: "8px",
+        border: "1px solid #fecaca",
+      },
+    });
+
+    // Optional: Redirect to login page after a delay
+    setTimeout(() => {
+      // window.location.href = '/login'; // Uncomment if you want to redirect
+    }, 2000);
+  };
+
+  // Updated toggle favorite function with authentication
+  // const toggleFavoriteInDB = async (id: string) => {
+  //   // Check if user is authenticated
+  //   if (!isAuthenticated) {
+  //     showLoginPrompt();
+  //     return;
+  //   }
+
+  //   // Set loading state for this specific course
+  //   setLoadingFavorites((prev) => ({ ...prev, [id]: true }));
+
+  //   try {
+  //     const isCurrentlyFavorited = favorites[id];
+  //     const action = isCurrentlyFavorited ? "remove" : "add";
+
+  //     // Optimistically update UI
+  //     setFavorites((prev) => {
+  //       const updatedFavorites = { ...prev, [id]: !prev[id] };
+  //       const newCount = Object.values(updatedFavorites).filter(Boolean).length;
+  //       setFavoritesCount(newCount);
+  //       return updatedFavorites;
+  //     });
+
+  //     // Animate heart
+  //     setHeartAnimation(id);
+  //     setTimeout(() => setHeartAnimation(null), 1000);
+
+  //     // Update favoriteCourses state
+  //     setFavoriteCourses((prevCourses) => {
+  //       const updated = { ...prevCourses };
+  //       const courseObj = courses.find((c) => c._id === id);
+
+  //       if (!isCurrentlyFavorited && courseObj) {
+  //         updated[id] = courseObj;
+  //       } else {
+  //         delete updated[id];
+  //       }
+
+  //       return updated;
+  //     });
+
+  //     // Update database
+  //     await toggleFavoriteInDB(id, action);
+
+  //     // Show success message
+  //     toast.success(
+  //       action === "add"
+  //         ? "Course added to favorites!"
+  //         : "Course removed from favorites!",
+  //       {
+  //         duration: 2000,
+  //         position: "top-center",
+  //       }
+  //     );
+  //   } catch (error) {
+  //     // Revert optimistic update on error
+  //     setFavorites((prev) => {
+  //       const revertedFavorites = { ...prev, [id]: !prev[id] };
+  //       const newCount =
+  //         Object.values(revertedFavorites).filter(Boolean).length;
+  //       setFavoritesCount(newCount);
+  //       return revertedFavorites;
+  //     });
+
+  //     // Revert favoriteCourses state
+  //     setFavoriteCourses((prevCourses) => {
+  //       const reverted = { ...prevCourses };
+  //       const courseObj = courses.find((c) => c._id === id);
+
+  //       if (favorites[id] && courseObj) {
+  //         reverted[id] = courseObj;
+  //       } else {
+  //         delete reverted[id];
+  //       }
+
+  //       return reverted;
+  //     });
+
+  //     toast.error("Failed to update favorites. Please try again.", {
+  //       duration: 3000,
+  //       position: "top-center",
+  //     });
+  //   } finally {
+  //     // Remove loading state
+  //     setLoadingFavorites((prev) => ({ ...prev, [id]: false }));
+  //   }
+  // };
+  const toggleFavoriteInDB = async (id: string, p0: string) => {
+    console.log(p0);
+    const token = getAuthToken();
+
+    // ✅ Check token directly instead of relying only on isAuthenticated
+    if (!token) {
+      showLoginPrompt();
+      return;
+    }
+
+    setLoadingFavorites((prev) => ({ ...prev, [id]: true }));
+
+    try {
+      const isCurrentlyFavorited = favorites[id];
+      const action = isCurrentlyFavorited ? "remove" : "add";
+
+      // Optimistic UI update
+      setFavorites((prev) => {
+        const updatedFavorites = { ...prev, [id]: !prev[id] };
+        const newCount = Object.values(updatedFavorites).filter(Boolean).length;
+        setFavoritesCount(newCount);
+        return updatedFavorites;
+      });
+
+      // Animate heart
       setHeartAnimation(id);
       setTimeout(() => setHeartAnimation(null), 1000);
 
-      // ✅ Store full course data if favorited
+      // Update favoriteCourses state
       setFavoriteCourses((prevCourses) => {
         const updated = { ...prevCourses };
         const courseObj = courses.find((c) => c._id === id);
 
-        if (updatedFavorites[id] && courseObj) {
+        if (!isCurrentlyFavorited && courseObj) {
           updated[id] = courseObj;
         } else {
           delete updated[id];
@@ -98,8 +258,51 @@ const CourseArchive = () => {
         return updated;
       });
 
-      return updatedFavorites;
-    });
+      // 🔥 Call backend
+      await toggleFavorite(id, action);
+
+      toast.success(
+        action === "add"
+          ? "Course added to favorites!"
+          : "Course removed from favorites!",
+        {
+          duration: 2000,
+          position: "top-center",
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update favorites:", error);
+
+      // Revert optimistic UI on failure
+      setFavorites((prev) => {
+        const revertedFavorites = { ...prev, [id]: !prev[id] };
+        const newCount =
+          Object.values(revertedFavorites).filter(Boolean).length;
+        setFavoritesCount(newCount);
+        return revertedFavorites;
+      });
+
+      // Revert favoriteCourses
+      setFavoriteCourses((prevCourses) => {
+        const reverted = { ...prevCourses };
+        const courseObj = courses.find((c) => c._id === id);
+
+        if (favorites[id] && courseObj) {
+          reverted[id] = courseObj;
+        } else {
+          delete reverted[id];
+        }
+
+        return reverted;
+      });
+
+      toast.error("Failed to update favorites. Please try again.", {
+        duration: 3000,
+        position: "top-center",
+      });
+    } finally {
+      setLoadingFavorites((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
   // Debounced search handler
@@ -110,7 +313,11 @@ const CourseArchive = () => {
     [setSearch]
   );
 
- 
+  // Fetch courses on mount
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
+
   // Scroll to top whenever the currentPage changes
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -128,21 +335,6 @@ const CourseArchive = () => {
   const displayedCourses = showFavorites
     ? Object.values(favoriteCourses)
     : courses;
-
-    
-  const searchParams = useSearchParams();
-
-useEffect(() => {
-  const country = searchParams.get("country");
-
-  if (country) {
-    setCountryFilter([country]);
-  } else {
-    fetchCourses();
-  }
-  // include fetchCourses & setCountryFilter in deps if stable
-}, [setCountryFilter, fetchCourses]);
-
 
   return (
     <section className="w-[95%] mx-auto p-2 ">
@@ -192,9 +384,8 @@ useEffect(() => {
           </DropdownMenu>
           <button
             onClick={() => setShowFavorites((prev) => !prev)}
-            className={`text-sm flex items-center justify-start md:justify-center gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 w-full md:w-[95%] lg:w-[90%] xl:w-[70%] h-10 ${
-              showFavorites ? "text-red-500 font-bold" : "text-gray-600"
-            }`}
+            className={`text-sm flex items-center justify-start md:justify-center gap-1 xl:gap-2 bg-[#F1F1F1] rounded-lg p-2 w-full md:w-[95%] lg:w-[90%] xl:w-[70%] h-10 ${showFavorites ? "text-red-500 font-bold" : "text-gray-600"
+              }`}
           >
             <Image
               src={favoritesCount > 0 ? "/redheart.svg" : "/hearti.svg"}
@@ -292,11 +483,10 @@ useEffect(() => {
                             </Label>
                             <Input
                               id={`link-${item._id}`}
-                              value={`${
-                                typeof window !== "undefined"
+                              value={`${typeof window !== "undefined"
                                   ? window.location.origin
                                   : ""
-                              }/courses/${item._id}`}
+                                }/courses/${item._id}`}
                               readOnly
                             />
                           </div>
@@ -367,10 +557,13 @@ useEffect(() => {
                     </Dialog>
 
                     <button
-                      onClick={() => toggleFavorite(item._id)}
-                      className={`relative ${
-                        heartAnimation === item._id ? "animate-pop" : ""
-                      }`}
+                      onClick={() => toggleFavoriteInDB(item._id, "add")}
+                      disabled={loadingFavorites[item._id]}
+                      className={`relative ${heartAnimation === item._id ? "animate-pop" : ""
+                        } ${loadingFavorites[item._id]
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                        }`}
                     >
                       {favorites[item._id] ? (
                         <Image
@@ -498,9 +691,8 @@ useEffect(() => {
           {/* First page button */}
           <button
             onClick={() => setPage(1)}
-            className={`text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200 ${
-              currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200 ${currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             aria-label="First page"
             disabled={currentPage <= 1}
           >
@@ -526,9 +718,8 @@ useEffect(() => {
           {/* Previous button */}
           <button
             onClick={handlePrevPage}
-            className={`text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200 ${
-              currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg p-2 transition-colors duration-200 ${currentPage <= 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             aria-label="Previous page"
             disabled={currentPage <= 1}
           >
@@ -588,11 +779,10 @@ useEffect(() => {
                   <button
                     key={i}
                     onClick={() => setPage(i)}
-                    className={`rounded-lg px-4 py-2 font-medium transition-colors duration-200 ${
-                      currentPage === i
+                    className={`rounded-lg px-4 py-2 font-medium transition-colors duration-200 ${currentPage === i
                         ? "bg-red-700 text-white shadow-md"
                         : "bg-gray-100 text-gray-700 hover:bg-red-100"
-                    }`}
+                      }`}
                     aria-current={currentPage === i ? "page" : undefined}
                   >
                     {i}
