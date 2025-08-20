@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
 
       if (Array.isArray(parsed)) {
         parsed.forEach((item, index) => {
-          // console.log(`Processing item ${index}:`, item);
+          console.log(`Processing item ${index}:`, item);
 
           if (typeof item === "string") {
             // Handle old string format or favourites
@@ -265,7 +265,7 @@ export async function GET(req: NextRequest) {
 
     // Log details about each found course
     enhancedCourses.forEach((course, index) => {
-      // console.log(`=== COURSE ${index + 1} ===`);
+      console.log(`=== COURSE ${index + 1} ===`);
       // console.log(`ID: ${course._id}`);
       // console.log(`Title: ${course.course_title}`);
       // console.log(`University: ${course.universityname}`);
