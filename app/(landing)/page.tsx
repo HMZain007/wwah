@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Typewriter } from "react-simple-typewriter";
 import { ScrollArea } from "@/components/ui/scroll-area";
-// import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { useRef } from "react";
 import {
   FaArrowLeft,
@@ -36,7 +35,7 @@ import Loading from "../loading";
 function Page() {
   const countries = [
     { name: "USA", value: "USA", img: "/countryarchive/usa_logo.png" },
-    { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
+    // { name: "China", value: "china", img: "/countryarchive/china_logo.png" },
     { name: "Canada", value: "canada", img: "/countryarchive/canada_logo.png" },
     { name: "Italy", value: "italy", img: "/countryarchive/italy_logo.png" },
     { name: "United Kingdom", value: "United Kingdom", img: "/ukflag.png" },
@@ -282,13 +281,13 @@ function Page() {
                   </h1>
                   <h3 className="text-white leading-snug">
                     <Typewriter
-                    words={[
-  "Let's explore your study options.",
-  "I simplify your university search.",
-  "Find courses that truly fit.",
-  "Smart scholarship search starts here.",
-  "Know your success chances first.",
-]}
+                      words={[
+                        "Let's explore your study options.",
+                        "I simplify your university search.",
+                        "Find courses that truly fit.",
+                        "Smart scholarship search starts here.",
+                        "Know your success chances first.",
+                      ]}
 
                       loop={true}
                       cursor

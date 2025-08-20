@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { MobileNav } from "./sd-mobile-nav";
 import Link from "next/link";
 import { useNotification } from "@/context/socket-context";
+import { useRouter } from "next/navigation"; // or "next/router" depending on your Next.js version
+
 import { useState, useRef, useEffect } from "react";
 import { X, MessageCircle } from "lucide-react";
 import { useChatStore } from "@/store/chatStore";
@@ -16,9 +18,9 @@ export function Navbar() {
   const notificationMenuRef = useRef<HTMLDivElement>(null);
   const setIsChatOpen = useChatStore((state) => state.setIsChatOpen);
 
-  console.log("🔔 Navbar - unreadCount:", unreadCount);
-  console.log("🔌 Navbar - isConnected:", isConnected);
-  console.log("📋 Navbar - notifications:", notifications);
+  // console.log("🔔 Navbar - unreadCount:", unreadCount);
+  // console.log("🔌 Navbar - isConnected:", isConnected);
+  // console.log("📋 Navbar - notifications:", notifications);
 
   // Close notification menu when clicking outside
   useEffect(() => {
@@ -38,19 +40,39 @@ export function Navbar() {
   }, []);
 
   const handleNotificationClick = () => {
-    console.log("🔔 Notification button clicked");
+    // console.log("🔔 Notification button clicked");
     setShowNotificationMenu(!showNotificationMenu);
   };
-
+  const router = useRouter();
   const handleChatClick = () => {
-    console.log("🔔 Opening chat and clearing notifications");
-    setIsChatOpen(true);
-    clearNotifications(); // Clear notifications when chat is opened
-    setShowNotificationMenu(false); // Also close the notification menu
+    const currentPath = window.location.pathname;
+
+    if (currentPath === "/dashboard/overview") {
+      setIsChatOpen(true);
+      clearNotifications();
+      setShowNotificationMenu(false);
+    } else {
+      // Navigate first, then open chat after route change
+      router.push("/dashboard/overview");
+
+      // Use a slight delay to allow the page to change, then open chat
+      setTimeout(() => {
+        setIsChatOpen(true);
+        clearNotifications();
+        setShowNotificationMenu(false);
+      }, 500); // Adjust the delay if necessary
+    }
   };
+  // const handleChatClick = () => {
+  //   // console.log("🔔 Opening chat and clearing notifications");
+  //   setIsChatOpen(true);
+
+  //   clearNotifications(); // Clear notifications when chat is opened
+  //   setShowNotificationMenu(false); // Also close the notification menu
+  // };
 
   const handleClearNotifications = () => {
-    console.log("🗑️ Clearing notifications from navbar...");
+    // console.log("🗑️ Clearing notifications from navbar...");
     clearNotifications();
     setShowNotificationMenu(false);
   };
@@ -73,25 +95,15 @@ export function Navbar() {
       <div className="flex items-center gap-4">
         <MobileNav />
         {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex justify-center">
           <Link href="/">
             <Image
-              src="/DashboardPage/wwahframe.svg"
+              src="/wwah-textb.svg"
               alt="Worldwide Admissions Hub Logo - desktop"
-              width={250}
+              width={170}
               height={32}
               priority
               className="hidden md:block"
-            />
-          </Link>
-          <Link href="/">
-            <Image
-              src="/DashboardPage/wwah.svg"
-              alt="Worldwide Admissions Hub Logo - mobile"
-              width={150}
-              height={32}
-              priority
-              className="block md:hidden h-[80px] w-[80px]"
             />
           </Link>
         </div>

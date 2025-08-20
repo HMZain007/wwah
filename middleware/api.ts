@@ -120,22 +120,105 @@ async function fetchAndCacheUserData(userId: string) {
     db.collection("successchances").findOne({ userId: new ObjectId(userId) }),
   ]);
 
-  // Create a UserStore compatible object
-  // ✅ RIGHT
+  // Create a complete UserStore compatible object
   const userData: UserStore = {
-    detailedInfo: detailedInfo as DetailedInfo | null,
+    // Core data
     user: user as User | null,
+    detailedInfo: detailedInfo as DetailedInfo | null,
     loading: false,
     error: null,
     isAuthenticated: !!user,
-    fetchUserProfile: async () => {}, // stub
-    setUser: () => {}, // stub
-    logout: () => {}, // stub
-    updateUserProfile: async () => {}, // stub
-    updateDetailedInfo: async () => {}, // stub
+    lastUpdated: user?.updatedAt || null,
+
+    // Favorite courses state
+    favoriteCourses: {},
+    favoriteCourseIds: (user as any)?.favouriteCourse || [],
+    loadingFavoriteCourses: false,
+
+    // Applied courses state
+    appliedCourses: {},
+    appliedCourseIds: ((user as any)?.appliedCourses || []).map((course: any) =>
+      typeof course === "string" ? course : course.courseId
+    ),
+    loadingAppliedCourses: false,
+
+    // Favorite universities state
+    favoriteUniversities: {},
+    favoriteUniversityIds: (user as any)?.favouriteUniversity || [],
+    loadingFavorites: false,
+
+    // Favorite scholarships state
+    favoriteScholarships: {},
+    favoriteScholarshipIds: (user as any)?.favouriteScholarship || [],
+    loadingScholarships: false,
+
+    // Applied scholarship courses state
+    appliedScholarshipCourses: {},
+    appliedScholarshipCourseIds: (
+      (user as any)?.appliedScholarshipCourses || []
+    ).map((app: any) =>
+      typeof app === "string" ? app : app._id || app.toString()
+    ),
+    loadingApplications: false,
+
+    // Core action methods
+    fetchUserProfile: async () => {},
+    updateUserProfile: async () => false,
+    updateDetailedInfo: async () => false,
+    setUser: () => {},
+    logout: () => {},
+    getLastUpdatedDate: () => null,
+
+    // Favorite courses actions
+    fetchFavoriteCourses: async () => {},
+    toggleCourseFavorite: async (
+      _courseId: string,
+      _action: "add" | "remove"
+    ) => false,
+    getCourseFavoriteStatus: (_courseId: string) => false,
+
+    // Applied courses actions
+    fetchAppliedCourses: async () => {},
+    addAppliedCourse: async (_courseId: string, _applicationStatus?: number) =>
+      false,
+    updateAppliedCourse: async (
+      _courseId: string,
+      _applicationStatus: number
+    ) => false,
+    updateCourseConfirmation: async (
+      _courseId: string,
+      _isConfirmed: boolean
+    ) => false,
+    removeAppliedCourse: async (_courseId: string) => false,
+    getAppliedCourseStatus: (_courseId: string) => false,
+    getAppliedCourseDetails: (_courseId: string) => null,
+
+    // Favorite universities actions
+    fetchFavoriteUniversities: async () => {},
+    toggleUniversityFavorite: async (
+      _universityId: string,
+      _action: "add" | "remove"
+    ) => false,
+    getFavoriteStatus: (_universityId: string) => false,
+
+    // Favorite scholarships actions
+    fetchFavoriteScholarships: async () => {},
+    toggleScholarshipFavorite: async (
+      _scholarshipId: string,
+      _action: "add" | "remove"
+    ) => false,
+    getScholarshipFavoriteStatus: (_scholarshipId: string) => false,
+
+    // Applied scholarship courses actions
+    fetchAppliedScholarshipCourses: async () => {},
+    fetchAppliedScholarship: async (_id: string) => {},
+    addAppliedScholarshipCourse: async (_applicationData: any) => false,
+    refreshApplications: async () => {},
+    getApplicationProgress: (_courseId: string) => 0,
   };
 
   console.log("userData", userData);
+
   // Cache the data
   await cacheUserData(userId, userData);
 

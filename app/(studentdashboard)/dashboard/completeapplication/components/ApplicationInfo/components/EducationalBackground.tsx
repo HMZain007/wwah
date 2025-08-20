@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import {
   FormControl,
   FormField,
@@ -81,11 +82,19 @@ const EducationalBackground: React.FC<Props> = ({ form }) => {
               name={`educationalBackground.${index}.highestDegree`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Highest Degree</FormLabel>
+                  <FormLabel>
+                    {index === 0 ? "Highest Degree" : "Degree"}
+                  </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Degree" />
+                        <SelectValue
+                          placeholder={
+                            index === 0
+                              ? "Select Highest Degree"
+                              : "Select Degree"
+                          }
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -168,8 +177,13 @@ const EducationalBackground: React.FC<Props> = ({ form }) => {
                       placeholder="YYYY/MM/DD"
                       value={
                         field.value
-                          ? new Date(field.value).toISOString().split("T")[0]
+                          ? format(new Date(field.value), "yyyy-MM-dd")
                           : ""
+                      }
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? new Date(e.target.value) : null
+                        )
                       }
                     />
                   </FormControl>
@@ -191,8 +205,13 @@ const EducationalBackground: React.FC<Props> = ({ form }) => {
                       placeholder="YYYY/MM/DD"
                       value={
                         field.value
-                          ? new Date(field.value).toISOString().split("T")[0]
+                          ? format(new Date(field.value), "yyyy-MM-dd")
                           : ""
+                      }
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? new Date(e.target.value) : null
+                        )
                       }
                     />
                   </FormControl>

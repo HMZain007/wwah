@@ -111,7 +111,6 @@ const Page = () => {
     [router, callbackUrl]
   );
 
-  // Initialize Google Sign-In
   useEffect(() => {
     const initializeGoogleSignIn = () => {
       if (window.google) {
@@ -123,12 +122,38 @@ const Page = () => {
 
         const googleButton = document.getElementById("google-signin-button");
         if (googleButton) {
+          // Get the actual width of the container
+          const containerWidth = googleButton.offsetWidth;
+
           window.google.accounts.id.renderButton(googleButton, {
             theme: "outline",
             size: "large",
-            width: "100%",
+            width: containerWidth.toString(), // Use actual pixel width as a string
             text: "signin_with",
           });
+
+          // Add custom CSS to center the button content after rendering
+          setTimeout(() => {
+            const style = document.createElement("style");
+            style.textContent = `
+              #google-signin-button iframe {
+                margin: 0 auto !important;
+                display: block !important;
+              }
+              #google-signin-button > div {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+              }
+              #google-signin-button button {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                margin: 0 auto !important;
+              }
+            `;
+            document.head.appendChild(style);
+          }, 100);
         }
       }
     };
@@ -144,7 +169,6 @@ const Page = () => {
       initializeGoogleSignIn();
     }
   }, [handleGoogleSignIn]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -214,13 +238,10 @@ const Page = () => {
           </p>
 
           {/* Google Sign-In Button */}
-          <div
-            className="w-full mb-4 mx-auto
-          "
-          >
+          <div className="w-full mb-4 mx-auto">
             <div
               id="google-signin-button"
-              className={`w-full ${
+              className={`w-full flex justify-center items-center ${
                 googleLoading ? "opacity-50 pointer-events-none" : ""
               }`}
             ></div>

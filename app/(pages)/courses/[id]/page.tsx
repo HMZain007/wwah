@@ -71,6 +71,15 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       embassyDocuments: [];
       universityDocuments: [];
     };
+    // courseEmbedding: {
+    //   text: string;
+    //   embedding: number[];
+    //   metadata: Record<string, any>;
+    // } | null;
+    costOfLiving?: {
+      amount: number;
+      currency: string;
+    };
   }
   const tabs = [
     { name: "Course Overview", id: "courseOverview" },
@@ -116,6 +125,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         const res = await fetch(`/api/course?id=${id}`);
         if (!res.ok) throw new Error("Failed to fetch course data");
         const jsonData = await res.json();
+        // console.log("Fetched Course Data:", jsonData);
         if (!jsonData.courseData) throw new Error("Course data not found");
         setData(jsonData);
       } catch (err) {
@@ -275,7 +285,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                         target="blank"
                         href={`/Universities/${data?.courseData?.university_id}`}
                       >
-                        <Button className="bg-white text-[#C7161E] px-0 py-0 sm:py-3 rounded-md hover:bg-gray-300 transition w-full">
+                        <Button className="bg-white text-[#C7161E] font-normal px-4 md:px-8 py-0 sm:py-3 rounded-md hover:bg-gray-300 transition">
+
                           Explore Here
                         </Button>
                       </Link>
@@ -301,7 +312,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                         {data?.courseData?.universityname}!
                       </p>
                       <Link target="blank" href="/universityarchievepage">
-                        <Button className="bg-white text-[#C7161E] font-normal px-0 md:px-8 py-0 sm:py-3 rounded-md hover:bg-gray-300 transition w-full">
+                        <Button className="bg-white text-[#C7161E] font-normal px-4 md:px-8 py-0 sm:py-3 rounded-md hover:bg-gray-300 transition">
                           Discover More
                         </Button>
                       </Link>
@@ -342,22 +353,22 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
       {/* Career Opportunities Section */}
       <div id="careerOpportunities">
-        <CareerOpportunities data={data.courseData} />
+        <CareerOpportunities data={data?.courseData} />
       </div>
       {/* fee and scholarship     */}
       <div id="feeScholarships">
-        <FeeAndScholarships data={data.courseData} />
+        <FeeAndScholarships data={data?.courseData} />
       </div>
 
       {/* progress bar  */}
-      <ProgressSection data={data.courseData} />
+      <ProgressSection data={data?.courseData} costOfLiving={data?.costOfLiving} />
 
       {/* English Requirnment Section      */}
-      <EnglishRequirement data={data.courseData} />
+      <EnglishRequirement data={data?.courseData} />
 
       {/* Required Documents! */}
       <div id="entryRequirements">
-        <RequiredDocuments data={data.countryData} />
+        <RequiredDocuments data={data?.countryData} />
       </div>
       {/* application process */}
       <div id="applicationProcess">
