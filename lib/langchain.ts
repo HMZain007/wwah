@@ -1,7 +1,4 @@
-// /lib/langchain.ts
-import { OpenAIEmbeddings } from "@langchain/openai";
-import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
-import { ChatOpenAI } from "@langchain/openai";
+// /lib/langchain.ts import { OpenAIEmbeddings } from "@langchain/openai"; import { MongoDBAtlasVectorSearch } from "@langchain/mongodb"; import { ChatOpenAI } from "@langchain/openai";
 import { RetrievalQAChain } from "langchain/chains";
 import clientPromise from "./mongodb";
 import { PromptTemplate } from "@langchain/core/prompts";
@@ -13,6 +10,8 @@ import {
   generateVectorKey,
 } from "./redis";
 import { UserStore } from "@/store/useUserData";
+import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 
 type Filter = Record<string, unknown>;
 type QueryParams = {
@@ -33,8 +32,8 @@ const COLLECTION_CONFIG = {
   courses: {
     name: "course_embeddings",
     indexName: "course_vector_index",
-    priority: 0.6, // Increased priority for courses
-    k: 8, // Increased k for more results
+    priority: 0.6, 
+    k: 8, 
   },
   universities: {
     name: "university_embeddings",
@@ -45,6 +44,24 @@ const COLLECTION_CONFIG = {
   countries: {
     name: "country_embeddings",
     indexName: "country_vector_index",
+    priority: 0.1,
+    k: 2,
+  },
+  expenses: {
+    name: "expense_embeddings",
+    indexName: "expense_vector_index",
+    priority: 0.1,
+    k: 2,
+  },
+  scholarships: {
+    name: "scholarship_embeddings",
+    indexName: "expense_vector_index",
+    priority: 0.1,
+    k: 2,
+  },
+  visaguide: {
+    name: "visaguide_embeddings",
+    indexName: "visaguide_vector_index",
     priority: 0.1,
     k: 2,
   },
@@ -319,7 +336,6 @@ Provide a focused, actionable response (max 300 words). Include specific details
     return "I'm having trouble processing your request right now. Please try again or rephrase your question.";
   }
 }
-
 // Connection cleanup function
 export function cleanupConnections() {
   vectorStoreInstances.clear();
@@ -552,6 +568,11 @@ function createQuerySpecificUserData(
       phone: originalUserData?.user?.phone || 0,
       gender: originalUserData?.user?.gender || "",
       favouriteCourse: originalUserData?.user?.favouriteCourse || [],
+      favouriteScholarship: originalUserData?.user?.favouriteScholarship || [],
+      favouriteUniversity: originalUserData?.user?.favouriteUniversity || [],
+      appliedScholarshipCourses:
+        originalUserData?.user?.appliedScholarshipCourses || [],
+      appliedCourses: originalUserData?.user?.appliedCourses || [],
       createdAt: originalUserData?.user?.createdAt || new Date().toISOString(),
       updatedAt: originalUserData?.user?.updatedAt || new Date().toISOString(),
     },
@@ -591,14 +612,97 @@ function createQuerySpecificUserData(
           "Canada",
       },
     },
-    loading: false,
-    error: null,
-    isAuthenticated: false,
-    fetchUserProfile: async () => {},
-    updateUserProfile: async () => {},
-    updateDetailedInfo: async () => {},
-    setUser: () => {},
-    logout: () => {},
+    loading: originalUserData?.loading || false,
+    error: originalUserData?.error || null,
+    isAuthenticated: originalUserData?.isAuthenticated || false,
+    lastUpdated: originalUserData?.lastUpdated || null,
+
+    // Favorite courses state
+    favoriteCourses: originalUserData?.favoriteCourses || {},
+    favoriteCourseIds: originalUserData?.favoriteCourseIds || [],
+    loadingFavoriteCourses: originalUserData?.loadingFavoriteCourses || false,
+
+    // Applied courses state
+    appliedCourses: originalUserData?.appliedCourses || {},
+    appliedCourseIds: originalUserData?.appliedCourseIds || [],
+    loadingAppliedCourses: originalUserData?.loadingAppliedCourses || false,
+
+    // Favorite universities state
+    favoriteUniversities: originalUserData?.favoriteUniversities || {},
+    favoriteUniversityIds: originalUserData?.favoriteUniversityIds || [],
+    loadingFavorites: originalUserData?.loadingFavorites || false,
+
+    // Favorite scholarships state
+    favoriteScholarships: originalUserData?.favoriteScholarships || {},
+    favoriteScholarshipIds: originalUserData?.favoriteScholarshipIds || [],
+    loadingScholarships: originalUserData?.loadingScholarships || false,
+
+    // Applied scholarship courses state
+    appliedScholarshipCourses:
+      originalUserData?.appliedScholarshipCourses || {},
+    appliedScholarshipCourseIds:
+      originalUserData?.appliedScholarshipCourseIds || [],
+    loadingApplications: originalUserData?.loadingApplications || false,
+
+    // Action methods - Preserve existing functions or provide defaults
+    fetchUserProfile: originalUserData?.fetchUserProfile || (async () => {}),
+    updateUserProfile:
+      originalUserData?.updateUserProfile || (async () => false),
+    updateDetailedInfo:
+      originalUserData?.updateDetailedInfo || (async () => false),
+    setUser: originalUserData?.setUser || (() => {}),
+    logout: originalUserData?.logout || (() => {}),
+    getLastUpdatedDate: originalUserData?.getLastUpdatedDate || (() => null),
+
+    // Favorite courses actions
+    fetchFavoriteCourses:
+      originalUserData?.fetchFavoriteCourses || (async () => {}),
+    toggleCourseFavorite:
+      originalUserData?.toggleCourseFavorite || (async () => false),
+    getCourseFavoriteStatus:
+      originalUserData?.getCourseFavoriteStatus || (() => false),
+
+    // Applied courses actions
+    fetchAppliedCourses:
+      originalUserData?.fetchAppliedCourses || (async () => {}),
+    addAppliedCourse: originalUserData?.addAppliedCourse || (async () => false),
+    updateAppliedCourse:
+      originalUserData?.updateAppliedCourse || (async () => false),
+    updateCourseConfirmation:
+      originalUserData?.updateCourseConfirmation || (async () => false),
+    removeAppliedCourse:
+      originalUserData?.removeAppliedCourse || (async () => false),
+    getAppliedCourseStatus:
+      originalUserData?.getAppliedCourseStatus || (() => false),
+    getAppliedCourseDetails:
+      originalUserData?.getAppliedCourseDetails || (() => null),
+
+    // Favorite universities actions
+    fetchFavoriteUniversities:
+      originalUserData?.fetchFavoriteUniversities || (async () => {}),
+    toggleUniversityFavorite:
+      originalUserData?.toggleUniversityFavorite || (async () => false),
+    getFavoriteStatus: originalUserData?.getFavoriteStatus || (() => false),
+
+    // Favorite scholarships actions
+    fetchFavoriteScholarships:
+      originalUserData?.fetchFavoriteScholarships || (async () => {}),
+    toggleScholarshipFavorite:
+      originalUserData?.toggleScholarshipFavorite || (async () => false),
+    getScholarshipFavoriteStatus:
+      originalUserData?.getScholarshipFavoriteStatus || (() => false),
+
+    // Applied scholarship courses actions
+    fetchAppliedScholarshipCourses:
+      originalUserData?.fetchAppliedScholarshipCourses || (async () => {}),
+    fetchAppliedScholarship:
+      originalUserData?.fetchAppliedScholarship || (async () => {}),
+    addAppliedScholarshipCourse:
+      originalUserData?.addAppliedScholarshipCourse || (async () => false),
+    refreshApplications:
+      originalUserData?.refreshApplications || (async () => {}),
+    getApplicationProgress:
+      originalUserData?.getApplicationProgress || (() => 0),
   };
 
   return querySpecificData;

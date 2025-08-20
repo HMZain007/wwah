@@ -90,7 +90,7 @@ const PopularPrograms: React.FC<PopularProgramsProps> = ({
   ];
   // Inside your component:
   const scrollRef = useRef<HTMLDivElement>(null);
-  console.log("PopularPrograms rendered with countryName:", costOfLiving);
+  // console.log("PopularPrograms rendered with countryName:", costOfLiving);
 
   // const scroll = (direction: "left" | "right") => {
   //   if (scrollRef.current) {
@@ -201,12 +201,7 @@ const PopularPrograms: React.FC<PopularProgramsProps> = ({
         backgroundImage="/bg-usa.png"
       />
 
-      {/* <Banner
-  title="Create your Application today for your desired program!"
-  buttonText="Apply Now!"
-  buttonLink={`/coursearchive?country=${encodeURIComponent(countryName)}`}
-  backgroundImage="/bg-usa.png"
-/> */}
+  \
 
     </>
   );

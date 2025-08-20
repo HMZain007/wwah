@@ -77,7 +77,7 @@ const VerifyOtp = () => {
 
       if (verifyRes?.success) {
         setSuccessMessage("OTP verified successfully!");
-        console.log("OTP verified successfully! Redirecting...");
+        // console.log("OTP verified successfully! Redirecting...");
 
         // Only redirect on successful verification
         setTimeout(() => {
@@ -92,13 +92,33 @@ const VerifyOtp = () => {
       console.log(`Something went wrong. Please try again ${error}`);
     }
   };
-  const handleResendOtp = () => {
-    setOtp(["", "", "", "", "", ""]);
-    setTimer(120); // Reset timer to 2 minutes
-    setIsOtpExpired(false);
-    setErrorMessage("");
-    setSuccessMessage("A new OTP has been sent to your email!");
+  const handleResendOtp = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API}verifyOtp/resend`, {
+        method: "POST",
+        credentials: "include", // Required to send session cookie
+      });
+
+      const data = await res.json();
+      // console.log("Resending OTP...", data);
+
+      if (res.ok) {
+        setOtp(["", "", "", "", "", ""]);
+        setTimer(120); // Reset timer
+        setIsOtpExpired(false);
+        setSuccessMessage(data.message || "OTP resent successfully!");
+        setErrorMessage("");
+      } else {
+        setErrorMessage(data.message || "Failed to resend OTP.");
+        setSuccessMessage("");
+      }
+    } catch (error) {
+      console.log("Error resending OTP:", error);
+      setErrorMessage("Something went wrong while resending OTP.");
+      setSuccessMessage("");
+    }
   };
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -111,7 +131,9 @@ const VerifyOtp = () => {
       {/* Sign-in Form Section */}
       <div className="flex-1 max-w-2xl sm:pl-44 px-20 sm:pr-28">
         {/* <Image src={Logo} alt="Logo" className="mb-4 w-28 mx-auto" /> */}
-        <Image src="/logowwah.svg" alt="WWAH Logo" width={150} height={60} />
+         <div className="flex justify-center mb-2">
+    <Image src="/logowwah.svg" alt="WWAH Logo" width={150} height={60} />
+  </div>
         <div className="text-2xl font-bold mb-2 text-center">Verify OTP!</div>
         <p className="text-gray-600 text-center text-sm sm:px-10 mb-6">
           We have sent a 6-digit OTP to your email!
