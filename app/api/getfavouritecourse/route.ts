@@ -12,12 +12,12 @@ interface ApplicationData {
   updatedAt?: string;
 }
 export async function GET(req: NextRequest) {
-  // console.log("=== API ROUTE DEBUG START ===");
+  console.log("=== API ROUTE DEBUG START ===");
 
   try {
     // Connect to database first
     await connectToDatabase();
-    // console.log("Database connected successfully");
+    console.log("Database connected successfully");
 
     // Get course IDs and type from query params
     const { searchParams } = new URL(req.url);
@@ -26,10 +26,10 @@ export async function GET(req: NextRequest) {
     const includeApplicationData =
       searchParams.get("includeApplicationData") === "true";
 
-    // console.log("=== REQUEST PARAMETERS ===");
-    // console.log("Course IDs parameter:", courseIdsParam);
-    // console.log("Request type:", type);
-    // console.log("Include application data:", includeApplicationData);
+    console.log("=== REQUEST PARAMETERS ===");
+    console.log("Course IDs parameter:", courseIdsParam);
+    console.log("Request type:", type);
+    console.log("Include application data:", includeApplicationData);
 
     // Early return if no course IDs provided
     if (!courseIdsParam) {
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       const responseKey =
         type === "applied" ? "appliedCourses" : "favouriteCourses";
 
-      // console.log("No course IDs provided, returning empty response");
+      console.log("No course IDs provided, returning empty response");
       return NextResponse.json(
         {
           success: true,
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     try {
       // Try to parse as JSON first (for applied courses with objects)
       const parsed = JSON.parse(decodeURIComponent(courseIdsParam));
-      // console.log("Parsed data:", parsed);
+      console.log("Parsed data:", parsed);
 
       if (Array.isArray(parsed)) {
         parsed.forEach((item, index) => {
@@ -68,11 +68,11 @@ export async function GET(req: NextRequest) {
           if (typeof item === "string") {
             // Handle old string format or favourites
             courseIds.push(item);
-            // console.log(`Added string course ID: ${item}`);
+            console.log(`Added string course ID: ${item}`);
           } else if (typeof item === "object" && item.courseId) {
             // Handle new applied course object format (SCHEMA ALIGNED)
             courseIds.push(item.courseId);
-            // console.log(`Added object course ID: ${item.courseId}`);
+            console.log(`Added object course ID: ${item.courseId}`);
 
             if (includeApplicationData || type === "applied") {
               // Store ONLY the schema fields
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
         throw new Error("Invalid format - not an array");
       }
     } catch {
-      // console.log("JSON parse failed, trying comma-separated string parsing");
+      console.log("JSON parse failed, trying comma-separated string parsing");
       // Fallback to comma-separated string parsing (for favourites or old format)
       courseIds = decodeURIComponent(courseIdsParam)
         .split(",")
@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
       const responseKey =
         type === "applied" ? "appliedCourses" : "favouriteCourses";
 
-      // console.log("No valid course IDs found after parsing");
+      console.log("No valid course IDs found after parsing");
       return NextResponse.json(
         {
           success: true,
@@ -149,9 +149,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // console.log("=== OBJECTID VALIDATION ===");
-    // console.log(`Valid ObjectIds: ${validObjectIds.length}`);
-    // console.log(`Invalid IDs: ${invalidIds.length}`);
+    console.log("=== OBJECTID VALIDATION ===");
+    console.log(`Valid ObjectIds: ${validObjectIds.length}`);
+    console.log(`Invalid IDs: ${invalidIds.length}`);
 
     // Return error if no valid ObjectIds found
     if (validObjectIds.length === 0) {
@@ -206,9 +206,6 @@ export async function GET(req: NextRequest) {
           application_deadline: 1,
           course_description: 1,
           entry_requirements: 1,
-          required_ielts_score: 1,
-          required_toefl_score: 1,
-          required_pte_score: 1,
           language_requirements: 1,
           "universityData.universityImages.banner": 1,
           "universityData.universityImages.logo": 1,
@@ -225,23 +222,23 @@ export async function GET(req: NextRequest) {
       },
     ];
 
-    // console.log("=== EXECUTING AGGREGATION ===");
+    console.log("=== EXECUTING AGGREGATION ===");
 
     // Execute the aggregation pipeline with error handling
     const courses = await Courses.aggregate(pipeline).exec();
 
-    // console.log("=== AGGREGATION RESULTS ===");
-    // console.log(`Found ${courses.length} courses from aggregation`);
+    console.log("=== AGGREGATION RESULTS ===");
+    console.log(`Found ${courses.length} courses from aggregation`);
 
     // Enhance courses with application data if available (SCHEMA ALIGNED)
     const enhancedCourses = courses.map((course) => {
       const courseId = course._id.toString();
       const applicationData = applicationDataMap.get(courseId);
 
-      // console.log(`Processing course ${courseId}:`, {
-      //   hasApplicationData: !!applicationData,
-      //   applicationData: applicationData,
-      // });
+      console.log(`Processing course ${courseId}:`, {
+        hasApplicationData: !!applicationData,
+        applicationData: applicationData,
+      });
 
       if (applicationData && (type === "applied" || includeApplicationData)) {
         return {
@@ -266,12 +263,12 @@ export async function GET(req: NextRequest) {
     // Log details about each found course
     enhancedCourses.forEach((course, index) => {
       console.log(`=== COURSE ${index + 1} ===`);
-      // console.log(`ID: ${course._id}`);
-      // console.log(`Title: ${course.course_title}`);
-      // console.log(`University: ${course.universityname}`);
+      console.log(`ID: ${course._id}`);
+      console.log(`Title: ${course.course_title}`);
+      console.log(`University: ${course.universityname}`);
       if (course.applicationData) {
-        // console.log(`Application Status: ${course.applicationStatus}`);
-        // console.log(`Is Confirmed: ${course.isConfirmed}`); // ✅ NEW: Added logging for isConfirmed
+        console.log(`Application Status: ${course.applicationStatus}`);
+        console.log(`Is Confirmed: ${course.isConfirmed}`); // ✅ NEW: Added logging for isConfirmed
       }
     });
 
@@ -296,29 +293,29 @@ export async function GET(req: NextRequest) {
     const finalCourses =
       type === "applied"
         ? enhancedCourses.sort((a, b) => {
-          // First sort by applicationStatus (higher status first)
-          const aStatus = a.applicationStatus || 1;
-          const bStatus = b.applicationStatus || 1;
+            // First sort by applicationStatus (higher status first)
+            const aStatus = a.applicationStatus || 1;
+            const bStatus = b.applicationStatus || 1;
 
-          if (aStatus !== bStatus) {
-            return bStatus - aStatus;
-          }
+            if (aStatus !== bStatus) {
+              return bStatus - aStatus;
+            }
 
-          // Then sort by creation date (most recent first) if available
-          const aDate = a.applicationData?.createdAt
-            ? new Date(a.applicationData.createdAt)
-            : new Date(0);
-          const bDate = b.applicationData?.createdAt
-            ? new Date(b.applicationData.createdAt)
-            : new Date(0);
+            // Then sort by creation date (most recent first) if available
+            const aDate = a.applicationData?.createdAt
+              ? new Date(a.applicationData.createdAt)
+              : new Date(0);
+            const bDate = b.applicationData?.createdAt
+              ? new Date(b.applicationData.createdAt)
+              : new Date(0);
 
-          return bDate.getTime() - aDate.getTime();
-        })
+            return bDate.getTime() - aDate.getTime();
+          })
         : enhancedCourses;
 
-    // console.log("=== FINAL RESPONSE ===");
-    // console.log(`Returning ${finalCourses.length} courses`);
-    // console.log("Response key:", responseKey);
+    console.log("=== FINAL RESPONSE ===");
+    console.log(`Returning ${finalCourses.length} courses`);
+    console.log("Response key:", responseKey);
 
     // Prepare warnings array
     const warnings: string[] = [];
@@ -352,8 +349,8 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    // console.error("=== API ERROR ===");
-    // console.error("Error fetching courses:", error);
+    console.error("=== API ERROR ===");
+    console.error("Error fetching courses:", error);
 
     let errorMessage = "Failed to fetch courses";
     let statusCode = 500;

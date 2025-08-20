@@ -307,7 +307,7 @@ const ApplyingSection: React.FC = () => {
   // No applied courses state
   if (!appliedCourseIds || appliedCourseIds.length === 0) {
     return (
-
+    
       <div>
         <div className="relative w-full h-[250px] flex items-center justify-center border border-gray-200 rounded-xl">
           {/* Blurred Dummy Card in Background */}
@@ -501,10 +501,11 @@ const ApplyingSection: React.FC = () => {
               {/* ✅ UPDATED: Remove Button with conditional styling and click handler */}
               <button
                 onClick={() => handleRemoveButtonClick(course._id)}
-                className={`absolute top-2 right-1 z-10 border rounded-full w-4 h-4 flex items-center justify-center transition-colors ${isConfirmed
+                className={`absolute top-2 right-1 z-10 border rounded-full w-4 h-4 flex items-center justify-center transition-colors ${
+                  isConfirmed
                     ? "border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                     : "border-gray-400 bg-white text-gray-400 hover:bg-red-600 hover:text-white cursor-pointer"
-                  }`}
+                }`}
                 title={
                   isConfirmed
                     ? "Cannot remove confirmed course"
@@ -659,8 +660,8 @@ const ApplyingSection: React.FC = () => {
                   progress={
                     applicationDetails
                       ? getApplicationProgress(
-                        applicationDetails.applicationStatus || 1
-                      )
+                          applicationDetails.applicationStatus || 1
+                        )
                       : 0
                   }
                 />
