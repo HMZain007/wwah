@@ -117,6 +117,7 @@ interface AppliedScholarshipCourse {
   status?: string;
   createdAt?: string;
   updatedAt?: string;
+  ScholarshipId: string; // Add ScholarshipId to link to the scholarship
   // applicationStatus:number;
 }
 
@@ -158,6 +159,7 @@ export interface DetailedInfo {
     score: string;
   };
   workExperience: number;
+  years: number;
   studyPreferenced: {
     country: string;
     degree: string;
@@ -261,6 +263,9 @@ export interface UserStore {
   ) => Promise<boolean>;
   refreshApplications: () => Promise<void>;
   getApplicationProgress: (courseId: string) => number;
+  refreshEmbeddings: () => Promise<boolean>;
+  embeddingUpdateStatus: "idle" | "updating" | "success" | "error";
+  lastEmbeddingUpdate: string | null;
 }
 
 // Default empty detailed info
@@ -269,6 +274,7 @@ const defaultDetailedInfo: DetailedInfo = {
   tuitionFee: { amount: 0, currency: "" },
   languageProficiency: { test: "", score: "" },
   studyPreferenced: { country: "", degree: "", subject: "" },
+  years: 0,
   studyLevel: "",
   gradeType: "",
   grade: 0,
@@ -335,6 +341,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
   appliedScholarshipCourses: {},
   appliedScholarshipCourseIds: [],
   loadingApplications: false,
+  embeddingUpdateStatus: "idle",
+  lastEmbeddingUpdate: null,
 
   fetchUserProfile: async () => {
     const token = getAuthToken();
@@ -655,34 +663,34 @@ export const useUserStore = create<UserStore>((set, get) => ({
         const coursesMap: Record<string, AppliedCourseWithDetails> = {};
 
         const courseIdsList: string[] = [];
-detailedCoursesResult.appliedCourses.forEach((course: any) => {
-  const courseId = course._id;
-  courseIdsList.push(courseId);
+        detailedCoursesResult.appliedCourses.forEach((course: any) => {
+          const courseId = course._id;
+          courseIdsList.push(courseId);
 
-  const trackingData = trackingDataMap.get(courseId);
+          const trackingData = trackingDataMap.get(courseId);
 
-  coursesMap[courseId] = {
-    courseId: courseId,
-    applicationStatus: trackingData?.applicationStatus || 1,
-    isConfirmed: trackingData?.isConfirmed || false, // ✅ NEW: Added isConfirmed
+          coursesMap[courseId] = {
+            courseId: courseId,
+            applicationStatus: trackingData?.applicationStatus || 1,
+            isConfirmed: trackingData?.isConfirmed || false, // ✅ NEW: Added isConfirmed
 
-    createdAt: trackingData?.createdAt,
-    updatedAt: trackingData?.updatedAt,
-    courseDetails: {
-      _id: course._id,
-      course_title: course.course_title,
-      universityData: course.universityData,
-      countryname: course.countryname,
-      intake: course.intake || "",
-      duration: course.duration || "",
-      annual_tuition_fee: course.annual_tuition_fee || {
-        amount: 0,
-        currency: "USD",
-      },
-      application_deadline: course.application_deadline,
-    },
-  };
-});
+            createdAt: trackingData?.createdAt,
+            updatedAt: trackingData?.updatedAt,
+            courseDetails: {
+              _id: course._id,
+              course_title: course.course_title,
+              universityData: course.universityData,
+              countryname: course.countryname,
+              intake: course.intake || "",
+              duration: course.duration || "",
+              annual_tuition_fee: course.annual_tuition_fee || {
+                amount: 0,
+                currency: "USD",
+              },
+              application_deadline: course.application_deadline,
+            },
+          };
+        });
 
         console.log("Processed courses map:", coursesMap);
 
@@ -764,6 +772,7 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
               banner: application.banner || "",
               scholarshipName:
                 application.scholarshipName || "Unknown Scholarship",
+                ScholarshipId: application.scholarshipId || "", // ✅ CRITICAL: Include this field
               hostCountry: application.hostCountry || "Not specified",
               courseName: application.courseName || "Not specified",
               duration: application.duration || "Not specified",
@@ -1378,7 +1387,7 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
             deadline: application.deadline || "Not specified",
             status: application.status || "pending",
             applicationStatus: application.applicationStatus || 1, // ✅ ADD THIS LINE
-
+            ScholarshipId: application.scholarshipId || "",
             appliedDate: application.appliedDate,
             createdAt: application.createdAt,
             updatedAt: application.updatedAt,
@@ -1655,14 +1664,18 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
               ...updateData,
 
               updatedAt: currentTimestamp,
-
             }
           : null,
         loading: false,
         lastUpdated: currentTimestamp,
         error: null,
       }));
+      console.log("🔄 Triggering embedding refresh after profile update...");
+      const embeddingSuccess = await get().refreshEmbeddings();
 
+      if (!embeddingSuccess) {
+        console.warn("⚠️ Profile updated but embedding refresh failed");
+      }
       return true;
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -1674,9 +1687,7 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
         loading: false,
       });
 
-
       return false;
-
     }
   },
 
@@ -1728,7 +1739,6 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
               ...updateData,
 
               updatedAt: currentTimestamp,
-
             }
           : {
               ...defaultDetailedInfo,
@@ -1738,6 +1748,11 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
         loading: false,
         lastUpdated: currentTimestamp,
         error: null,
+        // Update embedding status based on API response
+        embeddingUpdateStatus:
+          result.embeddingUpdate === "success" ? "success" : "error",
+        lastEmbeddingUpdate:
+          result.embeddingUpdate === "success" ? currentTimestamp : null,
       }));
 
       return true;
@@ -1808,6 +1823,57 @@ detailedCoursesResult.appliedCourses.forEach((course: any) => {
     } catch (error) {
       console.error("Error formatting last updated date:", error);
       return null;
+    }
+  },
+  refreshEmbeddings: async (): Promise<boolean> => {
+    const token = getAuthToken();
+    if (!token) {
+      set({ error: "No authentication token found" });
+      return false;
+    }
+
+    try {
+      set({ embeddingUpdateStatus: "updating" });
+      console.log("🔄 Manually refreshing user embeddings...");
+
+      // Call a new backend endpoint that triggers embedding refresh
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API}profile/refresh-embeddings`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to refresh embeddings: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        set({
+          embeddingUpdateStatus: "success",
+          lastEmbeddingUpdate: new Date().toISOString(),
+          error: null,
+        });
+        console.log("✅ Embeddings refreshed successfully");
+        return true;
+      } else {
+        throw new Error(result.message || "Failed to refresh embeddings");
+      }
+    } catch (error) {
+      console.error("❌ Error refreshing embeddings:", error);
+      set({
+        embeddingUpdateStatus: "error",
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      });
+      return false;
     }
   },
 
