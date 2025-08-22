@@ -6,6 +6,7 @@ export async function GET(req: Request) {
     try {
         await connectToDatabase();
         const { searchParams } = new URL(req.url);
+
         const page = Math.max(1, parseInt(searchParams.get('page') || '1', 12) || 1);
         const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '12', 12) || 12));
 
