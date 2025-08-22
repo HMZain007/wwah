@@ -957,6 +957,7 @@ const BasicInfo = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  console.log(validationErrors);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -1378,7 +1379,7 @@ const BasicInfo = () => {
       )}
 
       {/* Display validation errors */}
-      {validationErrors.length > 0 && (
+      {/* {validationErrors.length > 0 && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <h4 className="text-red-800 font-semibold mb-2">
             Please fix the following errors:
@@ -1392,7 +1393,7 @@ const BasicInfo = () => {
             ))}
           </ul>
         </div>
-      )}
+      )} */}
 
       <Form {...form}>
         <form onSubmit={handleFormSubmit}>
