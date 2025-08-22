@@ -1378,7 +1378,7 @@ const BasicInfo = () => {
       )}
 
       {/* Display validation errors */}
-      {validationErrors.length > 0 && (
+      {/* {validationErrors.length > 0 && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <h4 className="text-red-800 font-semibold mb-2">
             Please fix the following errors:
@@ -1392,7 +1392,7 @@ const BasicInfo = () => {
             ))}
           </ul>
         </div>
-      )}
+      )} */}
 
       <Form {...form}>
         <form onSubmit={handleFormSubmit}>
