@@ -1,3 +1,4 @@
+// export default ApplyingSection;
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -10,7 +11,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogClose,
+  DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Copy } from "lucide-react";
+import { BsWhatsapp } from "react-icons/bs";
+import { AiOutlineMail } from "react-icons/ai";
+import { FaFacebook } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/store/useUserData";
 import { useRouter } from "next/navigation";
@@ -51,24 +61,58 @@ const ApplyingSection: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [courseToConfirm, setCourseToConfirm] = useState<string | null>(null);
 
+  // ✅ NEW: Delete confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+
+  // ✅ NEW: Share functionality state
+  const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
+
   // ✅ NEW: Router for navigation
   const router = useRouter();
 
-  // Helper function to get application step label
-  const getApplicationStepLabel = (applicationStatus: number): string => {
-    const steps = [
-      { step: 1, label: "Application Started" },
-      { step: 2, label: "Documents Prepared" },
-      { step: 3, label: "Application Submitted" },
-      { step: 4, label: "Under Review" },
-      { step: 5, label: "Interview Scheduled" },
-      { step: 6, label: "Decision Pending" },
-      { step: 7, label: "Final Decision" },
-    ];
+  // ✅ NEW: Status configuration with colors
+  const getStatusConfig = (statusId: number) => {
+    const statusConfigs: Record<number, { label: string; color: string }> = {
+      1: { label: "Incomplete Application", color: "bg-red-500" },
+      2: {
+        label: "Complete application and confirm course",
+        color: "bg-red-500",
+      },
+      3: { label: "Awaiting Course Confirmation", color: "bg-orange-500" },
+      4: { label: "Pay Application Fee", color: "bg-yellow-500" },
+      5: { label: "In Process", color: "bg-yellow-500" },
+      6: { label: "Application withdrawn by student", color: "bg-black" },
+      7: { label: "Application Successful", color: "bg-green-500" },
+      8: { label: "Application Unsuccessful", color: "bg-red-500" },
+      9: { label: "Visa in process", color: "bg-yellow-500" },
+      10: { label: "Visa Rejected", color: "bg-red-500" },
+      11: { label: "Ready to Fly", color: "bg-green-500" },
+    };
 
-    const step = steps.find((s) => s.step === applicationStatus);
-    return step ? step.label : "Unknown Step";
+    return (
+      statusConfigs[statusId] || {
+        label: "Unknown Status",
+        color: "bg-gray-500",
+      }
+    );
   };
+
+  // Helper function to get application step label (keeping for backward compatibility)
+  // const getApplicationStepLabel = (applicationStatus: number): string => {
+  //   const steps = [
+  //     { step: 1, label: "Application Started" },
+  //     { step: 2, label: "Documents Prepared" },
+  //     { step: 3, label: "Application Submitted" },
+  //     { step: 4, label: "Under Review" },
+  //     { step: 5, label: "Interview Scheduled" },
+  //     { step: 6, label: "Decision Pending" },
+  //     { step: 7, label: "Final Decision" },
+  //   ];
+
+  //   const step = steps.find((s) => s.step === applicationStatus);
+  //   return step ? step.label : "Unknown Step";
+  // };
 
   const getApplicationProgress = (applicationStatus: number): number => {
     return Math.round((applicationStatus / 7) * 100);
@@ -184,14 +228,30 @@ const ApplyingSection: React.FC = () => {
   const handleRemoveButtonClick = async (courseId: string) => {
     const applicationDetails = getApplicationDetails(courseId);
 
-    // If course is confirmed, show modal instead of removing
+    // If course is confirmed, show contact modal instead of removing
     if (applicationDetails?.isConfirmed) {
       setShowContactModal(true);
       return;
     }
 
-    // If not confirmed, proceed with normal removal
-    await handleRemoveCourse(courseId);
+    // If not confirmed, show delete confirmation modal
+    setCourseToDelete(courseId);
+    setShowDeleteModal(true);
+  };
+
+  // ✅ NEW: Handle delete modal Yes click
+  const handleDeleteYes = async () => {
+    if (courseToDelete) {
+      await handleRemoveCourse(courseToDelete);
+    }
+    setShowDeleteModal(false);
+    setCourseToDelete(null);
+  };
+
+  // ✅ NEW: Handle delete modal No click
+  const handleDeleteNo = () => {
+    setShowDeleteModal(false);
+    setCourseToDelete(null);
   };
 
   // Function to remove course from applied courses using the store
@@ -237,6 +297,7 @@ const ApplyingSection: React.FC = () => {
     console.log("Confirm button clicked for course:", courseId);
     setCourseToConfirm(courseId);
     setShowConfirmModal(true);
+
     console.log("Modal should be open now");
   };
 
@@ -446,15 +507,15 @@ const ApplyingSection: React.FC = () => {
 
           {/* Overlay Message */}
           <div className="flex flex-col items-center justify-center h-[250px] text-center relative z-10 w-full">
-            <p className="font-semibold text-lg md:text-xl mb-2">
+            <p className="font-semibold text-lg md:text-lg mb-2">
               No Course Applications Yet{" "}
             </p>
             <p className="text-gray-600 mb-4">
               Start your journey by applying to your first course!{" "}
             </p>
             <Link href="/coursearchive">
-              <button className="px-5 py-2 bg-[#C7161E] text-white rounded-full hover:bg-red-700">
-                Browse Scholarships
+              <button className="px-4 py-2 text-[14px] bg-[#C7161E] text-white rounded-full hover:bg-red-700">
+                Browse Courses
               </button>
             </Link>
           </div>
@@ -495,9 +556,26 @@ const ApplyingSection: React.FC = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center">Course Confirmed</DialogTitle>
-            <DialogDescription className="text-center pt-4">
-              This course has been confirmed and cannot be removed. Please
-              contact your WWAH advisor for any changes.
+            <DialogDescription className="text-center pt-4 flex flex-col items-center text-black font-semibold text-[15px]">
+              <Image
+                src="/spark.png"
+                alt="Spark Icon"
+                width={100}
+                height={100}
+              />{" "}
+              <p className="pt-2">
+                {" "}
+                Your application is already in process for this course. Please{" "}
+                <a
+                  href="https://wa.me/923279541070"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#C7161E] underline hover:text-[#f03c45] transition-colors"
+                >
+                  contact a WWAH advisor
+                </a>{" "}
+                if you need to make changes.
+              </p>
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center pt-4">
@@ -511,16 +589,53 @@ const ApplyingSection: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ✅ NEW: Confirmation Modal */}
+      {/* ✅ NEW: Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-center mx-auto">
+              <Image
+                src="/spark.png"
+                alt="Spark Icon"
+                width={100}
+                height={100}
+              />
+            </DialogTitle>
+            <DialogDescription className="text-center text-black font-semibold text-[16px] pt-4">
+              Are you sure you want to delete this course?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center gap-4 pt-4">
+            <Button
+              onClick={handleDeleteYes}
+              className="bg-[#C7161E] hover:bg-[#f03c45] text-white px-8"
+            >
+              Yes
+            </Button>
+            <Button onClick={handleDeleteNo} variant="outline" className="px-8">
+              No
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ✅ Course Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex flex-col items-center text-center gap-6">
-              <Image src="/spark.png" alt="Spark Icon" width={80} height={80} />
-             <p className="text-[12px]">Are you sure you want to Confirm this course?</p>
+              <div className="flex flex-col items-center gap-2">
+                <Image
+                  src="/spark.png"
+                  alt="Spark Icon"
+                  width={100}
+                  height={100}
+                />
+                <p> Are you sure you want to confirm this scholarship?</p>
+              </div>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex justify-center gap-4 pt-4">
+          <div className="flex justify-center gap-4 pt-2">
             <Button
               onClick={handleConfirmYes}
               className="bg-[#C7161E] hover:bg-[#f03c45] text-white px-8"
@@ -535,6 +650,10 @@ const ApplyingSection: React.FC = () => {
               No
             </Button>
           </div>
+          <DialogDescription className="text-center pt-0">
+            *This will be the course we prepare your application for. You will
+            not be able to delete or change it later.
+          </DialogDescription>
         </DialogContent>
       </Dialog>
 
@@ -555,6 +674,20 @@ const ApplyingSection: React.FC = () => {
           const applicationDetails = getApplicationDetails(course._id);
           const isConfirmed = applicationDetails?.isConfirmed || false;
 
+          // ✅ CRITICAL: Use statusId for status display (priority) or fallback to applicationStatus
+          const statusId =
+            applicationDetails?.statusId ||
+            applicationDetails?.applicationStatus ||
+            1;
+          const statusConfig = getStatusConfig(statusId);
+
+          console.log(`Course ${course._id} status debug:`, {
+            statusId: applicationDetails?.statusId,
+            applicationStatus: applicationDetails?.applicationStatus,
+            finalStatusId: statusId,
+            statusConfig,
+          });
+
           return (
             <div
               key={course._id || index}
@@ -567,7 +700,7 @@ const ApplyingSection: React.FC = () => {
                 </button>
                 <button
                   onClick={() => handleRemoveButtonClick(course._id)}
-                  className={` border py-1 px-4 rounded-md flex items-center justify-center transition-colors  ${
+                  className={`border py-1 px-4 rounded-md flex items-center justify-center transition-colors ${
                     isConfirmed
                       ? "text-black-400 bg-[#FCE7D2] cursor-not-allowed opacity-50"
                       : "text-black-600 hover:bg-red-50 cursor-pointer"
@@ -584,12 +717,13 @@ const ApplyingSection: React.FC = () => {
                     width={16}
                     height={16}
                     className="w-4 h-4"
-                  />{" "}
+                  />
                 </button>
               </div>
-              <div className="flex flex-col md:flex-row justify-between gap-4">
+
+              <div className="flex flex-col md:flex-row justify-between gap-2">
                 {/* Left Section: Course Info */}
-                <div className="flex flex-col md:flex-row items-start gap-4 flex-1">
+                <div className="flex flex-col md:flex-row items-center gap-2 flex-1">
                   {/* Course Image and University Info */}
                   <div>
                     <div className="relative md:w-[230px] h-[180px] rounded-xl overflow-hidden">
@@ -621,29 +755,142 @@ const ApplyingSection: React.FC = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* ✅ NEW: Share Icon on Banner Image */}
+                      <div className="absolute z-10 top-4 right-4 flex space-x-1 py-1 px-3 bg-gray-200 bg-opacity-40 backdrop-blur-sm rounded-md">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <button>
+                              <Image
+                                src="/university/Share.svg"
+                                width={16}
+                                height={16}
+                                alt="Share"
+                              />
+                            </button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Share link</DialogTitle>
+                              <DialogDescription>
+                                Anyone who has this link will be able to view
+                                this.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="flex items-center space-x-2">
+                              <div className="grid flex-1 gap-2">
+                                <Label
+                                  htmlFor={`link-${course._id}`}
+                                  className="sr-only"
+                                >
+                                  Link
+                                </Label>
+                                <Input
+                                  id={`link-${course._id}`}
+                                  value={`${
+                                    typeof window !== "undefined"
+                                      ? window.location.origin
+                                      : ""
+                                  }/courses/${course._id}`}
+                                  readOnly
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                size="sm"
+                                className="px-3"
+                                onClick={() => {
+                                  const link = `${window.location.origin}/courses/${course._id}`;
+                                  navigator.clipboard
+                                    .writeText(link)
+                                    .then(() => {
+                                      setCopiedLinkId(course._id);
+                                      setTimeout(
+                                        () => setCopiedLinkId(null),
+                                        2000
+                                      );
+                                    });
+                                }}
+                              >
+                                <span className="sr-only">Copy</span>
+                                <Copy />
+                              </Button>
+                            </div>
+
+                            {copiedLinkId === course._id && (
+                              <p className="text-black text-sm mt-2">
+                                Link copied to clipboard!
+                              </p>
+                            )}
+
+                            <div className="mt-2 flex gap-4 justify-left">
+                              <a
+                                href={`https://wa.me/?text=${encodeURIComponent(
+                                  `${window.location.origin}/courses/${course._id}`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-600 hover:underline"
+                              >
+                                <BsWhatsapp className="text-2xl" />{" "}
+                              </a>
+                              <a
+                                href={`mailto:?subject=Check this out&body=${encodeURIComponent(
+                                  `${window.location.origin}/courses/${course._id}`
+                                )}`}
+                                className="text-blue-600 hover:underline"
+                              >
+                                <AiOutlineMail className="text-2xl text-red-600" />{" "}
+                              </a>
+                              <a
+                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                                  `${window.location.origin}/courses/${course._id}`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#1877F2] hover:underline"
+                              >
+                                <FaFacebook className="text-blue-600 text-2xl" />
+                              </a>
+                            </div>
+
+                            <DialogFooter className="sm:justify-start">
+                              <DialogClose asChild>
+                                <Button type="button" variant="secondary">
+                                  Close
+                                </Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
                     </div>
 
-                    {/* Course Confirmation Checkbox */}
-                    <div className="flex items-center gap-0 pt-4">
-                      <Button className="bg-red-600 py-1">
-                        Current Status :
-                      </Button>
-                      <span className="text-sm ml-2">
-                        {getApplicationStepLabel(
-                          applicationDetails?.applicationStatus || 1
-                        )}
+                    {/* ✅ CRITICAL: Course Status with colored dot using statusId */}
+                    {/* <div className="flex items-center gap-2 pt-4">
+                      <span className="text-[13px] font-medium px-4 py-1 rounded-md text-white bg-red-600">
+                        Current Status:
                       </span>
-                    </div>
+                      <div className="flex items-center gap-2 ml-2">
+                        <div
+                          className={`w-2 h-2 rounded-full ${statusConfig.color}`}
+                        ></div>
+                        <span className="text-sm">{statusConfig.label}</span>
+                      </div>
+                    </div> */}
+
+                    {/* ✅ DEBUG: Show status IDs for debugging */}
                   </div>
 
                   <div className="flex-1 space-y-2">
                     {/* Course title */}
-                    <p className="text-[14px] font-semibold">
+                    <p className="text-[13px] font-semibold leading-snug">
                       {course.course_title || "Course Title Not Available"}
                     </p>
 
                     {/* Info grid */}
-                    <div className="grid grid-cols-2 gap-y-1 gap-x-4 space-y-1 text-sm text-gray-700">
+                    <div className="grid grid-cols-2 gap-y-1 gap-x-4 space-y-0 text-sm text-gray-700">
                       <div className="flex items-center gap-1">
                         <Image
                           src="/location.svg"
@@ -651,7 +898,9 @@ const ApplyingSection: React.FC = () => {
                           height={16}
                           alt="Location"
                         />
-                        <p className="text-[12px]">{course.countryname || "Country not specified"}</p>
+                        <p className="text-[12px]">
+                          {course.countryname || "Country not specified"}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1">
                         <Image
@@ -660,7 +909,9 @@ const ApplyingSection: React.FC = () => {
                           height={16}
                           alt="Intake"
                         />
-                       <p className="text-[12px]">{course.intake || "Not specified"}</p>
+                        <p className="text-[12px]">
+                          {course.intake || "Not specified"}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1">
                         <Image
@@ -669,7 +920,9 @@ const ApplyingSection: React.FC = () => {
                           height={16}
                           alt="Duration"
                         />
-                       <p className="text-[12px]">{course.duration || "Not specified"}</p>
+                        <p className="text-[12px]">
+                          {course.duration || "Not specified"}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1">
                         <Image
@@ -678,7 +931,7 @@ const ApplyingSection: React.FC = () => {
                           height={16}
                           alt="Fee"
                         />
-                       <p className="text-[12px]">
+                        <p className="text-[12px]">
                           {course.annual_tuition_fee?.currency || "$"}{" "}
                           {course.annual_tuition_fee?.amount || "N/A"}
                         </p>
@@ -686,11 +939,11 @@ const ApplyingSection: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <Image
                           src="/dollar.png"
-                          width={18}
-                          height={18}
+                          width={16}
+                          height={16}
                           alt="dollar"
                         />
-                       <p className="text-[12px]">Application fee:</p>
+                        <p className="text-[12px]">Application fee:</p>
                       </div>
                       <p
                         className="truncate text-[12px] max-w-[100px]"
@@ -698,9 +951,6 @@ const ApplyingSection: React.FC = () => {
                       >
                         {course.application_fee || "Not specified"}
                       </p>
-                      {/* <p className="truncate">
-                        {course.application_fee || "Not specified"}
-                      </p> */}
                       <div className="flex items-center gap-1">
                         <Image
                           src="/DashboardPage/deadline.svg"
@@ -708,15 +958,17 @@ const ApplyingSection: React.FC = () => {
                           height={13}
                           alt="Deadline"
                         />
-                       <p className="text-[12px]">Deadline:</p>
+                        <p className="text-[12px]">Deadline:</p>
                       </div>
-                     <p className="text-[12px]">{course.application_deadline || "Not specified"}</p>
+                      <p className="text-[12px]">
+                        {course.application_deadline || "Not specified"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Section: Progress Circle */}
-                <div className="flex flex-col items-center justify-between mt-4 md:mt-0 md:ml-4">
+                <div className="flex flex-col items-center justify-between mt-4 md:mt-0">
                   <div className="relative flex flex-col items-end justify-center min-w-[140px]">
                     {/* Blurred content */}
                     <div className="blur-sm opacity-40 pointer-events-none flex flex-col justify-center items-center">
@@ -741,21 +993,47 @@ const ApplyingSection: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* ✅ UPDATED: Confirm button now calls handleConfirmButtonClick */}
-                  <button
+                  {/* Confirm button */}
+                  {/* <button
                     onClick={() => handleConfirmButtonClick(course._id)}
                     disabled={applicationDetails?.isConfirmed === true}
-                    className={` py-1 rounded text-white font-medium text-sm mt-2 ${
+                    className={`py-1 rounded text-white font-medium text-[13px] mt-2 ${
                       applicationDetails?.isConfirmed
                         ? "bg-red-600 cursor-not-allowed px-8"
-                        : "bg-[#C7161E] hover:bg-[#A01419] cursor-pointer px-2"
+                        : "bg-red-600 hover:bg-red-700 cursor-pointer px-2"
                     }`}
                   >
                     {applicationDetails?.isConfirmed
                       ? "Confirmed"
                       : "Confirm Course Selection"}
-                  </button>
+                  </button> */}
                 </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 pt-4">
+                  <span className="text-[13px] font-medium px-4 py-1 rounded-md text-white bg-red-600">
+                    Current Status:
+                  </span>
+                  <div className="flex items-center gap-2 ml-2">
+                    <div
+                      className={`w-2 h-2 rounded-full ${statusConfig.color}`}
+                    ></div>
+                    <span className="text-sm">{statusConfig.label}</span>
+                  </div>
+                </div>{" "}
+                <Button
+                  onClick={() => handleConfirmButtonClick(course._id)}
+                  disabled={applicationDetails?.isConfirmed === true}
+                  className={`py-1 rounded text-white font-medium text-[13px] mr-3  ${
+                    applicationDetails?.isConfirmed
+                      ? "bg-red-600 cursor-not-allowed px-8"
+                      : "bg-red-600 hover:bg-red-700 cursor-pointer px-2"
+                  }`}
+                >
+                  {applicationDetails?.isConfirmed
+                    ? "Confirmed"
+                    : "Confirm Course Selection"}
+                </Button>{" "}
               </div>
             </div>
           );
