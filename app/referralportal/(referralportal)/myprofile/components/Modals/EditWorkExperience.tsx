@@ -13,58 +13,59 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
-
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { useUserStore } from "@/store/useUserData";
+import { useRefUserStore } from "@/store/useRefDataStore";
+import { WorkExp } from "@/types/reffertypes";
+
+// Use the WorkExp interface from your store
+// interface WorkExp {
+//   hasWorkExperience: boolean;
+//   hasBrandAmbassador: boolean;
+//   jobDescription: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
 
 const workExperienceSchema = z.object({
   hasWorkExperience: z.boolean(),
-  workExperienceDetails: z.string().optional(),
-  hasBrandAmbassadorExperience: z.boolean(),
+  jobDescription: z.string().optional(),
+  hasBrandAmbassador: z.boolean(),
 });
 
-type WorkExperienceForm = z.infer<typeof workExperienceSchema>;
+type WorkExperienceFormData = z.infer<typeof workExperienceSchema>;
 
-interface WorkExperienceData {
-  workExperience: number;
-  workExperienceDetails?: string;
-  hasBrandAmbassadorExperience?: boolean;
-}
-
-const EditWorkExperience = ({
-  data,
-  updatedAt,
-}: {
-  data: WorkExperienceData;
-  updatedAt: string;
-}) => {
+const EditWorkExperience = ({ data }: { data: WorkExp }) => {
   const [open, setOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
-  const { updateDetailedInfo } = useUserStore();
+  const { updateDetailedInfo } = useRefUserStore();
 
-  const form = useForm<WorkExperienceForm>({
+  const form = useForm<WorkExperienceFormData>({
     resolver: zodResolver(workExperienceSchema),
     defaultValues: {
-      hasWorkExperience: data.workExperience > 0,
-      workExperienceDetails: data.workExperienceDetails || "",
-      hasBrandAmbassadorExperience: data.hasBrandAmbassadorExperience || false,
+      hasWorkExperience: data.hasWorkExperience || false,
+      jobDescription: data.jobDescription || "",
+      hasBrandAmbassador: data.hasBrandAmbassador || false,
     },
   });
 
   const hasWorkExperience = form.watch("hasWorkExperience");
 
-  async function onSubmit(values: WorkExperienceForm) {
+  async function onSubmit(values: WorkExperienceFormData) {
     try {
-      const transformedValues = {
-        hasWorkExperience: values.hasWorkExperience,
-        workExperience: values.hasWorkExperience ? 1 : 0, // Simple conversion for API
-        workExperienceDetails: values.workExperienceDetails,
-        hasBrandAmbassadorExperience: values.hasBrandAmbassadorExperience,
+      // Update the workExperience section of DetailedInfo
+      const updateData = {
+        workExperience: {
+          hasWorkExperience: values.hasWorkExperience,
+          jobDescription: values.jobDescription || "",
+          hasBrandAmbassador: values.hasBrandAmbassador,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        },
       };
 
-      const response = await updateDetailedInfo(transformedValues);
-      if (response !== undefined) {
+      const response = await updateDetailedInfo(updateData);
+      if (response) {
         setSuccessOpen(true);
         setTimeout(() => {
           setSuccessOpen(false);
@@ -88,8 +89,10 @@ const EditWorkExperience = ({
           width={16}
           height={16}
         />
+
         <p className="text-sm">
-          last updated on {new Date(updatedAt).toLocaleDateString("en-GB")}
+          Last updated on{" "}
+          {new Date(data?.updatedAt).toLocaleDateString("en-GB")}
         </p>
         <Image
           src="/DashboardPage/pen.svg"
@@ -141,7 +144,7 @@ const EditWorkExperience = ({
               {hasWorkExperience && (
                 <FormField
                   control={form.control}
-                  name="workExperienceDetails"
+                  name="jobDescription"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -160,7 +163,7 @@ const EditWorkExperience = ({
               {/* Brand Ambassador Experience */}
               <FormField
                 control={form.control}
-                name="hasBrandAmbassadorExperience"
+                name="hasBrandAmbassador"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>

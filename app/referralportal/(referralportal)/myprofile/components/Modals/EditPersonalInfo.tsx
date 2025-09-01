@@ -28,6 +28,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { User } from "@/types/reffertypes";
+import { useRefUserStore } from "@/store/useRefDataStore";
 
 const formSchema = z.object({
   contactNo: z.string().min(1, "Contact number is required"),
@@ -39,47 +41,11 @@ const formSchema = z.object({
   linkedin: z.string().optional(),
 });
 
-interface ApiLanguageProficiency {
-  test: string;
-  score: string;
-}
-
-interface ApiStudyPreference {
-  country: string;
-  degree: string;
-  subject: string;
-}
-
-interface DetailedInfo {
-  studyLevel: string;
-  gradeType: string;
-  grade: number;
-  dateOfBirth: string;
-  nationality: string;
-  majorSubject: string;
-  livingCosts: {
-    amount: number;
-    currency: string;
-  };
-  tuitionFee: {
-    amount: number;
-    currency: string;
-  };
-  languageProficiency: ApiLanguageProficiency;
-  workExperience: number;
-  studyPreferenced: ApiStudyPreference;
-  updatedAt: string;
-  contactNo?: string;
-  country?: string;
-  city?: string;
-  facebook?: string;
-  instagram?: string;
-  linkedin?: string;
-}
-
-export default function EditPersonalInfo({ data }: { data: DetailedInfo }) {
+export default function EditPersonalInfo({ data }: { data: User }) {
   const [open, setOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { updateUserProfile } = useRefUserStore();
 
   // Format date to YYYY-MM-DD for input if it exists
   const formatDate = (dateString: string | undefined) => {
@@ -109,7 +75,7 @@ export default function EditPersonalInfo({ data }: { data: DetailedInfo }) {
       contactNo: data?.contactNo || "",
       country: data?.country || "Pakistan",
       city: data?.city || "Lahore",
-      dateOfBirth: formatDate(data?.dateOfBirth) || "",
+      dateOfBirth: formatDate(data?.dob) || "",
       facebook: data?.facebook || "",
       instagram: data?.instagram || "",
       linkedin: data?.linkedin || "",
@@ -117,14 +83,41 @@ export default function EditPersonalInfo({ data }: { data: DetailedInfo }) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with values:", values);
+    console.log("Form submitting with values:", values);
+    setIsSubmitting(true);
 
-    // Show success modal without backend call
-    setOpen(false);
-    setSuccessOpen(true);
-    setTimeout(() => {
-      setSuccessOpen(false);
-    }, 2000);
+    try {
+      // Map form values to User object properties
+      const userData = {
+        contactNo: values.contactNo,
+        country: values.country,
+        city: values.city,
+        dob: values.dateOfBirth,
+        facebook: values.facebook || "",
+        instagram: values.instagram || "",
+        linkedin: values.linkedin || "",
+      };
+
+      const response = await updateUserProfile(userData);
+
+      console.log("Update response:", response);
+
+      if (response) {
+        setOpen(false);
+        setSuccessOpen(true);
+        setTimeout(() => {
+          setSuccessOpen(false);
+        }, 2000);
+      } else {
+        // Handle error case - you might want to show an error toast or message
+        console.error("Failed to update user profile");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      // Handle error case - you might want to show an error toast or message
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const countries = [
@@ -278,10 +271,7 @@ export default function EditPersonalInfo({ data }: { data: DetailedInfo }) {
                               key={country.country}
                               value={country.country}
                             >
-                            
-                               
-                                {country.country}
-                          
+                              {country.country}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -408,8 +398,12 @@ export default function EditPersonalInfo({ data }: { data: DetailedInfo }) {
               </div>
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full md:w-[45%] bg-[#C7161E]">
-                Update Basic Details
+              <Button
+                type="submit"
+                className="w-full md:w-[45%] bg-[#C7161E]"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Updating..." : "Update Basic Details"}
               </Button>
             </form>
           </Form>

@@ -21,7 +21,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useUserStore } from "@/store/useUserData";
+import { useRefUserStore } from "@/store/useRefDataStore";
+
 const formSchema = z.object({
   phone: z
     .string()
@@ -41,7 +42,7 @@ export default function EditPhone({
   const [open, setOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { updateUserProfile } = useUserStore();
+  const { updateUserProfile } = useRefUserStore();
   // console.log(updatedAt, "updatedAt");
   const form = useForm({
     resolver: zodResolver(formSchema),

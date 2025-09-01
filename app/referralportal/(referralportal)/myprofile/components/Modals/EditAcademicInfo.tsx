@@ -28,10 +28,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { Input } from "@/components/ui/input";
-import { useUserStore } from "@/store/useUserData";
+import { useRefUserStore } from "@/store/useRefDataStore";
+import { AcademicInfo, DetailedInfo } from "@/types/reffertypes";
 
 const formSchema = z.object({
-  qualification: z.string().min(1, { message: "Qualification is required" }),
+  currentDegree: z.string().min(1, { message: "Qualification is required" }),
   program: z.string().min(1, { message: "Program is required" }),
   universityName: z.string().min(1, { message: "University Name is required" }),
   currentSemester: z
@@ -39,44 +40,31 @@ const formSchema = z.object({
     .min(1, { message: "Current semester is required" }),
 });
 
-
-
-export interface detailedInfo {
-  studyLevel: string;
-  program?: string;
-  universityName?: string;
-  currentSemester?: string;
-  updatedAt: string;
-}
-
-const EditAcademicInfo = ({ data }: { data: detailedInfo }) => {
+const EditAcademicInfo = ({ data }: { data: AcademicInfo }) => {
   const [open, setOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
-  const { updateDetailedInfo } = useUserStore();
+  const { updateDetailedInfo } = useRefUserStore();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      qualification: `${data?.studyLevel}`,
-     
+      currentDegree: `${data?.currentDegree}`,
       program: `${data?.program || ""}`,
-      universityName: `${data?.universityName || ""}`,
+      universityName: `${data?.uniName || ""}`,
       currentSemester: `${data?.currentSemester || ""}`,
-      
     },
   });
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Submitting:", values);
 
+    // Structure the data according to DetailedInfo interface
     const apiData = {
-      studyLevel: values.qualification,
-
-      program: values.program,
-      universityName: values.universityName,
-      currentSemester: values.currentSemester,
- 
-    
-    };
+      AcademicInformation: {
+        currentDegree: values.currentDegree,
+        program: values.program,
+        uniName: values.universityName, // Note: backend expects 'uniName', not 'universityName'
+        currentSemester: values.currentSemester,
+      },
+    } as Partial<DetailedInfo>;
 
     try {
       const response = await updateDetailedInfo(apiData);
@@ -96,8 +84,6 @@ const EditAcademicInfo = ({ data }: { data: detailedInfo }) => {
       console.error("Network error:", error);
     }
   }
-
-
 
   return (
     <>
@@ -142,7 +128,7 @@ const EditAcademicInfo = ({ data }: { data: detailedInfo }) => {
                 {/* Qualification */}
                 <FormField
                   control={form.control}
-                  name="qualification"
+                  name="currentDegree"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Degree (Currently Enrolled in)</FormLabel>
@@ -154,19 +140,12 @@ const EditAcademicInfo = ({ data }: { data: detailedInfo }) => {
                           <SelectValue placeholder="Select Qualification" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Matric">Matric</SelectItem>
-                          <SelectItem value="O Levels">O Levels</SelectItem>
                           <SelectItem value="Intermediate">
                             Intermediate
                           </SelectItem>
-                          <SelectItem value="A Levels">A Levels</SelectItem>
-                          <SelectItem value="Bachelors">Bachelors</SelectItem>
-                          <SelectItem value="Masters">Masters</SelectItem>
-                          <SelectItem value="MPhil">MPhil</SelectItem>
-                          <SelectItem value="PhD">PhD</SelectItem>
-                          <SelectItem value="Any Other">
-                            Any Other (Specify)
-                          </SelectItem>
+                          <SelectItem value="bachelors">Bachelors</SelectItem>
+                          <SelectItem value="masters">Masters</SelectItem>
+                          <SelectItem value="Phd">PhD</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormItem>
@@ -224,16 +203,19 @@ const EditAcademicInfo = ({ data }: { data: detailedInfo }) => {
                           <SelectValue placeholder="Select semester" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1st">1st</SelectItem>
-                          <SelectItem value="2nd">2nd</SelectItem>
-                          <SelectItem value="3rd">3rd</SelectItem>
-                          <SelectItem value="4th">4th</SelectItem>
-                          <SelectItem value="5th">5th</SelectItem>
-                          <SelectItem value="6th">6th</SelectItem>
-                          <SelectItem value="7th">7th</SelectItem>
-                          <SelectItem value="8th">8th</SelectItem>
-                          <SelectItem value="Final Year">Final Year</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
+                          <SelectItem value="semester-1">1st</SelectItem>
+                          <SelectItem value="semester-2">2nd</SelectItem>
+                          <SelectItem value="semester-3">3rd</SelectItem>
+                          <SelectItem value="semester-4">4th</SelectItem>
+
+                          <SelectItem value="semester-5">5th</SelectItem>
+                          <SelectItem value="semester-6">6th</SelectItem>
+                          <SelectItem value="semester-7">7th</SelectItem>
+                          <SelectItem value="semester-8">8th</SelectItem>
+                          <SelectItem value="semester-9">9th</SelectItem>
+                          <SelectItem value="semester-10">10th</SelectItem>
+                          <SelectItem value="semester-11">11th</SelectItem>
+                          <SelectItem value="semester-12">12th</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormItem>

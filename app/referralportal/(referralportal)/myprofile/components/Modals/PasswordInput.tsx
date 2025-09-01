@@ -70,7 +70,7 @@ const Password = ({ data }: { data: PasswordData }) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API}updateprofile/change-password`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API}refupdateprofile/changePassword`,
         {
           method: "PUT",
           headers: {
