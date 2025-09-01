@@ -14,7 +14,7 @@ import { z } from "zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUserStore } from "@/store/useUserData";
+import { useRefUserStore } from "@/store/useRefDataStore";
 
 const nameSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -34,7 +34,7 @@ const EditfirstandlastName: FC<EditfirstandlastNameProps> = ({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { updateUserProfile, user, getLastUpdatedDate, loading, error } =
-    useUserStore();
+    useRefUserStore();
 
   const form = useForm({
     resolver: zodResolver(nameSchema),
