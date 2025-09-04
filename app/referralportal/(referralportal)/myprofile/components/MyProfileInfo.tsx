@@ -5,21 +5,17 @@ import EditAcademicInfo from "./Modals/EditAcademicInfo";
 import EditWorkExperience from "./Modals/EditWorkExperience";
 import EditfirstandlastName from "./Modals/EditfirstandlastName";
 import Password from "./Modals/PasswordInput";
-// import EditPhoneNo from "./Modals/EditPhoneNo";
 import EditPersonalInfo from "./Modals/EditPersonalInfo";
 import EditPaymentDetails from "./Modals/EditPaymentDetails";
-import { DetailedInfo } from "@/store/useRefDataStore";
-import { User } from "@/types/reffertypes";
+import { DetailedInfo, User } from "@/types/reffertypes";
 
 interface UserProps {
   user: User;
   detailInfo: DetailedInfo | null;
 }
 
-
-
 const MyProfileInfo = ({ user, detailInfo }: UserProps) => {
- const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   return (
     <div className="w-[100%] md:w-[60%] ml-4 md:ml-8 xl:ml-72 mt-24 md:mt-56 xl:mt-10 mb-6 xl:mb-10">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-12 justify-between">
@@ -41,7 +37,6 @@ const MyProfileInfo = ({ user, detailInfo }: UserProps) => {
           </div>
         </div>
         <Password data={user} />
-        {/* <EditPhoneNo phone={user?.phone} updatedAt={user.updatedAt} /> */}
         <EditPersonalInfo data={user} />
         {detailInfo && (
           <>
@@ -50,7 +45,9 @@ const MyProfileInfo = ({ user, detailInfo }: UserProps) => {
             <EditPaymentDetails
               open={paymentModalOpen}
               setOpen={setPaymentModalOpen}
-             
+             data={
+              detailInfo.paymentInformation
+             }
             />
           </>
         )}
