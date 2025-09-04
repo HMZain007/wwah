@@ -9,7 +9,7 @@ interface User {
   lastName: string;
   fullName?: string;
   email: string;
-  phone?: string;
+  phone?: number;
   provider: "local" | "google" | "email" | "facebook";
   googleId?: string;
   profilePicture?: string;
@@ -26,6 +26,15 @@ interface User {
   otpVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  referrals: [
+    firstName: string,
+    lastName: string,
+    id: string,
+    profilePicture: string,
+    status: string,
+    createdAt: Date
+  ];
+  refId: string;
 }
 
 interface ApiResponse {
@@ -76,7 +85,7 @@ const ReferralControl: React.FC = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
+  console.log(users, "all users");
   // Filter users based on search term, provider, and verification status
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -221,7 +230,10 @@ const ReferralControl: React.FC = () => {
                   href={`/adminportal/referralControl/${user._id}`}
                   className="group block"
                 >
-                  <tr key={user._id} className="hover:bg-gray-50">
+                  <tr
+                    key={user._id}
+                    className="hover:bg-gray-50"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap ">
                       <div className="flex items-center  ">
                         <div className="flex-shrink-0 h-10 w-10">
