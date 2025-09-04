@@ -48,9 +48,9 @@ const majorSubjectsByDegree: Record<string, { options: string[]; allowMultiple?:
     options: [
       "fsc pre medical",
       "fsc pre engineering",
-      "isc physics",
-      "isc Economisc",
-      "isc Statistisc",
+      "ics physics",
+      "ics Economisc",
+      "ics Statistisc",
       "fs humanities",
       "icom",
     ],
